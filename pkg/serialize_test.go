@@ -13,9 +13,10 @@ import (
 	"github.com/itsubaki/awsri/internal/awsprice/rds"
 	"github.com/itsubaki/awsri/internal/costviz"
 	"github.com/itsubaki/awsri/pkg/awsprice"
+	"github.com/itsubaki/awsri/pkg/utilization"
 )
 
-func TestAWSPriceSerialize(t *testing.T) {
+func TestSerializeAWSPrice(t *testing.T) {
 	region := []string{
 		"ap-northeast-1",
 		"eu-central-1",
@@ -29,7 +30,10 @@ func TestAWSPriceSerialize(t *testing.T) {
 			continue
 		}
 
-		repo := &awsprice.Repository{}
+		repo := &awsprice.Repository{
+			Region: r,
+		}
+
 		{
 			price, err := ec2.ReadPrice(r)
 			if err != nil {
@@ -113,24 +117,10 @@ func TestAWSPriceSerialize(t *testing.T) {
 		if err := ioutil.WriteFile(path, bytes, os.ModePerm); err != nil {
 			t.Errorf("write file: %v", err)
 		}
-
-		read, err := ioutil.ReadFile(path)
-		if err != nil {
-			t.Errorf("read file: %v", err)
-		}
-
-		var repo2 awsprice.Repository
-		if err := json.Unmarshal(read, &repo2); err != nil {
-			t.Errorf("unmarshal: %v", err)
-		}
-
-		for _, v := range repo2.SelectAll() {
-			fmt.Println(v)
-		}
 	}
 }
 
-func TestCostVizSerialize(t *testing.T) {
+func TestSerializeCostViz(t *testing.T) {
 	if len(os.Getenv("COSTVIZ_BASEURL")) < 1 {
 		return
 	}
@@ -160,29 +150,31 @@ func TestCostVizSerialize(t *testing.T) {
 			t.Error(err)
 		}
 
-		for _, uu := range u {
-			fmt.Println(uu)
+		repo := &utilization.Repository{
+			AccountID: id,
 		}
 
-		if err := Serialize(u, path); err != nil {
-			t.Error(err)
+		for i := range u {
+			uu := u[i]
+			repo.Internal = append(repo.Internal, &utilization.Record{
+				AccountID:       uu.AccountID,
+				Date:            uu.Date,
+				ID:              uu.ID,
+				UsageType:       uu.UsageType,
+				OperatingSystem: uu.OperatingSystem,
+				Engine:          uu.Engine,
+				InstanceHour:    uu.InstanceHour,
+				InstanceNum:     uu.InstanceNum,
+			})
+		}
+
+		bytes, err := json.Marshal(repo)
+		if err != nil {
+			t.Errorf("marshal: %v", err)
+		}
+
+		if err := ioutil.WriteFile(path, bytes, os.ModePerm); err != nil {
+			t.Errorf("write file: %v", err)
 		}
 	}
-}
-
-func Serialize(r costviz.RecordList, path string) error {
-	if _, err := os.Stat(path); !os.IsNotExist(err) {
-		return nil
-	}
-
-	bytes, err := json.Marshal(r)
-	if err != nil {
-		return fmt.Errorf("marshal: %v", err)
-	}
-
-	if err := ioutil.WriteFile(path, bytes, os.ModePerm); err != nil {
-		return fmt.Errorf("write file: %v", err)
-	}
-
-	return nil
 }

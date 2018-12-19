@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-
-	"github.com/itsubaki/awsri/internal/costviz"
 )
 
 type Repository struct {
-	AccountID string             `json:"account_id"`
-	Internal  costviz.RecordList `json:"internal"`
+	AccountID string     `json:"account_id"`
+	Internal  RecordList `json:"internal"`
 }
 
 func NewRepository(path string) (*Repository, error) {
@@ -19,16 +17,14 @@ func NewRepository(path string) (*Repository, error) {
 		return nil, fmt.Errorf("read file: %v", err)
 	}
 
-	var records costviz.RecordList
-	if err := json.Unmarshal(read, &records); err != nil {
+	var repo Repository
+	if err := json.Unmarshal(read, &repo); err != nil {
 		return nil, fmt.Errorf("unmarshal: %v", err)
 	}
 
-	return &Repository{
-		Internal: records,
-	}, nil
+	return &repo, nil
 }
 
-func (r *Repository) SelectAll() costviz.RecordList {
+func (r *Repository) SelectAll() RecordList {
 	return r.Internal
 }

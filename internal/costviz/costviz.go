@@ -19,9 +19,9 @@ type CostViz struct {
 	TableName []string
 }
 
-type RecordList []*Record
+type UtilList []*Utilization
 
-type Record struct {
+type Utilization struct {
 	AccountID       string  `json:"account_id"`
 	Date            string  `json:"date"`
 	ID              string  `json:"id"`
@@ -32,7 +32,7 @@ type Record struct {
 	InstanceNum     float64 `json:"instance_num"`
 }
 
-func (u *Record) String() string {
+func (u *Utilization) String() string {
 	bytea, err := json.Marshal(u)
 	if err != nil {
 		panic(err)
@@ -78,13 +78,13 @@ func (v *CostViz) GetOSEngine() ([]string, error) {
 
 	return out, nil
 }
-func (v *CostViz) GetUtilization() (RecordList, error) {
+func (v *CostViz) GetUtilization() (UtilList, error) {
 	osengine, err := v.GetOSEngine()
 	if err != nil {
 		return nil, fmt.Errorf("get os engine: %v", err)
 	}
 
-	out := RecordList{}
+	out := UtilList{}
 	for _, tableName := range v.TableName {
 		for _, os := range osengine {
 			u, err := v.getUtilization(tableName, os)
@@ -99,7 +99,7 @@ func (v *CostViz) GetUtilization() (RecordList, error) {
 	return out, nil
 }
 
-func (v *CostViz) getUtilization(tableName, os string) (RecordList, error) {
+func (v *CostViz) getUtilization(tableName, os string) (UtilList, error) {
 	hash := md5.Sum([]byte(os))
 	hstr := hex.EncodeToString(hash[:])
 	url := fmt.Sprintf(
@@ -136,14 +136,14 @@ func (v *CostViz) getUtilization(tableName, os string) (RecordList, error) {
 	}
 	sort.Strings(keys)
 
-	out := RecordList{}
+	out := UtilList{}
 	for _, k := range keys {
 		max := 0.0
 		for _, w := range usage[k] {
 			max = math.Max(max, w)
 		}
 
-		r := &Record{
+		r := &Utilization{
 			ID:           fmt.Sprintf("%s:%s", k, strings.Replace(os, " ", "", -1)),
 			AccountID:    v.AccountID,
 			Date:         strings.Split(tableName, "_")[1], // awsbilling_201806 -> 201806
