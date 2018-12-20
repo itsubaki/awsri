@@ -25,7 +25,7 @@ func TestSerializeAWSPrice(t *testing.T) {
 	}
 
 	for _, r := range region {
-		path := fmt.Sprintf("%s/%s/%s.out", os.Getenv("GOPATH"), "src/github.com/itsubaki/awsri/internal/_serialized", r)
+		path := fmt.Sprintf("%s/%s/%s.out", os.Getenv("GOPATH"), "src/github.com/itsubaki/awsri/internal/_serialized/awsprice", r)
 		if _, err := os.Stat(path); !os.IsNotExist(err) {
 			continue
 		}
@@ -126,7 +126,7 @@ func TestSerializeCostViz(t *testing.T) {
 	}
 
 	for _, id := range strings.Split(os.Getenv("COSTVIZ_ACCOUNTID"), ",") {
-		path := fmt.Sprintf("%s/%s/%s.out", os.Getenv("GOPATH"), "src/github.com/itsubaki/awsri/internal/_serialized", id)
+		path := fmt.Sprintf("%s/%s/%s.out", os.Getenv("GOPATH"), "src/github.com/itsubaki/awsri/internal/_serialized/utilization", id)
 		if _, err := os.Stat(path); !os.IsNotExist(err) {
 			continue
 		}

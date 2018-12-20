@@ -6,6 +6,42 @@ import (
 	"testing"
 )
 
+func TestFindByInstanceTypeCache(t *testing.T) {
+	path := fmt.Sprintf("%s/%s/%s.out", os.Getenv("GOPATH"), "src/github.com/itsubaki/awsri/internal/_serialized/awsprice", "ap-northeast-1")
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		t.Errorf("file not found: %v", path)
+	}
+
+	repo, err := NewRepository(path)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	rs := repo.FindByInstanceType("cache.m4.large").
+		Engine("Redis").
+		PurchaseOption("Heavy Utilization").
+		LeaseContractLength("3yr")
+
+	for _, r := range rs {
+		if r.Engine != "Redis" {
+			t.Error("invalid engine")
+		}
+
+		e := r.ExpectedCost(0, 10)
+		if e.ReservedApplied.OnDemand != 0 {
+			t.Error("invalid reserved applied")
+		}
+
+		if e.Subtraction < 0 {
+			t.Error("invalid substraction")
+		}
+
+		if e.DiscountRate < 0 {
+			t.Error("invalid discount rate")
+		}
+	}
+}
+
 func TestExpect(t *testing.T) {
 	r := &Record{
 		SKU:                     "7MYWT7Y96UT3NJ2D",
@@ -39,40 +75,4 @@ func TestExpect(t *testing.T) {
 		t.Errorf("invalid reserved applied cost")
 	}
 
-}
-
-func TestFindByInstanceTypeCache(t *testing.T) {
-	path := fmt.Sprintf("%s/%s/%s.out", os.Getenv("GOPATH"), "src/github.com/itsubaki/awsri/internal/_serialized", "ap-northeast-1")
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		t.Errorf("file not found: %v", path)
-	}
-
-	repo, err := NewRepository(path)
-	if err != nil {
-		t.Errorf("%v", err)
-	}
-
-	rs := repo.FindByInstanceType("cache.m4.large").
-		Engine("Redis").
-		PurchaseOption("Heavy Utilization").
-		LeaseContractLength("3yr")
-
-	for _, r := range rs {
-		if r.Engine != "Redis" {
-			t.Error("invalid engine")
-		}
-
-		e := r.ExpectedCost(0, 10)
-		if e.ReservedApplied.OnDemand != 0 {
-			t.Error("invalid reserved applied")
-		}
-
-		if e.Subtraction < 0 {
-			t.Error("invalid substraction")
-		}
-
-		if e.DiscountRate < 0 {
-			t.Error("invalid discount rate")
-		}
-	}
 }
