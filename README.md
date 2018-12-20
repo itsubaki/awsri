@@ -64,37 +64,3 @@ fmt.Println(r.ExpectedCost(onDemandInstanceNum, reservedInstanceNum))
 
 {"full_on_demand":{"on_demand":5650.2,"reserved":0,"total":5650.2},"reserved_applied":{"on_demand":2260.08,"reserved":2139,"total":4399.08},"reserved_quantity":2139,"subtraction":1251.12,"discount_rate":0.22142932993522357}
 ```
-
-```
-c := &CostViz{
-	BaseURL:   os.Getenv("BASEURL"),
-	XApiKey:   os.Getenv("XAPIKEY"),
-	AccountID: "123",
-	TableName: []string{
-		"awsbilling_201806",
-		"awsbilling_201807",
-		"awsbilling_201808",
-	},
-}
-
-u, err := c.GetUtilization()
-if err != nil {
-	t.Error(err)
-}
-
-for _, uu := range u {
-	fmt.Println(uu)
-}
-
-{"account_id":"123","label":"201806","id":"APN1-BoxUsage:c4.xlarge:Linux","usage_type":"APN1-BoxUsage:c4.xlarge","operating_system":"Linux","instance_hour":2880}
-{"account_id":"123","label":"201807","id":"APN1-BoxUsage:c4.xlarge:Linux","usage_type":"APN1-BoxUsage:c4.xlarge","operating_system":"Linux","instance_hour":2976}
-{"account_id":"123","label":"201808","id":"APN1-BoxUsage:c4.xlarge:Linux","usage_type":"APN1-BoxUsage:c4.xlarge","operating_system":"Linux","instance_hour":2976}
-
-{"account_id":"123","label":"201806","id":"APN1-NodeUsage:cache.m3.medium:Redis","usage_type":"APN1-NodeUsage:cache.m3.medium","engine":"Redis","instance_hour":1440}
-{"account_id":"123","label":"201807","id":"APN1-NodeUsage:cache.m3.medium:Redis","usage_type":"APN1-NodeUsage:cache.m3.medium","engine":"Redis","instance_hour":1488}
-{"account_id":"123","label":"201808","id":"APN1-NodeUsage:cache.m3.medium:Redis","usage_type":"APN1-NodeUsage:cache.m3.medium","engine":"Redis","instance_hour":1488}
-
-{"account_id":"123","label":"201806","id":"APN1-InstanceUsage:db.r3.4xlarge:AuroraMySQL","usage_type":"APN1-InstanceUsage:db.r3.4xlarge","engine":"Aurora MySQL","instance_hour":28922}
-{"account_id":"123","label":"201807","id":"APN1-InstanceUsage:db.r3.4xlarge:AuroraMySQL","usage_type":"APN1-InstanceUsage:db.r3.4xlarge","engine":"Aurora MySQL","instance_hour":25488}
-{"account_id":"123","label":"201808","id":"APN1-InstanceUsage:db.r3.4xlarge:AuroraMySQL","usage_type":"APN1-InstanceUsage:db.r3.4xlarge","engine":"Aurora MySQL","instance_hour":22697}
-```
