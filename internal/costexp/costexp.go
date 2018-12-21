@@ -19,10 +19,10 @@ type UsageQuantityList []*UsageQuantity
 
 type UsageQuantity struct {
 	AccountID    string  `json:"account_id"`
-	Date         string  `json:"date"`
 	UsageType    string  `json:"usage_type"`
 	Platform     string  `json:"platform,omitempty"`
 	Engine       string  `json:"engine,omitempty"`
+	Date         string  `json:"date"`
 	InstanceHour float64 `json:"instance_hour"`
 	InstanceNum  float64 `json:"instance_num"`
 }

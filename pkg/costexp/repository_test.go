@@ -19,14 +19,7 @@ func TestRepository(t *testing.T) {
 	}
 
 	if repo.Profile != "example" {
-		t.Errorf("invalid profile=%s", repo.Profile)
+		t.Errorf("invalid profile")
 	}
 
-	if repo.Period.Start != "2018-11-01" {
-		t.Errorf("invalid start=%s", repo.Period.Start)
-	}
-
-	if repo.Period.End != "2018-12-01" {
-		t.Errorf("invalid start=%s", repo.Period.End)
-	}
 }

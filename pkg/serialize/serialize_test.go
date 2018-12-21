@@ -1,4 +1,4 @@
-package internal
+package serialize
 
 import (
 	"encoding/json"
@@ -88,10 +88,6 @@ func TestSerializeCostExpOverall(t *testing.T) {
 
 		repo := &costexp.Repository{
 			Profile: os.Getenv("AWS_PROFILE"),
-			Period: costexp.Period{
-				Start: *plist[i].Start,
-				End:   *plist[i].End,
-			},
 		}
 
 		q, err := internal.New().GetUsageQuantity(plist[i])
@@ -144,10 +140,6 @@ func TestSerializeCostExp(t *testing.T) {
 
 	repo := &costexp.Repository{
 		Profile: os.Getenv("AWS_PROFILE"),
-		Period: costexp.Period{
-			Start: *period.Start,
-			End:   *period.End,
-		},
 	}
 
 	q, err := internal.New().GetUsageQuantity(period)

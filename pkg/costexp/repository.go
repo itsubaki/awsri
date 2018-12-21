@@ -8,13 +8,7 @@ import (
 
 type Repository struct {
 	Profile  string     `json:"profile"`
-	Period   Period     `json:"period"`
 	Internal RecordList `json:"internal"`
-}
-
-type Period struct {
-	Start string `json:"start"`
-	End   string `json:"end"`
 }
 
 func NewRepository(path string) (*Repository, error) {
