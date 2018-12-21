@@ -196,14 +196,21 @@ func (c *CostExp) getUsageQuantity(in *getUsageQuantityInput) (UsageQuantityList
 			hrs, num := GetInstanceHourAndNum(amount, *in.Period.Start)
 			index := strings.LastIndex(*in.Period.Start, "-")
 			date := string(*in.Period.Start)[:index]
-			out = append(out, &UsageQuantity{
+			q := &UsageQuantity{
 				AccountID:    in.AccountID,
 				Date:         date,
 				UsageType:    *g.Keys[0],
-				Platform:     *g.Keys[1],
 				InstanceHour: hrs,
 				InstanceNum:  num,
-			})
+			}
+
+			if in.Dimension == "PLATFORM" {
+				q.Platform = *g.Keys[1]
+			} else {
+				q.Engine = *g.Keys[1]
+			}
+
+			out = append(out, q)
 		}
 	}
 

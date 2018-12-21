@@ -54,11 +54,11 @@ for _, r := range repo.SelectAll() {
 {"account_id":"123456789012","date":"2018-11","usage_type":"APN1-BoxUsage:t2.micro","platform":"Linux/UNIX","instance_hour":2264.238066,"instance_num":3.1447750916666664}
 {"account_id":"123456789012","date":"2018-11","usage_type":"APN1-BoxUsage:t2.nano","platform":"Linux/UNIX","instance_hour":720,"instance_num":1}
 {"account_id":"123456789012","date":"2018-11","usage_type":"APN1-BoxUsage:t2.small","platform":"Linux/UNIX","instance_hour":1440,"instance_num":2}
-{"account_id":"123456789012","date":"2018-11","usage_type":"APN1-NodeUsage:cache.r5.large","platform":"Redis","instance_hour":2,"instance_num":0.002777777777777778}
-{"account_id":"123456789012","date":"2018-11","usage_type":"APN1-NodeUsage:cache.t2.micro","platform":"Redis","instance_hour":344,"instance_num":0.4777777777777778}
-{"account_id":"123456789012","date":"2018-11","usage_type":"APN1-NodeUsage:cache.t2.small","platform":"Redis","instance_hour":72,"instance_num":0.1}
-{"account_id":"123456789012","date":"2018-11","usage_type":"APN1-InstanceUsage:db.r3.large","platform":"Aurora MySQL","instance_hour":1,"instance_num":0.001388888888888889}
-{"account_id":"123456789012","date":"2018-11","usage_type":"APN1-InstanceUsage:db.r4.large","platform":"Aurora MySQL","instance_hour":2,"instance_num":0.002777777777777778}
-{"account_id":"123456789012","date":"2018-11","usage_type":"APN1-InstanceUsage:db.t2.small","platform":"Aurora MySQL","instance_hour":237,"instance_num":0.32916666666666666}
+{"account_id":"123456789012","date":"2018-11","usage_type":"APN1-NodeUsage:cache.r5.large","engine":"Redis","instance_hour":2,"instance_num":0.002777777777777778}
+{"account_id":"123456789012","date":"2018-11","usage_type":"APN1-NodeUsage:cache.t2.micro","engine":"Redis","instance_hour":344,"instance_num":0.4777777777777778}
+{"account_id":"123456789012","date":"2018-11","usage_type":"APN1-NodeUsage:cache.t2.small","engine":"Redis","instance_hour":72,"instance_num":0.1}
+{"account_id":"123456789012","date":"2018-11","usage_type":"APN1-InstanceUsage:db.r3.large","engine":"Aurora MySQL","instance_hour":1,"instance_num":0.001388888888888889}
+{"account_id":"123456789012","date":"2018-11","usage_type":"APN1-InstanceUsage:db.r4.large","engine":"Aurora MySQL","instance_hour":2,"instance_num":0.002777777777777778}
+{"account_id":"123456789012","date":"2018-11","usage_type":"APN1-InstanceUsage:db.t2.small","engine":"Aurora MySQL","instance_hour":237,"instance_num":0.32916666666666666}
 
 ```
