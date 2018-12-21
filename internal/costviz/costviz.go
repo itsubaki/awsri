@@ -40,6 +40,7 @@ func (u *Utilization) String() string {
 
 	return string(bytea)
 }
+
 func (v *CostViz) GetOSEngine() ([]string, error) {
 	url := fmt.Sprintf("https://%s/linechart/?target=os_engine&summary=usageamount&stack=on&account=%s", v.BaseURL, v.AccountID)
 

@@ -1,5 +1,18 @@
 package costexp
 
+import (
+	"strconv"
+	"strings"
+)
+
+func GetInstanceHourAndNum(amount, start string) (float64, float64) {
+	hrs, _ := strconv.ParseFloat(amount, 64)
+	month := strings.Split(start, "-")[1]
+	num := hrs / float64(24*Month[month])
+
+	return hrs, num
+}
+
 var Month = map[string]int{
 	"01": 31,
 	"02": 28,

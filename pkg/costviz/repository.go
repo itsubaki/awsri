@@ -1,4 +1,4 @@
-package utilization
+package costviz
 
 import (
 	"encoding/json"

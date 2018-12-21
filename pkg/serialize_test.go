@@ -5,16 +5,64 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 	"testing"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/costexplorer"
 	"github.com/itsubaki/awsri/internal/awsprice/cache"
 	"github.com/itsubaki/awsri/internal/awsprice/ec2"
 	"github.com/itsubaki/awsri/internal/awsprice/rds"
-	"github.com/itsubaki/awsri/internal/costviz"
+	icostexp "github.com/itsubaki/awsri/internal/costexp"
 	"github.com/itsubaki/awsri/pkg/awsprice"
-	"github.com/itsubaki/awsri/pkg/utilization"
+	"github.com/itsubaki/awsri/pkg/costexp"
 )
+
+func TestSerializeCostExp(t *testing.T) {
+	os.Setenv("AWS_PROFILE", "example")
+	period := &costexplorer.DateInterval{
+		Start: aws.String("2018-11-01"),
+		End:   aws.String("2018-12-01"),
+	}
+
+	repo := &costexp.Repository{
+		Profile: os.Getenv("AWS_PROFILE"),
+		Period: costexp.Period{
+			Start: *period.Start,
+			End:   *period.End,
+		},
+	}
+
+	q, err := icostexp.New().GetUsageQuantity(period)
+	if err != nil {
+		t.Errorf("get usage quantity: %v", err)
+	}
+
+	for _, qq := range q {
+		repo.Internal = append(repo.Internal, &costexp.Record{
+			AccountID:    qq.AccountID,
+			Date:         qq.Date,
+			UsageType:    qq.UsageType,
+			Platform:     qq.Platform,
+			Engine:       qq.Engine,
+			InstanceHour: qq.InstanceHour,
+			InstanceNum:  qq.InstanceNum,
+		})
+	}
+
+	bytes, err := json.Marshal(repo)
+	if err != nil {
+		t.Errorf("marshal: %v", err)
+	}
+
+	path := fmt.Sprintf("%s/%s/%s.out", os.Getenv("GOPATH"), "src/github.com/itsubaki/awsri/internal/_serialized/costexp", os.Getenv("AWS_PROFILE"))
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		return
+	}
+
+	if err := ioutil.WriteFile(path, bytes, os.ModePerm); err != nil {
+		t.Errorf("write file: %v", err)
+	}
+}
 
 func TestSerializeAWSPrice(t *testing.T) {
 	region := []string{
@@ -107,65 +155,6 @@ func TestSerializeAWSPrice(t *testing.T) {
 					UsageType:           v.UsageType,
 				})
 			}
-		}
-
-		bytes, err := json.Marshal(repo)
-		if err != nil {
-			t.Errorf("marshal: %v", err)
-		}
-
-		if err := ioutil.WriteFile(path, bytes, os.ModePerm); err != nil {
-			t.Errorf("write file: %v", err)
-		}
-	}
-}
-
-func TestSerializeCostViz(t *testing.T) {
-	if len(os.Getenv("COSTVIZ_BASEURL")) < 1 {
-		return
-	}
-
-	for _, id := range strings.Split(os.Getenv("COSTVIZ_ACCOUNTID"), ",") {
-		path := fmt.Sprintf("%s/%s/%s.out", os.Getenv("GOPATH"), "src/github.com/itsubaki/awsri/internal/_serialized/utilization", id)
-		if _, err := os.Stat(path); !os.IsNotExist(err) {
-			continue
-		}
-
-		c := &costviz.CostViz{
-			BaseURL:   os.Getenv("COSTVIZ_BASEURL"),
-			XApiKey:   os.Getenv("COSTVIZ_XAPIKEY"),
-			AccountID: id,
-			TableName: []string{
-				"awsbilling_201806",
-				"awsbilling_201807",
-				"awsbilling_201808",
-				"awsbilling_201809",
-				"awsbilling_201810",
-				"awsbilling_201811",
-			},
-		}
-
-		u, err := c.GetUtilization()
-		if err != nil {
-			t.Error(err)
-		}
-
-		repo := &utilization.Repository{
-			AccountID: id,
-		}
-
-		for i := range u {
-			uu := u[i]
-			repo.Internal = append(repo.Internal, &utilization.Record{
-				AccountID:       uu.AccountID,
-				Date:            uu.Date,
-				ID:              uu.ID,
-				UsageType:       uu.UsageType,
-				OperatingSystem: uu.OperatingSystem,
-				Engine:          uu.Engine,
-				InstanceHour:    uu.InstanceHour,
-				InstanceNum:     uu.InstanceNum,
-			})
 		}
 
 		bytes, err := json.Marshal(repo)
