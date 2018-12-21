@@ -14,8 +14,8 @@ func TestRepository(t *testing.T) {
 		t.Errorf("new repository: %v", err)
 	}
 
-	for _, r := range repo.SelectAll() {
-		fmt.Println(r)
+	if len(repo.SelectAll()) < 1 {
+		t.Errorf("repository is empty")
 	}
 
 	if repo.Profile != "example" {

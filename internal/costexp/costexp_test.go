@@ -1,7 +1,6 @@
 package costexp
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -10,7 +9,7 @@ import (
 )
 
 func TestLinkedAccount(t *testing.T) {
-	os.Setenv("AWS_PROFILE", "aws")
+	os.Setenv("AWS_PROFILE", "example")
 	period := &costexplorer.DateInterval{
 		Start: aws.String("2018-11-01"),
 		End:   aws.String("2018-12-01"),
@@ -28,7 +27,7 @@ func TestLinkedAccount(t *testing.T) {
 }
 
 func TestUsageType(t *testing.T) {
-	os.Setenv("AWS_PROFILE", "aws")
+	os.Setenv("AWS_PROFILE", "example")
 	period := &costexplorer.DateInterval{
 		Start: aws.String("2018-11-01"),
 		End:   aws.String("2018-12-01"),
@@ -53,12 +52,12 @@ func TestGetUsageQuantity(t *testing.T) {
 	}
 
 	c := New()
-	q, err := c.GetUsageQuantity(period)
+	list, err := c.GetUsageQuantity(period)
 	if err != nil {
 		t.Errorf("get usage quantity: %v", err)
 	}
 
-	for _, qq := range q {
-		fmt.Println(qq)
+	if len(list) < 1 {
+		t.Errorf("usage quantity is empty")
 	}
 }
