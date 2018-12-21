@@ -7,7 +7,7 @@ import (
 )
 
 func TestRepository(t *testing.T) {
-	path := fmt.Sprintf("%s/%s/%s.out", os.Getenv("GOPATH"), "src/github.com/itsubaki/awsri/internal/_serialized/costexp", "example")
+	path := fmt.Sprintf("%s/%s/%s.out", os.Getenv("GOPATH"), "src/github.com/itsubaki/awsri/internal/_serialized/costexp", "example_2018-11")
 
 	repo, err := NewRepository(path)
 	if err != nil {
