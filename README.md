@@ -20,6 +20,12 @@ for _, r := range rs {
   fmt.Printf("%s\n", r.GetAnnualCost())
 }
 
+onDemandInstanceNum := 3
+reservedInstanceNum := 10
+for _, r := range rs {
+  fmt.Printf("%s\n", r.ExpectedCost(onDemandInstanceNum, reservedInstanceNum))
+}
+
 {"sku":"7MYWT7Y96UT3NJ2D","offer_term_code":"4NA7Y494T4","region":"ap-northeast-1","instance_type":"m4.large","usage_type":"APN1-BoxUsage:m4.large","lease_contract_length":"1yr","purchase_option":"No Upfront","on_demand":0.129,"reserved_quantity":0,"reserved_hrs":0.0871,"tenancy":"Shared","pre_installed":"NA","operating_system":"Linux","operation":"RunInstances","offering_class":"standard","normalization_size_factor":"4"}
 {"sku":"7MYWT7Y96UT3NJ2D","offer_term_code":"HU7G6KETJZ","region":"ap-northeast-1","instance_type":"m4.large","usage_type":"APN1-BoxUsage:m4.large","lease_contract_length":"1yr","purchase_option":"Partial Upfront","on_demand":0.129,"reserved_quantity":364,"reserved_hrs":0.0415,"tenancy":"Shared","pre_installed":"NA","operating_system":"Linux","operation":"RunInstances","offering_class":"standard","normalization_size_factor":"4"}
 {"sku":"7MYWT7Y96UT3NJ2D","offer_term_code":"6QCMYABX3D","region":"ap-northeast-1","instance_type":"m4.large","usage_type":"APN1-BoxUsage:m4.large","lease_contract_length":"1yr","purchase_option":"All Upfront","on_demand":0.129,"reserved_quantity":713,"reserved_hrs":0,"tenancy":"Shared","pre_installed":"NA","operating_system":"Linux","operation":"RunInstances","offering_class":"standard","normalization_size_factor":"4"}
@@ -34,12 +40,12 @@ for _, r := range rs {
 {"lease_contract_length":"3yr","purchase_option":"Partial Upfront","on_demand":3390.12,"reserved":1550.26,"reserved_quantity":775,"subtraction":1839.86,"discount_rate":0.5427123523651081}
 {"lease_contract_length":"3yr","purchase_option":"All Upfront","on_demand":3390.12,"reserved":1457,"reserved_quantity":1457,"subtraction":1933.12,"discount_rate":0.5702217030665582}
 
-onDemandInstanceNum := 2
-reservedInstanceNum := 3
-fmt.Println(r.ExpectedCost(onDemandInstanceNum, reservedInstanceNum))
-
-{"full_on_demand":{"on_demand":5650.2,"reserved":0,"total":5650.2},"reserved_applied":{"on_demand":2260.08,"reserved":2139,"total":4399.08},"reserved_quantity":2139,"subtraction":1251.12,"discount_rate":0.22142932993522357}
-
+{"full_on_demand":{"on_demand":14690.52,"reserved":0,"total":14690.52},"reserved_applied":{"on_demand":3390.12,"reserved":7629.96,"total":11020.08},"reserved_quantity":0,"subtraction":3670.4400000000005,"discount_rate":0.24985092426952893}
+{"full_on_demand":{"on_demand":14690.52,"reserved":0,"total":14690.52},"reserved_applied":{"on_demand":3390.12,"reserved":7275.4,"total":10665.52},"reserved_quantity":3640,"subtraction":4025,"discount_rate":0.2739862169616869}
+{"full_on_demand":{"on_demand":14690.52,"reserved":0,"total":14690.52},"reserved_applied":{"on_demand":3390.12,"reserved":7130,"total":10520.119999999999},"reserved_quantity":7130,"subtraction":4170.4000000000015,"discount_rate":0.28388375632720975}
+{"full_on_demand":{"on_demand":44071.56,"reserved":0,"total":44071.56},"reserved_applied":{"on_demand":10170.36,"reserved":16740.360000000004,"total":26910.720000000005},"reserved_quantity":0,"subtraction":17160.839999999993,"discount_rate":0.38938580799045897}
+{"full_on_demand":{"on_demand":44071.56,"reserved":0,"total":44071.56},"reserved_applied":{"on_demand":10170.36,"reserved":15502.6,"total":25672.96},"reserved_quantity":7750,"subtraction":18398.6,"discount_rate":0.41747104028085236}
+{"full_on_demand":{"on_demand":44071.56,"reserved":0,"total":44071.56},"reserved_applied":{"on_demand":10170.36,"reserved":14570,"total":24740.36},"reserved_quantity":14570,"subtraction":19331.199999999997,"discount_rate":0.4386320792819678}
 ```
 
 ```
@@ -60,5 +66,4 @@ for _, r := range repo.SelectAll() {
 {"account_id":"123456789012","date":"2018-11","usage_type":"APN1-InstanceUsage:db.r3.large","engine":"Aurora MySQL","instance_hour":1,"instance_num":0.001388888888888889}
 {"account_id":"123456789012","date":"2018-11","usage_type":"APN1-InstanceUsage:db.r4.large","engine":"Aurora MySQL","instance_hour":2,"instance_num":0.002777777777777778}
 {"account_id":"123456789012","date":"2018-11","usage_type":"APN1-InstanceUsage:db.t2.small","engine":"Aurora MySQL","instance_hour":237,"instance_num":0.32916666666666666}
-
 ```
