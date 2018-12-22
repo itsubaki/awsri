@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/itsubaki/awsri/pkg/costexp"
+	"github.com/itsubaki/awsri/internal/costexp"
 )
 
 func TestMergedRepository(t *testing.T) {
@@ -16,22 +16,22 @@ func TestMergedRepository(t *testing.T) {
 	)
 
 	path := []string{
-		fmt.Sprintf("%s/%s", dir, "aws_2017-12.out"),
-		fmt.Sprintf("%s/%s", dir, "aws_2018-01.out"),
-		fmt.Sprintf("%s/%s", dir, "aws_2018-02.out"),
-		fmt.Sprintf("%s/%s", dir, "aws_2018-03.out"),
-		fmt.Sprintf("%s/%s", dir, "aws_2018-04.out"),
-		fmt.Sprintf("%s/%s", dir, "aws_2018-05.out"),
-		fmt.Sprintf("%s/%s", dir, "aws_2018-06.out"),
-		fmt.Sprintf("%s/%s", dir, "aws_2018-07.out"),
-		fmt.Sprintf("%s/%s", dir, "aws_2018-08.out"),
-		fmt.Sprintf("%s/%s", dir, "aws_2018-09.out"),
-		fmt.Sprintf("%s/%s", dir, "aws_2018-10.out"),
-		fmt.Sprintf("%s/%s", dir, "aws_2018-11.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2017-12.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-01.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-02.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-03.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-04.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-05.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-06.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-07.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-08.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-09.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-10.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-11.out"),
 	}
 
 	repo := &costexp.Repository{
-		Profile: "aws",
+		Profile: "example",
 	}
 
 	for _, p := range path {
