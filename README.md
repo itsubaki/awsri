@@ -40,12 +40,12 @@ for _, r := range rs {
 {"lease_contract_length":"3yr","purchase_option":"Partial Upfront","on_demand":3390.12,"reserved":1550.26,"reserved_quantity":775,"subtraction":1839.86,"discount_rate":0.5427123523651081}
 {"lease_contract_length":"3yr","purchase_option":"All Upfront","on_demand":3390.12,"reserved":1457,"reserved_quantity":1457,"subtraction":1933.12,"discount_rate":0.5702217030665582}
 
-{"full_on_demand":{"on_demand":14690.52,"reserved":0,"total":14690.52},"reserved_applied":{"on_demand":3390.12,"reserved":7629.96,"total":11020.08},"reserved_quantity":0,"subtraction":3670.4400000000005,"discount_rate":0.24985092426952893}
-{"full_on_demand":{"on_demand":14690.52,"reserved":0,"total":14690.52},"reserved_applied":{"on_demand":3390.12,"reserved":7275.4,"total":10665.52},"reserved_quantity":3640,"subtraction":4025,"discount_rate":0.2739862169616869}
-{"full_on_demand":{"on_demand":14690.52,"reserved":0,"total":14690.52},"reserved_applied":{"on_demand":3390.12,"reserved":7130,"total":10520.119999999999},"reserved_quantity":7130,"subtraction":4170.4000000000015,"discount_rate":0.28388375632720975}
-{"full_on_demand":{"on_demand":44071.56,"reserved":0,"total":44071.56},"reserved_applied":{"on_demand":10170.36,"reserved":16740.360000000004,"total":26910.720000000005},"reserved_quantity":0,"subtraction":17160.839999999993,"discount_rate":0.38938580799045897}
-{"full_on_demand":{"on_demand":44071.56,"reserved":0,"total":44071.56},"reserved_applied":{"on_demand":10170.36,"reserved":15502.6,"total":25672.96},"reserved_quantity":7750,"subtraction":18398.6,"discount_rate":0.41747104028085236}
-{"full_on_demand":{"on_demand":44071.56,"reserved":0,"total":44071.56},"reserved_applied":{"on_demand":10170.36,"reserved":14570,"total":24740.36},"reserved_quantity":14570,"subtraction":19331.199999999997,"discount_rate":0.4386320792819678}
+{"lease_contract_length":"1yr","purchase_option":"No Upfront","full_on_demand":{"on_demand":14690.52,"reserved":0,"total":14690.52},"reserved_applied":{"on_demand":3390.12,"reserved":7629.96,"total":11020.08},"reserved_quantity":0,"subtraction":3670.4400000000005,"discount_rate":0.24985092426952893}
+{"lease_contract_length":"1yr","purchase_option":"Partial Upfront","full_on_demand":{"on_demand":14690.52,"reserved":0,"total":14690.52},"reserved_applied":{"on_demand":3390.12,"reserved":7275.4,"total":10665.52},"reserved_quantity":3640,"subtraction":4025,"discount_rate":0.2739862169616869}
+{"lease_contract_length":"1yr","purchase_option":"All Upfront","full_on_demand":{"on_demand":14690.52,"reserved":0,"total":14690.52},"reserved_applied":{"on_demand":3390.12,"reserved":7130,"total":10520.119999999999},"reserved_quantity":7130,"subtraction":4170.4000000000015,"discount_rate":0.28388375632720975}
+{"lease_contract_length":"3yr","purchase_option":"No Upfront","full_on_demand":{"on_demand":44071.56,"reserved":0,"total":44071.56},"reserved_applied":{"on_demand":10170.36,"reserved":16740.360000000004,"total":26910.720000000005},"reserved_quantity":0,"subtraction":17160.839999999993,"discount_rate":0.38938580799045897}
+{"lease_contract_length":"3yr","purchase_option":"Partial Upfront","full_on_demand":{"on_demand":44071.56,"reserved":0,"total":44071.56},"reserved_applied":{"on_demand":10170.36,"reserved":15502.6,"total":25672.96},"reserved_quantity":7750,"subtraction":18398.6,"discount_rate":0.41747104028085236}
+{"lease_contract_length":"3yr","purchase_option":"All Upfront","full_on_demand":{"on_demand":44071.56,"reserved":0,"total":44071.56},"reserved_applied":{"on_demand":10170.36,"reserved":14570,"total":24740.36},"reserved_quantity":14570,"subtraction":19331.199999999997,"discount_rate":0.4386320792819678}
 ```
 
 ```

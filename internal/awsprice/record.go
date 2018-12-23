@@ -149,6 +149,8 @@ func (r *Record) ExpectedCost(ondemandNum, reservedNum int) *ExpectedCost {
 	res := r.GetAnnualCost().Reserved * float64(reservedNum)
 
 	out := &ExpectedCost{
+		LeaseContractLength: r.LeaseContractLength,
+		PurchaseOption:      r.PurchaseOption,
 		FullOnDemand: Cost{
 			OnDemand: full,
 			Reserved: 0.0,
@@ -169,11 +171,13 @@ func (r *Record) ExpectedCost(ondemandNum, reservedNum int) *ExpectedCost {
 }
 
 type ExpectedCost struct {
-	FullOnDemand     Cost    `json:"full_on_demand"`
-	ReservedApplied  Cost    `json:"reserved_applied"`
-	ReservedQuantity float64 `json:"reserved_quantity"`
-	Subtraction      float64 `json:"subtraction"`
-	DiscountRate     float64 `json:"discount_rate"`
+	LeaseContractLength string  `json:"lease_contract_length"`
+	PurchaseOption      string  `json:"purchase_option"`
+	FullOnDemand        Cost    `json:"full_on_demand"`
+	ReservedApplied     Cost    `json:"reserved_applied"`
+	ReservedQuantity    float64 `json:"reserved_quantity"`
+	Subtraction         float64 `json:"subtraction"`
+	DiscountRate        float64 `json:"discount_rate"`
 }
 
 type Cost struct {
