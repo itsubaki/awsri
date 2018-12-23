@@ -79,7 +79,12 @@ type OutputPrice struct {
 }
 
 func ReadPrice(region string, dir ...string) (map[string]OutputPrice, error) {
-	dirpath := fmt.Sprintf("%s/%s", os.Getenv("GOPATH"), "src/github.com/itsubaki/awsri/internal/awsprice/_json/")
+	dirpath := fmt.Sprintf(
+		"%s/%s",
+		os.Getenv("GOPATH"),
+		"src/github.com/itsubaki/awsri/internal/awsprice/_json/",
+	)
+
 	path := fmt.Sprintf("%s/%s/%s.json", dirpath, "rds", region)
 	if len(dir) > 0 {
 		path = fmt.Sprintf("%s/%s/%s.json", dir[0], "rds", region)

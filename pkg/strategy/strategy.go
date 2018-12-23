@@ -6,5 +6,5 @@ type Strategy interface {
 type Minimum struct {
 }
 
-type Breakeven struct {
+type BreakevenPoint struct {
 }

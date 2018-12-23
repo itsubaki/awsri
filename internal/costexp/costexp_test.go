@@ -10,13 +10,13 @@ import (
 
 func TestLinkedAccount(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
+
 	period := &costexplorer.DateInterval{
 		Start: aws.String("2018-11-01"),
 		End:   aws.String("2018-12-01"),
 	}
 
-	c := New()
-	list, err := c.GetLinkedAccount(period)
+	list, err := New().GetLinkedAccount(period)
 	if err != nil {
 		t.Errorf("get linked account: %v", err)
 	}
@@ -28,13 +28,13 @@ func TestLinkedAccount(t *testing.T) {
 
 func TestUsageType(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
+
 	period := &costexplorer.DateInterval{
 		Start: aws.String("2018-11-01"),
 		End:   aws.String("2018-12-01"),
 	}
 
-	c := New()
-	list, err := c.GetUsageType(period)
+	list, err := New().GetUsageType(period)
 	if err != nil {
 		t.Errorf("get usage type: %v", err)
 	}
@@ -46,13 +46,13 @@ func TestUsageType(t *testing.T) {
 
 func TestGetUsageQuantity(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
+
 	period := &costexplorer.DateInterval{
 		Start: aws.String("2018-11-01"),
 		End:   aws.String("2018-12-01"),
 	}
 
-	c := New()
-	list, err := c.GetUsageQuantity(period)
+	list, err := New().GetUsageQuantity(period)
 	if err != nil {
 		t.Errorf("get usage quantity: %v", err)
 	}

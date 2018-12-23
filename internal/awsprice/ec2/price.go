@@ -82,7 +82,12 @@ type OutputPrice struct {
 }
 
 func ReadPrice(region string, dir ...string) (map[string]OutputPrice, error) {
-	dirpath := fmt.Sprintf("%s/%s", os.Getenv("GOPATH"), "src/github.com/itsubaki/awsri/internal/awsprice/_json/")
+	dirpath := fmt.Sprintf(
+		"%s/%s",
+		os.Getenv("GOPATH"),
+		"src/github.com/itsubaki/awsri/internal/awsprice/_json/",
+	)
+
 	path := fmt.Sprintf("%s/%s/%s.json", dirpath, "ec2", region)
 	if len(dir) > 0 {
 		path = fmt.Sprintf("%s/%s/%s.json", dir[0], "ec2", region)
@@ -158,6 +163,7 @@ func usage(region string, list PriceList) (map[string]OutputPrice, error) {
 					}
 				}
 
+				// k is SKU.OfferingTermCode. it is unique.
 				p[k] = OutputPrice{
 					SKU:                 v.SKU,
 					OfferTermCode:       v.OfferTermCode,
