@@ -1,6 +1,9 @@
 package awsprice
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"math"
+)
 
 type RecordList []*Record
 
@@ -129,7 +132,7 @@ type Record struct {
 	UsageType               string  `json:"usage_type"`                          // common
 	LeaseContractLength     string  `json:"lease_contract_length"`               // common
 	PurchaseOption          string  `json:"purchase_option"`                     // common
-	OnDemand                float64 `json:"on_demand"`                           // common
+	OnDemand                float64 `json:"ondemand"`                            // common
 	ReservedQuantity        float64 `json:"reserved_quantity"`                   // common
 	ReservedHrs             float64 `json:"reserved_hrs"`                        // common
 	Tenancy                 string  `json:"tenancy,omitempty"`                   // ec2: Shared, Host, Dedicated
@@ -139,6 +142,47 @@ type Record struct {
 	OfferingClass           string  `json:"offering_class,omitempty"`            // ec2, rds
 	NormalizationSizeFactor string  `json:"normalization_size_factor,omitempty"` // ec2, rds
 	Engine                  string  `json:"engine,omitempty"`                    // rds, cache
+}
+
+func (r *Record) ExpectedInstanceNum(forecast []Forecast) *ExpectedInstanceNum {
+	//TODO breakeven point
+	breakevenpoint := 9
+	if len(forecast) < breakevenpoint {
+		sum := 0.0
+		for i := range forecast {
+			sum = sum + forecast[i].InstanceNum
+		}
+
+		return &ExpectedInstanceNum{
+			LeaseContractLength: r.LeaseContractLength,
+			PurchaseOption:      r.PurchaseOption,
+			OnDemandInstanceNum: int64(math.Ceil(sum / float64(len(forecast)))),
+			ReservedInstanceNum: 0,
+		}
+	}
+
+	return nil
+}
+
+type Forecast struct {
+	Month       string  `json:"month"` // 2018-11
+	InstanceNum float64 `json:"instance_num"`
+}
+
+type ExpectedInstanceNum struct {
+	LeaseContractLength string `json:"lease_contract_length"`
+	PurchaseOption      string `json:"purchase_option"`
+	OnDemandInstanceNum int64  `json:"ondemand_instance_num"`
+	ReservedInstanceNum int64  `json:"reserved_instance_num"`
+}
+
+func (r *ExpectedInstanceNum) String() string {
+	bytea, err := json.Marshal(r)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(bytea)
 }
 
 // ondemandNum, reservedNum is Per Year  (LeaseContractLength=1yr)
@@ -173,7 +217,7 @@ func (r *Record) ExpectedCost(ondemandNum, reservedNum int) *ExpectedCost {
 type ExpectedCost struct {
 	LeaseContractLength string  `json:"lease_contract_length"`
 	PurchaseOption      string  `json:"purchase_option"`
-	FullOnDemand        Cost    `json:"full_on_demand"`
+	FullOnDemand        Cost    `json:"full_ondemand"`
 	ReservedApplied     Cost    `json:"reserved_applied"`
 	ReservedQuantity    float64 `json:"reserved_quantity"`
 	Subtraction         float64 `json:"subtraction"`
@@ -181,7 +225,7 @@ type ExpectedCost struct {
 }
 
 type Cost struct {
-	OnDemand float64 `json:"on_demand"`
+	OnDemand float64 `json:"ondemand"`
 	Reserved float64 `json:"reserved"`
 	Total    float64 `json:"total"`
 }
@@ -227,7 +271,7 @@ func (r *Record) String() string {
 type AnnualCost struct {
 	LeaseContractLength string  `json:"lease_contract_length"`
 	PurchaseOption      string  `json:"purchase_option"`
-	OnDemand            float64 `json:"on_demand"`
+	OnDemand            float64 `json:"ondemand"`
 	Reserved            float64 `json:"reserved"`
 	ReservedQuantity    float64 `json:"reserved_quantity"`
 	Subtraction         float64 `json:"subtraction"`

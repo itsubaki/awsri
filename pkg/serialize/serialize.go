@@ -84,7 +84,7 @@ func SerializeAWSPirice(region []string) error {
 		}
 
 		{
-			price, err := ec2.GetPrice(r)
+			price, err := ec2.ReadPrice(r)
 			if err != nil {
 				return fmt.Errorf("read ec2 price file: %v", err)
 			}
@@ -113,7 +113,7 @@ func SerializeAWSPirice(region []string) error {
 		}
 
 		{
-			price, err := cache.GetPrice(r)
+			price, err := cache.ReadPrice(r)
 			if err != nil {
 				return fmt.Errorf("read cache price file: %v", err)
 			}
@@ -136,7 +136,7 @@ func SerializeAWSPirice(region []string) error {
 		}
 
 		{
-			price, err := rds.GetPrice(r)
+			price, err := rds.ReadPrice(r)
 			if err != nil {
 				return fmt.Errorf("read cache price file: %v", err)
 			}

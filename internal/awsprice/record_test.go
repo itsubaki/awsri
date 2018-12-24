@@ -81,4 +81,20 @@ func TestExpect(t *testing.T) {
 		t.Errorf("invalid reserved applied cost")
 	}
 
+	n := r.ExpectedInstanceNum([]Forecast{
+		{Month: "2018-06", InstanceNum: 10},
+		{Month: "2018-07", InstanceNum: 20},
+		{Month: "2018-08", InstanceNum: 10},
+		{Month: "2018-09", InstanceNum: 20},
+		{Month: "2018-10", InstanceNum: 10},
+		{Month: "2018-11", InstanceNum: 20},
+	})
+
+	if n.OnDemandInstanceNum != 15 {
+		t.Errorf("invalid ondemand instance num")
+	}
+
+	if n.ReservedInstanceNum != 0 {
+		t.Errorf("invalid reserved instance num")
+	}
 }
