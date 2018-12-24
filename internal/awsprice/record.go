@@ -144,10 +144,29 @@ type Record struct {
 	Engine                  string  `json:"engine,omitempty"`                    // rds, cache
 }
 
+func (r *Record) BreakevenPointInMonth() int {
+	month := 12
+	if r.LeaseContractLength != "3yr" {
+		month = 12 * 3
+	}
+
+	breakEvenPoint := 0
+	res := r.ReservedQuantity
+	ond := 0.0
+	for i := 1; i < month+1; i++ {
+		ond = ond + r.OnDemand*24*float64(Days[i])
+		res = res + r.ReservedHrs*24*float64(Days[i])
+		if ond > res {
+			breakEvenPoint = i
+			break
+		}
+	}
+
+	return breakEvenPoint
+}
+
 func (r *Record) ExpectedInstanceNum(forecast []Forecast) *ExpectedInstanceNum {
-	//TODO breakeven point
-	breakevenpoint := 9
-	if len(forecast) < breakevenpoint {
+	if len(forecast) < r.BreakevenPointInMonth()+1 {
 		sum := 0.0
 		for i := range forecast {
 			sum = sum + forecast[i].InstanceNum

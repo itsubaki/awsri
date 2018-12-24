@@ -8,12 +8,12 @@ import (
 func GetInstanceHourAndNum(amount, start string) (float64, float64) {
 	hrs, _ := strconv.ParseFloat(amount, 64)
 	month := strings.Split(start, "-")[1]
-	num := hrs / float64(24*Month[month])
+	num := hrs / float64(24*Days[month])
 
 	return hrs, num
 }
 
-var Month = map[string]int{
+var Days = map[string]int{
 	"01": 31,
 	"02": 28,
 	"03": 31,

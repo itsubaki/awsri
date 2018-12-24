@@ -6,6 +6,45 @@ import (
 	"testing"
 )
 
+func TestBreakevenPoint(t *testing.T) {
+	path := fmt.Sprintf(
+		"%s/%s/%s.out",
+		os.Getenv("GOPATH"),
+		"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+		"ap-northeast-1",
+	)
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		t.Errorf("file not found: %v", path)
+	}
+
+	repo, err := NewRepository(path)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	rs := repo.FindByInstanceType("m4.large").
+		OperatingSystem("Linux").
+		Tenancy("Shared").
+		PreInstalled("NA").
+		OfferingClass("standard").
+		LeaseContractLength("1yr")
+
+	for _, r := range rs {
+		p := r.BreakevenPointInMonth()
+
+		if r.PurchaseOption == "No Upfront" && p != 1 {
+			t.Errorf("invalid breakeven point. purchase=%v, point=%v", r.PurchaseOption, p)
+		}
+		if r.PurchaseOption == "Partial Upfront" && p != 6 {
+			t.Errorf("invalid breakeven point. purchase=%v, point=%v", r.PurchaseOption, p)
+		}
+		if r.PurchaseOption == "All Upfront" && p != 8 {
+			t.Errorf("invalid breakeven point. purchase=%v, point=%v", r.PurchaseOption, p)
+		}
+	}
+}
+
 func TestFindByInstanceTypeCache(t *testing.T) {
 	path := fmt.Sprintf(
 		"%s/%s/%s.out",
