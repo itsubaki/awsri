@@ -166,10 +166,10 @@ func (r *Record) BreakevenPointInMonth() int {
 	return breakEvenPoint
 }
 
-func (r *Record) ExpectedCostAndInstanceNum(forecast []Forecast) (*ExpectedCost, *ExpectedInstanceNum) {
+func (r *Record) ExpectedInstanceNumAndCost(forecast []Forecast) (*ExpectedInstanceNum, *ExpectedCost) {
 	num := r.ExpectedInstanceNum(forecast)
 	cost := r.ExpectedCost(num.OnDemandInstanceNum, num.ReservedInstanceNum)
-	return cost, num
+	return num, cost
 }
 
 func (r *Record) ExpectedInstanceNum(forecast []Forecast) *ExpectedInstanceNum {

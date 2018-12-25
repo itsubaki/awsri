@@ -214,7 +214,7 @@ func TestExpectFullOndemand(t *testing.T) {
 		{Month: "2018-11", InstanceNum: 20},
 	}
 
-	c, n := r.ExpectedCostAndInstanceNum(forecast)
+	n, c := r.ExpectedInstanceNumAndCost(forecast)
 	if c.FullOnDemand.Total != c.ReservedApplied.Total {
 		t.Errorf("invalid total cost")
 	}
@@ -276,7 +276,7 @@ func TestExpect(t *testing.T) {
 		{Month: "2018-12", InstanceNum: 10.8},
 	}
 
-	c, n := r.ExpectedCostAndInstanceNum(forecast)
+	n, c := r.ExpectedInstanceNumAndCost(forecast)
 	if n.OnDemandInstanceNum != 23 {
 		t.Errorf("invalid ondemand instance num")
 	}
@@ -287,5 +287,13 @@ func TestExpect(t *testing.T) {
 
 	if c.ReservedQuantity != 36363 {
 		t.Errorf("invalid reserved quantity")
+	}
+
+	if c.Subtraction < 0 {
+		t.Error("invalid substraction")
+	}
+
+	if c.DiscountRate < 0 {
+		t.Error("invalid discount rate")
 	}
 }
