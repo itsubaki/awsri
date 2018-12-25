@@ -162,7 +162,7 @@ func TestExpectedInstanceNum(t *testing.T) {
 	}
 
 	n := r.ExpectedInstanceNum(forecast)
-	if n.OnDemandInstanceNum != 23 {
+	if n.OnDemandInstanceNumAvg != 23 {
 		t.Errorf("invalid ondemand instance num")
 	}
 
@@ -219,7 +219,7 @@ func TestExpectFullOndemand(t *testing.T) {
 		t.Errorf("invalid total cost")
 	}
 
-	if n.OnDemandInstanceNum != 15 {
+	if n.OnDemandInstanceNumAvg != 15 {
 		t.Errorf("invalid ondemand instance num")
 	}
 
@@ -277,7 +277,7 @@ func TestExpect(t *testing.T) {
 	}
 
 	n, c := r.ExpectedInstanceNumAndCost(forecast)
-	if n.OnDemandInstanceNum != 23 {
+	if n.OnDemandInstanceNumAvg != 23 {
 		t.Errorf("invalid ondemand instance num")
 	}
 

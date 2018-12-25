@@ -168,7 +168,7 @@ func (r *Record) BreakevenPointInMonth() int {
 
 func (r *Record) ExpectedInstanceNumAndCost(forecast []Forecast) (*ExpectedInstanceNum, *ExpectedCost) {
 	num := r.ExpectedInstanceNum(forecast)
-	cost := r.ExpectedCost(num.OnDemandInstanceNum, num.ReservedInstanceNum)
+	cost := r.ExpectedCost(num.OnDemandInstanceNumAvg, num.ReservedInstanceNum)
 	return num, cost
 }
 
@@ -181,10 +181,10 @@ func (r *Record) ExpectedInstanceNum(forecast []Forecast) *ExpectedInstanceNum {
 		}
 
 		return &ExpectedInstanceNum{
-			LeaseContractLength: r.LeaseContractLength,
-			PurchaseOption:      r.PurchaseOption,
-			OnDemandInstanceNum: sum / float64(len(forecast)),
-			ReservedInstanceNum: 0,
+			LeaseContractLength:    r.LeaseContractLength,
+			PurchaseOption:         r.PurchaseOption,
+			OnDemandInstanceNumAvg: sum / float64(len(forecast)),
+			ReservedInstanceNum:    0,
 		}
 	}
 
@@ -201,10 +201,10 @@ func (r *Record) ExpectedInstanceNum(forecast []Forecast) *ExpectedInstanceNum {
 	}
 
 	return &ExpectedInstanceNum{
-		LeaseContractLength: r.LeaseContractLength,
-		PurchaseOption:      r.PurchaseOption,
-		OnDemandInstanceNum: sum / float64(len(forecast)),
-		ReservedInstanceNum: rnum,
+		LeaseContractLength:    r.LeaseContractLength,
+		PurchaseOption:         r.PurchaseOption,
+		OnDemandInstanceNumAvg: sum / float64(len(forecast)),
+		ReservedInstanceNum:    rnum,
 	}
 }
 
@@ -214,10 +214,10 @@ type Forecast struct {
 }
 
 type ExpectedInstanceNum struct {
-	LeaseContractLength string  `json:"lease_contract_length"`
-	PurchaseOption      string  `json:"purchase_option"`
-	OnDemandInstanceNum float64 `json:"ondemand_instance_num"`
-	ReservedInstanceNum int64   `json:"reserved_instance_num"`
+	LeaseContractLength    string  `json:"lease_contract_length"`
+	PurchaseOption         string  `json:"purchase_option"`
+	OnDemandInstanceNumAvg float64 `json:"ondemand_instance_num_avg"`
+	ReservedInstanceNum    int64   `json:"reserved_instance_num"`
 }
 
 func (r *ExpectedInstanceNum) String() string {
