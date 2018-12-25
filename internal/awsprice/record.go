@@ -166,6 +166,12 @@ func (r *Record) BreakevenPointInMonth() int {
 	return breakEvenPoint
 }
 
+func (r *Record) ExpectedCostAndInstanceNum(forecast []Forecast) (*ExpectedCost, *ExpectedInstanceNum) {
+	num := r.ExpectedInstanceNum(forecast)
+	cost := r.ExpectedCost(num.OnDemandInstanceNum, num.ReservedInstanceNum)
+	return cost, num
+}
+
 func (r *Record) ExpectedInstanceNum(forecast []Forecast) *ExpectedInstanceNum {
 	p := r.BreakevenPointInMonth()
 	if len(forecast) < p {
@@ -225,9 +231,9 @@ func (r *ExpectedInstanceNum) String() string {
 
 // ondemandNum, reservedNum is Per Year  (LeaseContractLength=1yr)
 // ondemandNum, reservedNum is Per 3Year (LeaseContractLength=3yr)
-func (r *Record) ExpectedCost(ondemandNum, reservedNum int) *ExpectedCost {
-	full := r.GetAnnualCost().OnDemand * float64(ondemandNum+reservedNum)
-	ond := r.GetAnnualCost().OnDemand * float64(ondemandNum)
+func (r *Record) ExpectedCost(ondemandNum float64, reservedNum int64) *ExpectedCost {
+	full := r.GetAnnualCost().OnDemand * (ondemandNum + float64(reservedNum))
+	ond := r.GetAnnualCost().OnDemand * ondemandNum
 	res := r.GetAnnualCost().Reserved * float64(reservedNum)
 
 	out := &ExpectedCost{
