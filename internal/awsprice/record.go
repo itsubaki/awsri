@@ -168,7 +168,7 @@ func (r *Record) BreakevenPointInMonth() int {
 
 func (r *Record) ExpectedInstanceNum(forecast []Forecast) *ExpectedInstanceNum {
 	p := r.BreakevenPointInMonth()
-	if len(forecast) < p+1 {
+	if len(forecast) < p {
 		sum := 0.0
 		for i := range forecast {
 			sum = sum + forecast[i].InstanceNum
@@ -177,22 +177,28 @@ func (r *Record) ExpectedInstanceNum(forecast []Forecast) *ExpectedInstanceNum {
 		return &ExpectedInstanceNum{
 			LeaseContractLength: r.LeaseContractLength,
 			PurchaseOption:      r.PurchaseOption,
-			OnDemandInstanceNum: int64(math.Ceil(sum / float64(len(forecast)))),
+			OnDemandInstanceNum: sum / float64(len(forecast)),
 			ReservedInstanceNum: 0,
 		}
 	}
 
 	tmp := append([]Forecast{}, forecast...)
-	sort.Slice(tmp, func(i, j int) bool { return tmp[i].InstanceNum < tmp[j].InstanceNum })
-	rnum := tmp[p-1].InstanceNum
+	sort.Slice(tmp, func(i, j int) bool { return tmp[i].InstanceNum > tmp[j].InstanceNum })
+	rnum := int64(math.Ceil(tmp[p-1].InstanceNum))
 
-	//TODO OndemandInstanceNum
+	sum := 0.0
+	for i := range tmp {
+		ond := tmp[i].InstanceNum - float64(rnum)
+		if ond > 0 {
+			sum = sum + ond
+		}
+	}
 
 	return &ExpectedInstanceNum{
 		LeaseContractLength: r.LeaseContractLength,
 		PurchaseOption:      r.PurchaseOption,
-		OnDemandInstanceNum: 0,
-		ReservedInstanceNum: int64(math.Ceil(rnum)),
+		OnDemandInstanceNum: sum / float64(len(forecast)),
+		ReservedInstanceNum: rnum,
 	}
 }
 
@@ -202,10 +208,10 @@ type Forecast struct {
 }
 
 type ExpectedInstanceNum struct {
-	LeaseContractLength string `json:"lease_contract_length"`
-	PurchaseOption      string `json:"purchase_option"`
-	OnDemandInstanceNum int64  `json:"ondemand_instance_num"`
-	ReservedInstanceNum int64  `json:"reserved_instance_num"`
+	LeaseContractLength string  `json:"lease_contract_length"`
+	PurchaseOption      string  `json:"purchase_option"`
+	OnDemandInstanceNum float64 `json:"ondemand_instance_num"`
+	ReservedInstanceNum int64   `json:"reserved_instance_num"`
 }
 
 func (r *ExpectedInstanceNum) String() string {
