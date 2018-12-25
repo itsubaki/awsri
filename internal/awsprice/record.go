@@ -146,7 +146,7 @@ type Record struct {
 
 func (r *Record) BreakevenPointInMonth() int {
 	month := 12
-	if r.LeaseContractLength != "3yr" {
+	if r.LeaseContractLength == "3yr" {
 		month = 12 * 3
 	}
 
@@ -154,8 +154,8 @@ func (r *Record) BreakevenPointInMonth() int {
 	res := r.ReservedQuantity
 	ond := 0.0
 	for i := 1; i < month+1; i++ {
-		ond = ond + r.OnDemand*24*float64(Days[i])
-		res = res + r.ReservedHrs*24*float64(Days[i])
+		ond = ond + r.OnDemand*24*float64(GetDays(i))
+		res = res + r.ReservedHrs*24*float64(GetDays(i))
 		if ond > res {
 			breakEvenPoint = i
 			break
