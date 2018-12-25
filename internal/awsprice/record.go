@@ -3,6 +3,7 @@ package awsprice
 import (
 	"encoding/json"
 	"math"
+	"sort"
 )
 
 type RecordList []*Record
@@ -166,7 +167,8 @@ func (r *Record) BreakevenPointInMonth() int {
 }
 
 func (r *Record) ExpectedInstanceNum(forecast []Forecast) *ExpectedInstanceNum {
-	if len(forecast) < r.BreakevenPointInMonth()+1 {
+	p := r.BreakevenPointInMonth()
+	if len(forecast) < p+1 {
 		sum := 0.0
 		for i := range forecast {
 			sum = sum + forecast[i].InstanceNum
@@ -180,7 +182,18 @@ func (r *Record) ExpectedInstanceNum(forecast []Forecast) *ExpectedInstanceNum {
 		}
 	}
 
-	return nil
+	tmp := append([]Forecast{}, forecast...)
+	sort.Slice(tmp, func(i, j int) bool { return tmp[i].InstanceNum < tmp[j].InstanceNum })
+	rnum := tmp[p-1].InstanceNum
+
+	//TODO OndemandInstanceNum
+
+	return &ExpectedInstanceNum{
+		LeaseContractLength: r.LeaseContractLength,
+		PurchaseOption:      r.PurchaseOption,
+		OnDemandInstanceNum: 0,
+		ReservedInstanceNum: int64(math.Ceil(rnum)),
+	}
 }
 
 type Forecast struct {
