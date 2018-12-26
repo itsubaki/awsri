@@ -2,6 +2,7 @@ package costexp
 
 import (
 	"encoding/json"
+	"reflect"
 	"sort"
 )
 
@@ -24,6 +25,24 @@ func (u *Record) String() string {
 	}
 
 	return string(bytea)
+}
+
+func (list RecordList) Unique(fieldname string) []string {
+	uniq := make(map[string]bool)
+	for i := range list {
+		ref := reflect.ValueOf(*list[i]).FieldByName(fieldname)
+		val := ref.Interface().(string)
+		if len(val) > 0 {
+			uniq[val] = true
+		}
+	}
+
+	out := []string{}
+	for k := range uniq {
+		out = append(out, k)
+	}
+
+	return out
 }
 
 func (list RecordList) InstanceNumAvg() float64 {

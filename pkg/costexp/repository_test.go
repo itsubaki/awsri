@@ -40,7 +40,7 @@ func TestMergedRepository(t *testing.T) {
 		repo.Internal = append(repo.Internal, p.Internal...)
 	}
 
-	if len(repo.SelectAll()) < 0 {
+	if len(repo.SelectAll()) < 1 {
 		t.Errorf("invalid repository")
 	}
 
