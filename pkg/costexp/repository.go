@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"sort"
 )
 
 type Repository struct {
@@ -27,4 +28,19 @@ func NewRepository(path string) (*Repository, error) {
 
 func (r *Repository) SelectAll() RecordList {
 	return r.Internal
+}
+
+func (r *Repository) AccountID() []string {
+	selected := make(map[string]bool)
+	for i := range r.Internal {
+		selected[r.Internal[i].AccountID] = true
+	}
+
+	out := []string{}
+	for k := range selected {
+		out = append(out, k)
+	}
+
+	sort.Slice(out, func(i, j int) bool { return out[i] < out[j] })
+	return out
 }

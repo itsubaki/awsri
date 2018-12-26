@@ -10,6 +10,7 @@ import (
 	"github.com/itsubaki/awsri/internal/awsprice/cache"
 	"github.com/itsubaki/awsri/internal/awsprice/ec2"
 	"github.com/itsubaki/awsri/internal/awsprice/rds"
+	internal "github.com/itsubaki/awsri/internal/costexp"
 	"github.com/itsubaki/awsri/pkg/awsprice"
 	"github.com/itsubaki/awsri/pkg/costexp"
 )
@@ -35,7 +36,7 @@ func Serialize(input *SerializeInput) error {
 			Profile: input.Profile,
 		}
 
-		q, err := costexp.New().GetUsageQuantity(input.Date[i])
+		q, err := internal.New().GetUsageQuantity(input.Date[i])
 		if err != nil {
 			return fmt.Errorf("get usage quantity: %v", err)
 		}

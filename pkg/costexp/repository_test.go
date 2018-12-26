@@ -16,6 +16,16 @@ func TestMergedRepository(t *testing.T) {
 	path := []string{
 		fmt.Sprintf("%s/%s", dir, "example_2017-12.out"),
 		fmt.Sprintf("%s/%s", dir, "example_2018-01.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-02.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-03.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-04.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-05.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-06.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-07.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-08.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-09.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-10.out"),
+		fmt.Sprintf("%s/%s", dir, "example_2018-11.out"),
 	}
 
 	repo := &Repository{
@@ -33,14 +43,20 @@ func TestMergedRepository(t *testing.T) {
 	if len(repo.SelectAll()) < 0 {
 		t.Errorf("invalid repository")
 	}
+
+	for _, ID := range repo.AccountID() {
+		if len(ID) != 12 {
+			t.Errorf("invalid AWS AccountID")
+		}
+	}
 }
 
 func TestRepository(t *testing.T) {
 	path := fmt.Sprintf(
-		"%s/%s/%s.out",
+		"%s/%s/%s",
 		os.Getenv("GOPATH"),
 		"src/github.com/itsubaki/awsri/internal/_serialized/costexp",
-		"example_2018-11",
+		"example_2018-11.out",
 	)
 
 	repo, err := NewRepository(path)

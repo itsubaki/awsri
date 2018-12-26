@@ -8,10 +8,10 @@ import (
 
 func TestFindByInstanceType(t *testing.T) {
 	path := fmt.Sprintf(
-		"%s/%s/%s.out",
+		"%s/%s/%s",
 		os.Getenv("GOPATH"),
 		"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
-		"ap-northeast-1",
+		"ap-northeast-1.out",
 	)
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {

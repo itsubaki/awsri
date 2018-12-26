@@ -49,7 +49,7 @@ func TestGetUsageQuantity(t *testing.T) {
 
 	period := &costexplorer.DateInterval{
 		Start: aws.String("2018-11-01"),
-		End:   aws.String("2018-12-01"),
+		End:   aws.String("2018-11-02"),
 	}
 
 	list, err := New().GetUsageQuantity(period)
