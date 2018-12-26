@@ -26,6 +26,32 @@ func (u *Record) String() string {
 	return string(bytea)
 }
 
+func (list RecordList) InstanceNumAvg() float64 {
+	if len(list) == 0 {
+		return 0
+	}
+
+	sum := 0.0
+	for i := range list {
+		sum = sum + list[i].InstanceNum
+	}
+
+	return sum / float64(len(list))
+}
+
+func (list RecordList) InstanceHourAvg() float64 {
+	if len(list) == 0 {
+		return 0
+	}
+
+	sum := 0.0
+	for i := range list {
+		sum = sum + list[i].InstanceHour
+	}
+
+	return sum / float64(len(list))
+}
+
 func (list RecordList) AccountID(accountID string) RecordList {
 	ret := RecordList{}
 
