@@ -1,5 +1,0 @@
-package awsri
-
-func main() {
-
-}
