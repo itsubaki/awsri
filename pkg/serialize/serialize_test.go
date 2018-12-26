@@ -1,6 +1,8 @@
 package serialize
 
 import (
+	"fmt"
+	"os"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -59,7 +61,17 @@ func TestSerializeCostExp(t *testing.T) {
 		},
 	}
 
-	if err := Serialize("example", date); err != nil {
+	input := SerializeInput{
+		Profile: "example",
+		Date:    date,
+		OutputDir: fmt.Sprintf(
+			"%s/%s",
+			os.Getenv("GOPATH"),
+			"src/github.com/itsubaki/awsri/internal/_serialized/costexp",
+		),
+	}
+
+	if err := Serialize(&input); err != nil {
 		t.Errorf("serialize costexp: %v", err)
 	}
 }
@@ -72,7 +84,16 @@ func TestSerializeAWSPrice(t *testing.T) {
 		"us-west-2",
 	}
 
-	if err := SerializeAWSPirice(region); err != nil {
+	input := SerializeAWSPriceInput{
+		Region: region,
+		OutputDir: fmt.Sprintf(
+			"%s/%s",
+			os.Getenv("GOPATH"),
+			"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+		),
+	}
+
+	if err := SerializeAWSPirice(&input); err != nil {
 		t.Errorf("serialize aws price: %v", err)
 	}
 }

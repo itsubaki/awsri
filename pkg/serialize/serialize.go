@@ -7,36 +7,35 @@ import (
 	"os"
 
 	"github.com/aws/aws-sdk-go/service/costexplorer"
-	"github.com/itsubaki/awsri/internal/awsprice"
 	"github.com/itsubaki/awsri/internal/awsprice/cache"
 	"github.com/itsubaki/awsri/internal/awsprice/ec2"
 	"github.com/itsubaki/awsri/internal/awsprice/rds"
-	"github.com/itsubaki/awsri/internal/costexp"
+	"github.com/itsubaki/awsri/pkg/awsprice"
+	"github.com/itsubaki/awsri/pkg/costexp"
 )
 
-func Serialize(profile string, date []*costexplorer.DateInterval) error {
-	os.Setenv("AWS_PROFILE", profile)
+type SerializeInput struct {
+	Profile   string
+	Date      []*costexplorer.DateInterval
+	OutputDir string
+}
 
-	for i := range date {
-		start := *date[i].Start
+func Serialize(input *SerializeInput) error {
+	os.Setenv("AWS_PROFILE", input.Profile)
 
-		path := fmt.Sprintf(
-			"%s/%s/%s_%s.out",
-			os.Getenv("GOPATH"),
-			"src/github.com/itsubaki/awsri/internal/_serialized/costexp",
-			profile,
-			start[:7], // 2018-12-01 -> 2018-12
-		)
-
+	for i := range input.Date {
+		// start[:7] => 2018-12-01 -> 2018-12
+		start := *input.Date[i].Start
+		path := fmt.Sprintf("%s/%s_%s.out", input.OutputDir, input.Profile, start[:7])
 		if _, err := os.Stat(path); !os.IsNotExist(err) {
 			continue
 		}
 
 		repo := &costexp.Repository{
-			Profile: profile,
+			Profile: input.Profile,
 		}
 
-		q, err := costexp.New().GetUsageQuantity(date[i])
+		q, err := costexp.New().GetUsageQuantity(input.Date[i])
 		if err != nil {
 			return fmt.Errorf("get usage quantity: %v", err)
 		}
@@ -66,15 +65,15 @@ func Serialize(profile string, date []*costexplorer.DateInterval) error {
 	return nil
 }
 
-func SerializeAWSPirice(region []string) error {
-	for _, r := range region {
-		path := fmt.Sprintf(
-			"%s/%s/%s.out",
-			os.Getenv("GOPATH"),
-			"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
-			r,
-		)
+type SerializeAWSPriceInput struct {
+	Region    []string
+	OutputDir string
+}
 
+func SerializeAWSPirice(input *SerializeAWSPriceInput) error {
+	for _, r := range input.Region {
+
+		path := fmt.Sprintf("%s/%s.out", input.OutputDir, r)
 		if _, err := os.Stat(path); !os.IsNotExist(err) {
 			continue
 		}
