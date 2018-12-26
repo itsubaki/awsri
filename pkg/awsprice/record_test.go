@@ -126,7 +126,7 @@ func TestFindByInstanceTypeCache(t *testing.T) {
 	}
 }
 
-func TestExpectedInstanceNum(t *testing.T) {
+func TestExpectNoReserved(t *testing.T) {
 	r := &Record{
 		SKU:                     "7MYWT7Y96UT3NJ2D",
 		OfferTermCode:           "4NA7Y494T4",
@@ -144,65 +144,6 @@ func TestExpectedInstanceNum(t *testing.T) {
 		Operation:               "RunInstances",
 		OfferingClass:           "standard",
 		NormalizationSizeFactor: "4",
-	}
-
-	forecast := []Forecast{
-		{Month: "2018-01", InstanceNum: 120.4},
-		{Month: "2018-02", InstanceNum: 110.3},
-		{Month: "2018-03", InstanceNum: 100.1},
-		{Month: "2018-04", InstanceNum: 90.4},
-		{Month: "2018-05", InstanceNum: 80.9},
-		{Month: "2018-06", InstanceNum: 70.6},
-		{Month: "2018-07", InstanceNum: 60.3},
-		{Month: "2018-08", InstanceNum: 50.9},
-		{Month: "2018-09", InstanceNum: 40.7},
-		{Month: "2018-10", InstanceNum: 30.4},
-		{Month: "2018-11", InstanceNum: 20.2},
-		{Month: "2018-12", InstanceNum: 10.8},
-	}
-
-	n := r.ExpectedInstanceNum(forecast)
-	if n.OnDemandInstanceNumAvg != 23 {
-		t.Errorf("invalid ondemand instance num")
-	}
-
-	if n.ReservedInstanceNum != 51 {
-		t.Errorf("invalid reserved instance num")
-	}
-
-}
-
-func TestExpectFullOndemand(t *testing.T) {
-	r := &Record{
-		SKU:                     "7MYWT7Y96UT3NJ2D",
-		OfferTermCode:           "4NA7Y494T4",
-		Region:                  "ap-northeast-1",
-		InstanceType:            "m4.large",
-		UsageType:               "APN1-BoxUsage:m4.large",
-		LeaseContractLength:     "1yr",
-		PurchaseOption:          "All Upfront",
-		OnDemand:                0.129,
-		ReservedHrs:             0,
-		ReservedQuantity:        713,
-		Tenancy:                 "Shared",
-		PreInstalled:            "NA",
-		OperatingSystem:         "Linux",
-		Operation:               "RunInstances",
-		OfferingClass:           "standard",
-		NormalizationSizeFactor: "4",
-	}
-
-	e := r.ExpectedCost(2, 3)
-	if e.FullOnDemand.OnDemand != 5650.2 {
-		t.Errorf("invalid full ondemand cost")
-	}
-
-	if e.ReservedApplied.OnDemand != 2260.08 {
-		t.Errorf("invalid reserved applied cost")
-	}
-
-	if e.ReservedApplied.Reserved != 2139 {
-		t.Errorf("invalid reserved applied cost")
 	}
 
 	forecast := []Forecast{
@@ -246,19 +187,6 @@ func TestExpect(t *testing.T) {
 		Operation:               "RunInstances",
 		OfferingClass:           "standard",
 		NormalizationSizeFactor: "4",
-	}
-
-	e := r.ExpectedCost(2, 3)
-	if e.FullOnDemand.OnDemand != 5650.2 {
-		t.Errorf("invalid full ondemand cost")
-	}
-
-	if e.ReservedApplied.OnDemand != 2260.08 {
-		t.Errorf("invalid reserved applied cost")
-	}
-
-	if e.ReservedApplied.Reserved != 2139 {
-		t.Errorf("invalid reserved applied cost")
 	}
 
 	forecast := []Forecast{

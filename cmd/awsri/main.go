@@ -1,0 +1,5 @@
+package awsri
+
+func main() {
+
+}

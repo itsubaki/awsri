@@ -26,6 +26,71 @@ func (u *Record) String() string {
 	return string(bytea)
 }
 
+func (list RecordList) AccountID(accountID string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].AccountID != accountID {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
+func (list RecordList) UsageType(usageType string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].UsageType != usageType {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
+func (list RecordList) Platform(platform string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].Platform != platform {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
+func (list RecordList) Date(date string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].Date != date {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
+func (list RecordList) Engine(engine string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].Engine != engine {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
 func (r RecordList) Sort() RecordList {
 	list := append(RecordList{}, r...)
 
