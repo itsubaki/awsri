@@ -176,8 +176,7 @@ func (r *Record) BreakevenPointInMonth() int {
 }
 
 type Recommended struct {
-	LeaseContractLength    string  `json:"lease_contract_length"`
-	PurchaseOption         string  `json:"purchase_option"`
+	Record                 *Record `json:"record"`
 	BreakevenPointInMonth  int     `json:"breakevenpoint_in_month"`
 	OnDemandInstanceNumAvg float64 `json:"ondemand_instance_num_avg"`
 	ReservedInstanceNum    int64   `json:"reserved_instance_num"`
@@ -223,8 +222,7 @@ func (r *Record) Recommend(forecast []Forecast) *Recommended {
 	cost := r.GetCost(ondemand, reserved)
 
 	return &Recommended{
-		LeaseContractLength:    r.LeaseContractLength,
-		PurchaseOption:         r.PurchaseOption,
+		Record:                 r,
 		BreakevenPointInMonth:  r.BreakevenPointInMonth(),
 		OnDemandInstanceNumAvg: ondemand,
 		ReservedInstanceNum:    reserved,
