@@ -3,8 +3,8 @@ aws reserved instance
 
 ## TODO
 
- - [] convert costexp.Platform/awsprice.OperatingSystem
- - [] convert costexp.Engine/awsprice.Engine
+ - [ ] convert costexp.Platform/awsprice.OperatingSystem
+ - [ ] convert costexp.Engine/awsprice.Engine
 
 ## example
 
