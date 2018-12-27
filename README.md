@@ -69,6 +69,25 @@ for _, r := range repo.SelectAll() {
 ```
 
 ```
+r := &Record{
+  SKU:                     "7MYWT7Y96UT3NJ2D",
+  OfferTermCode:           "4NA7Y494T4",
+  Region:                  "ap-northeast-1",
+  InstanceType:            "m4.large",
+  UsageType:               "APN1-BoxUsage:m4.large",
+  LeaseContractLength:     "1yr",
+  PurchaseOption:          "All Upfront",
+  OnDemand:                0.129,
+  ReservedHrs:             0,
+  ReservedQuantity:        713,
+  Tenancy:                 "Shared",
+  PreInstalled:            "NA",
+  OperatingSystem:         "Linux",
+  Operation:               "RunInstances",
+  OfferingClass:           "standard",
+  NormalizationSizeFactor: "4",
+}
+
 forecast := []Forecast{
   {Month: "2018-01", InstanceNum: 120.4},
   {Month: "2018-02", InstanceNum: 110.3},
