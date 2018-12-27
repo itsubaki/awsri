@@ -181,7 +181,7 @@ type Recommended struct {
 	BreakevenPointInMonth  int     `json:"breakevenpoint_in_month"`
 	OnDemandInstanceNumAvg float64 `json:"ondemand_instance_num_avg"`
 	ReservedInstanceNum    int64   `json:"reserved_instance_num"`
-	FullOnDemandCost       Cost    `json:"full_ondemand_cost"`
+	FullOnDemandCost       float64 `json:"full_ondemand_cost"`
 	ReservedAppliedCost    Cost    `json:"reserved_applied_cost"`
 	ReservedQuantity       float64 `json:"reserved_quantity"`
 	Subtraction            float64 `json:"subtraction"`
@@ -205,7 +205,7 @@ type Forecast struct {
 type ReservedAppliedCost struct {
 	LeaseContractLength string  `json:"lease_contract_length"`
 	PurchaseOption      string  `json:"purchase_option"`
-	FullOnDemand        Cost    `json:"full_ondemand"`
+	FullOnDemand        float64 `json:"full_ondemand"`
 	ReservedApplied     Cost    `json:"reserved_applied"`
 	ReservedQuantity    float64 `json:"reserved_quantity"`
 	Subtraction         float64 `json:"subtraction"`
@@ -272,11 +272,7 @@ func (r *Record) GetCost(ondemandNum float64, reservedNum int64) *ReservedApplie
 	out := &ReservedAppliedCost{
 		LeaseContractLength: r.LeaseContractLength,
 		PurchaseOption:      r.PurchaseOption,
-		FullOnDemand: Cost{
-			OnDemand: full,
-			Reserved: 0.0,
-			Total:    full,
-		},
+		FullOnDemand:        full,
 		ReservedApplied: Cost{
 			OnDemand: ond,
 			Reserved: res,
@@ -285,8 +281,8 @@ func (r *Record) GetCost(ondemandNum float64, reservedNum int64) *ReservedApplie
 		ReservedQuantity: r.ReservedQuantity * float64(reservedNum),
 	}
 
-	out.Subtraction = out.FullOnDemand.Total - out.ReservedApplied.Total
-	out.DiscountRate = 1.0 - (out.ReservedApplied.Total / out.FullOnDemand.Total)
+	out.Subtraction = full - out.ReservedApplied.Total
+	out.DiscountRate = 1.0 - (out.ReservedApplied.Total / full)
 
 	return out
 }

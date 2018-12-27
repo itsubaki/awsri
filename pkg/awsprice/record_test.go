@@ -156,7 +156,7 @@ func TestExpectNoReserved(t *testing.T) {
 	}
 
 	rec := r.Recommend(forecast)
-	if rec.FullOnDemandCost.Total != rec.ReservedAppliedCost.Total {
+	if rec.FullOnDemandCost != rec.ReservedAppliedCost.Total {
 		t.Errorf("invalid total cost")
 	}
 
