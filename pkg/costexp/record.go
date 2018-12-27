@@ -1,12 +1,36 @@
 package costexp
 
 import (
+	"bytes"
 	"encoding/json"
 	"reflect"
 	"sort"
 )
 
 type RecordList []*Record
+
+func (list RecordList) String() string {
+	bytea, err := json.Marshal(list)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(bytea)
+}
+
+func (list RecordList) Pretty() string {
+	bytea, err := json.Marshal(list)
+	if err != nil {
+		panic(err)
+	}
+
+	var out bytes.Buffer
+	if err := json.Indent(&out, bytea, "", " "); err != nil {
+		panic(err)
+	}
+
+	return string(out.Bytes())
+}
 
 type Record struct {
 	AccountID    string  `json:"account_id"`

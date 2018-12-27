@@ -219,7 +219,7 @@ type Cost struct {
 }
 
 func (r *Record) Recommend(forecast []Forecast) *Recommended {
-	ondemand, reserved := r.RecommendedInstanceNum(forecast)
+	ondemand, reserved := r.recommendedInstanceNum(forecast)
 	cost := r.GetCost(ondemand, reserved)
 
 	return &Recommended{
@@ -236,7 +236,7 @@ func (r *Record) Recommend(forecast []Forecast) *Recommended {
 	}
 }
 
-func (r *Record) RecommendedInstanceNum(forecast []Forecast) (float64, int64) {
+func (r *Record) recommendedInstanceNum(forecast []Forecast) (float64, int64) {
 	p := r.BreakevenPointInMonth()
 	if len(forecast) < p {
 		sum := 0.0
