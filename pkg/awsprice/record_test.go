@@ -126,7 +126,7 @@ func TestFindByInstanceTypeCache(t *testing.T) {
 	}
 }
 
-func TestExpectNoReserved(t *testing.T) {
+func TestRecommendNoReserved(t *testing.T) {
 	r := &Record{
 		SKU:                     "7MYWT7Y96UT3NJ2D",
 		OfferTermCode:           "4NA7Y494T4",
@@ -169,7 +169,7 @@ func TestExpectNoReserved(t *testing.T) {
 	}
 }
 
-func TestExpect(t *testing.T) {
+func TestRecommend1yr(t *testing.T) {
 	r := &Record{
 		SKU:                     "7MYWT7Y96UT3NJ2D",
 		OfferTermCode:           "4NA7Y494T4",
@@ -205,7 +205,6 @@ func TestExpect(t *testing.T) {
 	}
 
 	rec := r.Recommend(forecast)
-	fmt.Println(rec)
 	if rec.OnDemandInstanceNumAvg != 23.7 {
 		t.Errorf("invalid ondemand instance num")
 	}
@@ -225,4 +224,67 @@ func TestExpect(t *testing.T) {
 	if rec.DiscountRate != 0.2503723766793573 {
 		t.Error("invalid discount rate")
 	}
+}
+
+func TestRecommend3yr(t *testing.T) {
+	r := &Record{
+		SKU:                     "7MYWT7Y96UT3NJ2D",
+		OfferTermCode:           "NQ3QZPMQV9",
+		Region:                  "ap-northeast-1",
+		InstanceType:            "m4.large",
+		UsageType:               "APN1-BoxUsage:m4.large",
+		LeaseContractLength:     "3yr",
+		PurchaseOption:          "All Upfront",
+		OnDemand:                0.129,
+		ReservedHrs:             0,
+		ReservedQuantity:        1457,
+		Tenancy:                 "Shared",
+		PreInstalled:            "NA",
+		OperatingSystem:         "Linux",
+		Operation:               "RunInstances",
+		OfferingClass:           "standard",
+		NormalizationSizeFactor: "4",
+	}
+
+	forecast := []Forecast{
+		{Month: "2018-01", InstanceNum: 120.4},
+		{Month: "2018-02", InstanceNum: 110.3},
+		{Month: "2018-03", InstanceNum: 100.1},
+		{Month: "2018-04", InstanceNum: 90.9},
+		{Month: "2018-05", InstanceNum: 80.9},
+		{Month: "2018-06", InstanceNum: 70.6},
+		{Month: "2018-07", InstanceNum: 60.3},
+		{Month: "2018-08", InstanceNum: 50.9},
+		{Month: "2018-09", InstanceNum: 40.7},
+		{Month: "2018-10", InstanceNum: 30.6},
+		{Month: "2018-11", InstanceNum: 20.2},
+		{Month: "2018-12", InstanceNum: 10.8},
+		{Month: "2019-01", InstanceNum: 120.4},
+		{Month: "2019-02", InstanceNum: 110.3},
+		{Month: "2019-03", InstanceNum: 100.1},
+		{Month: "2019-04", InstanceNum: 90.9},
+		{Month: "2019-05", InstanceNum: 80.9},
+		{Month: "2019-06", InstanceNum: 70.6},
+		{Month: "2019-07", InstanceNum: 60.3},
+		{Month: "2019-08", InstanceNum: 50.9},
+		{Month: "2019-09", InstanceNum: 40.7},
+		{Month: "2019-10", InstanceNum: 30.6},
+		{Month: "2019-11", InstanceNum: 20.2},
+		{Month: "2019-12", InstanceNum: 10.8},
+		{Month: "2020-01", InstanceNum: 120.4},
+		{Month: "2020-02", InstanceNum: 110.3},
+		{Month: "2020-03", InstanceNum: 100.1},
+		{Month: "2020-04", InstanceNum: 90.9},
+		{Month: "2020-05", InstanceNum: 80.9},
+		{Month: "2020-06", InstanceNum: 70.6},
+		{Month: "2020-07", InstanceNum: 60.3},
+		{Month: "2020-08", InstanceNum: 50.9},
+		{Month: "2020-09", InstanceNum: 40.7},
+		{Month: "2020-10", InstanceNum: 30.6},
+		{Month: "2020-11", InstanceNum: 20.2},
+		{Month: "2020-12", InstanceNum: 10.8},
+	}
+
+	rec := r.Recommend(forecast)
+	fmt.Println(rec)
 }
