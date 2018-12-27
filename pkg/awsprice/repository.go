@@ -7,7 +7,7 @@ import (
 )
 
 type Repository struct {
-	Region   string     `json:"region"`
+	Region   []string   `json:"region"`
 	Internal RecordList `json:"internal"`
 }
 

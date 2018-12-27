@@ -80,7 +80,7 @@ func SerializeAWSPirice(input *SerializeAWSPriceInput) error {
 		}
 
 		repo := &awsprice.Repository{
-			Region: r,
+			Region: []string{r},
 		}
 
 		{
