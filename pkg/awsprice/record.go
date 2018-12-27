@@ -145,6 +145,15 @@ type Record struct {
 	Engine                  string  `json:"engine,omitempty"`                    // rds, cache
 }
 
+func (r *Record) String() string {
+	bytea, err := json.Marshal(r)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(bytea)
+}
+
 func (r *Record) BreakevenPointInMonth() int {
 	month := 12
 	if r.LeaseContractLength == "3yr" {
@@ -166,13 +175,68 @@ func (r *Record) BreakevenPointInMonth() int {
 	return breakEvenPoint
 }
 
-func (r *Record) ExpectedInstanceNumAndCost(forecast []Forecast) (*ExpectedInstanceNum, *ExpectedCost) {
-	num := r.ExpectedInstanceNum(forecast)
-	cost := r.ExpectedCost(num.OnDemandInstanceNumAvg, num.ReservedInstanceNum)
-	return num, cost
+type Recommended struct {
+	LeaseContractLength    string  `json:"lease_contract_length"`
+	PurchaseOption         string  `json:"purchase_option"`
+	BreakevenPointInMonth  int     `json:"breakevenpoint_in_month"`
+	OnDemandInstanceNumAvg float64 `json:"ondemand_instance_num_avg"`
+	ReservedInstanceNum    int64   `json:"reserved_instance_num"`
+	FullOnDemandCost       Cost    `json:"full_ondemand_cost"`
+	ReservedAppliedCost    Cost    `json:"reserved_applied_cost"`
+	ReservedQuantity       float64 `json:"reserved_quantity"`
+	Subtraction            float64 `json:"subtraction"`
+	DiscountRate           float64 `json:"discount_rate"`
 }
 
-func (r *Record) ExpectedInstanceNum(forecast []Forecast) *ExpectedInstanceNum {
+func (r *Recommended) String() string {
+	bytea, err := json.Marshal(r)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(bytea)
+}
+
+type Forecast struct {
+	Month       string  `json:"month"` // 2018-11
+	InstanceNum float64 `json:"instance_num"`
+}
+
+type ReservedAppliedCost struct {
+	LeaseContractLength string  `json:"lease_contract_length"`
+	PurchaseOption      string  `json:"purchase_option"`
+	FullOnDemand        Cost    `json:"full_ondemand"`
+	ReservedApplied     Cost    `json:"reserved_applied"`
+	ReservedQuantity    float64 `json:"reserved_quantity"`
+	Subtraction         float64 `json:"subtraction"`
+	DiscountRate        float64 `json:"discount_rate"`
+}
+
+type Cost struct {
+	OnDemand float64 `json:"ondemand"`
+	Reserved float64 `json:"reserved"`
+	Total    float64 `json:"total"`
+}
+
+func (r *Record) Recommend(forecast []Forecast) *Recommended {
+	ondemand, reserved := r.RecommendedInstanceNum(forecast)
+	cost := r.GetCost(ondemand, reserved)
+
+	return &Recommended{
+		LeaseContractLength:    r.LeaseContractLength,
+		PurchaseOption:         r.PurchaseOption,
+		BreakevenPointInMonth:  r.BreakevenPointInMonth(),
+		OnDemandInstanceNumAvg: ondemand,
+		ReservedInstanceNum:    reserved,
+		FullOnDemandCost:       cost.FullOnDemand,
+		ReservedAppliedCost:    cost.ReservedApplied,
+		ReservedQuantity:       cost.ReservedQuantity,
+		Subtraction:            cost.Subtraction,
+		DiscountRate:           cost.DiscountRate,
+	}
+}
+
+func (r *Record) RecommendedInstanceNum(forecast []Forecast) (float64, int64) {
 	p := r.BreakevenPointInMonth()
 	if len(forecast) < p {
 		sum := 0.0
@@ -180,17 +244,12 @@ func (r *Record) ExpectedInstanceNum(forecast []Forecast) *ExpectedInstanceNum {
 			sum = sum + forecast[i].InstanceNum
 		}
 
-		return &ExpectedInstanceNum{
-			LeaseContractLength:    r.LeaseContractLength,
-			PurchaseOption:         r.PurchaseOption,
-			OnDemandInstanceNumAvg: sum / float64(len(forecast)),
-			ReservedInstanceNum:    0,
-		}
+		return sum / float64(len(forecast)), 0
 	}
 
 	tmp := append([]Forecast{}, forecast...)
 	sort.Slice(tmp, func(i, j int) bool { return tmp[i].InstanceNum > tmp[j].InstanceNum })
-	rnum := int64(math.Ceil(tmp[p-1].InstanceNum))
+	rnum := int64(math.Floor(tmp[p-1].InstanceNum))
 
 	sum := 0.0
 	for i := range tmp {
@@ -200,43 +259,17 @@ func (r *Record) ExpectedInstanceNum(forecast []Forecast) *ExpectedInstanceNum {
 		}
 	}
 
-	return &ExpectedInstanceNum{
-		LeaseContractLength:    r.LeaseContractLength,
-		PurchaseOption:         r.PurchaseOption,
-		OnDemandInstanceNumAvg: sum / float64(len(forecast)),
-		ReservedInstanceNum:    rnum,
-	}
-}
-
-type Forecast struct {
-	Month       string  `json:"month"` // 2018-11
-	InstanceNum float64 `json:"instance_num"`
-}
-
-type ExpectedInstanceNum struct {
-	LeaseContractLength    string  `json:"lease_contract_length"`
-	PurchaseOption         string  `json:"purchase_option"`
-	OnDemandInstanceNumAvg float64 `json:"ondemand_instance_num_avg"`
-	ReservedInstanceNum    int64   `json:"reserved_instance_num"`
-}
-
-func (r *ExpectedInstanceNum) String() string {
-	bytea, err := json.Marshal(r)
-	if err != nil {
-		panic(err)
-	}
-
-	return string(bytea)
+	return sum / float64(len(forecast)), rnum
 }
 
 // ondemandNum, reservedNum is Per Year  (LeaseContractLength=1yr)
 // ondemandNum, reservedNum is Per 3Year (LeaseContractLength=3yr)
-func (r *Record) ExpectedCost(ondemandNum float64, reservedNum int64) *ExpectedCost {
+func (r *Record) GetCost(ondemandNum float64, reservedNum int64) *ReservedAppliedCost {
 	full := r.GetAnnualCost().OnDemand * (ondemandNum + float64(reservedNum))
 	ond := r.GetAnnualCost().OnDemand * ondemandNum
 	res := r.GetAnnualCost().Reserved * float64(reservedNum)
 
-	out := &ExpectedCost{
+	out := &ReservedAppliedCost{
 		LeaseContractLength: r.LeaseContractLength,
 		PurchaseOption:      r.PurchaseOption,
 		FullOnDemand: Cost{
@@ -258,31 +291,6 @@ func (r *Record) ExpectedCost(ondemandNum float64, reservedNum int64) *ExpectedC
 	return out
 }
 
-type ExpectedCost struct {
-	LeaseContractLength string  `json:"lease_contract_length"`
-	PurchaseOption      string  `json:"purchase_option"`
-	FullOnDemand        Cost    `json:"full_ondemand"`
-	ReservedApplied     Cost    `json:"reserved_applied"`
-	ReservedQuantity    float64 `json:"reserved_quantity"`
-	Subtraction         float64 `json:"subtraction"`
-	DiscountRate        float64 `json:"discount_rate"`
-}
-
-type Cost struct {
-	OnDemand float64 `json:"ondemand"`
-	Reserved float64 `json:"reserved"`
-	Total    float64 `json:"total"`
-}
-
-func (r *ExpectedCost) String() string {
-	bytea, err := json.Marshal(r)
-	if err != nil {
-		panic(err)
-	}
-
-	return string(bytea)
-}
-
 func (r *Record) GetAnnualCost() *AnnualCost {
 	ret := &AnnualCost{
 		LeaseContractLength: r.LeaseContractLength,
@@ -301,15 +309,6 @@ func (r *Record) GetAnnualCost() *AnnualCost {
 	ret.ReservedQuantity = r.ReservedQuantity
 
 	return ret
-}
-
-func (r *Record) String() string {
-	bytea, err := json.Marshal(r)
-	if err != nil {
-		panic(err)
-	}
-
-	return string(bytea)
 }
 
 type AnnualCost struct {

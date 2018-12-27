@@ -111,7 +111,7 @@ func TestFindByInstanceTypeCache(t *testing.T) {
 			t.Error("invalid engine")
 		}
 
-		e := r.ExpectedCost(0, 10)
+		e := r.GetCost(0, 10)
 		if e.ReservedApplied.OnDemand != 0 {
 			t.Error("invalid reserved applied")
 		}
@@ -155,16 +155,16 @@ func TestExpectNoReserved(t *testing.T) {
 		{Month: "2018-11", InstanceNum: 20},
 	}
 
-	n, c := r.ExpectedInstanceNumAndCost(forecast)
-	if c.FullOnDemand.Total != c.ReservedApplied.Total {
+	rec := r.Recommend(forecast)
+	if rec.FullOnDemandCost.Total != rec.ReservedAppliedCost.Total {
 		t.Errorf("invalid total cost")
 	}
 
-	if n.OnDemandInstanceNumAvg != 15 {
+	if rec.OnDemandInstanceNumAvg != 15 {
 		t.Errorf("invalid ondemand instance num")
 	}
 
-	if n.ReservedInstanceNum != 0 {
+	if rec.ReservedInstanceNum != 0 {
 		t.Errorf("invalid reserved instance num")
 	}
 }
@@ -193,35 +193,36 @@ func TestExpect(t *testing.T) {
 		{Month: "2018-01", InstanceNum: 120.4},
 		{Month: "2018-02", InstanceNum: 110.3},
 		{Month: "2018-03", InstanceNum: 100.1},
-		{Month: "2018-04", InstanceNum: 90.4},
+		{Month: "2018-04", InstanceNum: 90.9},
 		{Month: "2018-05", InstanceNum: 80.9},
 		{Month: "2018-06", InstanceNum: 70.6},
 		{Month: "2018-07", InstanceNum: 60.3},
 		{Month: "2018-08", InstanceNum: 50.9},
 		{Month: "2018-09", InstanceNum: 40.7},
-		{Month: "2018-10", InstanceNum: 30.4},
+		{Month: "2018-10", InstanceNum: 30.6},
 		{Month: "2018-11", InstanceNum: 20.2},
 		{Month: "2018-12", InstanceNum: 10.8},
 	}
 
-	n, c := r.ExpectedInstanceNumAndCost(forecast)
-	if n.OnDemandInstanceNumAvg != 23 {
+	rec := r.Recommend(forecast)
+	fmt.Println(rec)
+	if rec.OnDemandInstanceNumAvg != 23.7 {
 		t.Errorf("invalid ondemand instance num")
 	}
 
-	if n.ReservedInstanceNum != 51 {
+	if rec.ReservedInstanceNum != 50 {
 		t.Errorf("invalid reserved instance num")
 	}
 
-	if c.ReservedQuantity != 36363 {
+	if rec.ReservedQuantity != 35650 {
 		t.Errorf("invalid reserved quantity")
 	}
 
-	if c.Subtraction < 0 {
+	if rec.Subtraction != 20852.000000000007 {
 		t.Error("invalid substraction")
 	}
 
-	if c.DiscountRate < 0 {
+	if rec.DiscountRate != 0.2503723766793573 {
 		t.Error("invalid discount rate")
 	}
 }

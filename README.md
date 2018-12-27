@@ -67,3 +67,44 @@ for _, r := range repo.SelectAll() {
 {"account_id":"123456789012","date":"2018-11","usage_type":"APN1-InstanceUsage:db.r4.large","engine":"Aurora MySQL","instance_hour":2,"instance_num":0.002777777777777778}
 {"account_id":"123456789012","date":"2018-11","usage_type":"APN1-InstanceUsage:db.t2.small","engine":"Aurora MySQL","instance_hour":237,"instance_num":0.32916666666666666}
 ```
+
+```
+forecast := []Forecast{
+  {Month: "2018-01", InstanceNum: 120.4},
+  {Month: "2018-02", InstanceNum: 110.3},
+  {Month: "2018-03", InstanceNum: 100.1},
+  {Month: "2018-04", InstanceNum: 90.9},
+  {Month: "2018-05", InstanceNum: 80.9},
+  {Month: "2018-06", InstanceNum: 70.6},
+  {Month: "2018-07", InstanceNum: 60.3},
+  {Month: "2018-08", InstanceNum: 50.9},
+  {Month: "2018-09", InstanceNum: 40.7},
+  {Month: "2018-10", InstanceNum: 30.6},
+  {Month: "2018-11", InstanceNum: 20.2},
+  {Month: "2018-12", InstanceNum: 10.8},
+}
+
+fmt.Println(r.Recommend(forecast))
+{
+  "lease_contract_length":"1yr",
+  "purchase_option":"All Upfront",
+  "breakevenpoint_in_month":8,
+  "ondemand_instance_num_avg":23.7,
+  "reserved_instance_num":50,
+  "full_ondemand_cost":
+    {
+      "ondemand":83283.948,
+      "reserved":0,
+      "total":83283.948
+    },
+  "reserved_applied_cost":
+    {
+      "ondemand":26781.947999999997,
+      "reserved":35650,
+      "total":62431.948
+    },
+  "reserved_quantity":35650,
+  "subtraction":20852.000000000007,
+  "discount_rate":0.2503723766793573
+}
+```
