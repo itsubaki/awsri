@@ -6,6 +6,35 @@ import (
 	"testing"
 )
 
+func TestUnique(t *testing.T) {
+	path := fmt.Sprintf(
+		"%s/%s/%s",
+		os.Getenv("GOPATH"),
+		"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+		"ap-northeast-1.out",
+	)
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		t.Errorf("file not found: %v", path)
+	}
+
+	repo, err := NewRepository(path)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	for _, r := range repo.SelectAll().Unique("OperatingSystem") {
+		fmt.Println(r)
+	}
+
+	for _, r := range repo.SelectAll().Unique("CacheEngine") {
+		fmt.Println(r)
+	}
+	for _, r := range repo.SelectAll().Unique("DatabaseEngine") {
+		fmt.Println(r)
+	}
+}
+
 func TestBreakevenPoint1yr(t *testing.T) {
 	path := fmt.Sprintf(
 		"%s/%s/%s",
@@ -102,12 +131,12 @@ func TestFindByInstanceTypeCache(t *testing.T) {
 	}
 
 	rs := repo.FindByInstanceType("cache.m4.large").
-		Engine("Redis").
+		CacheEngine("Redis").
 		PurchaseOption("Heavy Utilization").
 		LeaseContractLength("3yr")
 
 	for _, r := range rs {
-		if r.Engine != "Redis" {
+		if r.CacheEngine != "Redis" {
 			t.Error("invalid engine")
 		}
 
@@ -205,6 +234,7 @@ func TestRecommend1yr(t *testing.T) {
 	}
 
 	rec := r.Recommend(forecast)
+	fmt.Println(rec)
 	if rec.OnDemandInstanceNumAvg != 23.7 {
 		t.Errorf("invalid ondemand instance num")
 	}

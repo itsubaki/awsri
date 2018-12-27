@@ -24,8 +24,6 @@ func TestMergedRepository(t *testing.T) {
 		fmt.Sprintf("%s/%s", dir, "example_2018-07.out"),
 		fmt.Sprintf("%s/%s", dir, "example_2018-08.out"),
 		fmt.Sprintf("%s/%s", dir, "example_2018-09.out"),
-		fmt.Sprintf("%s/%s", dir, "example_2018-10.out"),
-		fmt.Sprintf("%s/%s", dir, "example_2018-11.out"),
 	}
 
 	repo := &Repository{
@@ -56,7 +54,7 @@ func TestRepository(t *testing.T) {
 		"%s/%s/%s",
 		os.Getenv("GOPATH"),
 		"src/github.com/itsubaki/awsri/internal/_serialized/costexp",
-		"example_2018-11.out",
+		"example_2018-09.out",
 	)
 
 	repo, err := NewRepository(path)

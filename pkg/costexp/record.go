@@ -33,13 +33,14 @@ func (list RecordList) Pretty() string {
 }
 
 type Record struct {
-	AccountID    string  `json:"account_id"`
-	UsageType    string  `json:"usage_type"`
-	Platform     string  `json:"platform,omitempty"`
-	Engine       string  `json:"engine,omitempty"`
-	Date         string  `json:"date"`
-	InstanceHour float64 `json:"instance_hour"`
-	InstanceNum  float64 `json:"instance_num"`
+	AccountID      string  `json:"account_id"`
+	UsageType      string  `json:"usage_type"`
+	Platform       string  `json:"platform,omitempty"`        // ec2
+	DatabaseEngine string  `json:"database_engine,omitempty"` // rds
+	CacheEngine    string  `json:"cache_engine,omitempty"`    // cache
+	Date           string  `json:"date"`
+	InstanceHour   float64 `json:"instance_hour"`
+	InstanceNum    float64 `json:"instance_num"`
 }
 
 func (u *Record) String() string {
@@ -147,11 +148,24 @@ func (list RecordList) Date(date string) RecordList {
 	return ret
 }
 
-func (list RecordList) Engine(engine string) RecordList {
+func (list RecordList) CacheEngine(engine string) RecordList {
 	ret := RecordList{}
 
 	for i := range list {
-		if list[i].Engine != engine {
+		if list[i].CacheEngine != engine {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
+func (list RecordList) DatabaseEngine(engine string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].DatabaseEngine != engine {
 			continue
 		}
 		ret = append(ret, list[i])
@@ -165,7 +179,8 @@ func (r RecordList) Sort() RecordList {
 
 	sort.SliceStable(list, func(i, j int) bool { return list[i].UsageType < list[j].UsageType })
 	sort.SliceStable(list, func(i, j int) bool { return list[i].Platform < list[j].Platform })
-	sort.SliceStable(list, func(i, j int) bool { return list[i].Engine < list[j].Engine })
+	sort.SliceStable(list, func(i, j int) bool { return list[i].CacheEngine < list[j].CacheEngine })
+	sort.SliceStable(list, func(i, j int) bool { return list[i].DatabaseEngine < list[j].DatabaseEngine })
 	sort.SliceStable(list, func(i, j int) bool { return list[i].AccountID < list[j].AccountID })
 
 	return list

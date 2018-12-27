@@ -73,7 +73,7 @@ type OutputPrice struct {
 	OnDemand            float64 // common
 	ReservedQuantity    float64 // common
 	ReservedHrs         float64 // common
-	Engine              string  // rds, cache
+	CacheEngine         string  // cache
 }
 
 func ReadPrice(region string, dir ...string) (map[string]OutputPrice, error) {
@@ -206,7 +206,7 @@ func usage(region string, list PriceList) (map[string]OutputPrice, error) {
 				Region:              region,
 				InstanceType:        pp.Attributes["instanceType"],
 				UsageType:           pp.Attributes["usagetype"],
-				Engine:              pp.Attributes["cacheEngine"],
+				CacheEngine:         pp.Attributes["cacheEngine"],
 				LeaseContractLength: v.LeaseContractLength,
 				PurchaseOption:      v.PurchaseOption,
 				OnDemand:            v.OnDemand,

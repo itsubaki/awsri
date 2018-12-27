@@ -18,13 +18,14 @@ type LinkedAccount struct {
 type UsageQuantityList []*UsageQuantity
 
 type UsageQuantity struct {
-	AccountID    string  `json:"account_id"`
-	UsageType    string  `json:"usage_type"`
-	Platform     string  `json:"platform,omitempty"`
-	Engine       string  `json:"engine,omitempty"`
-	Date         string  `json:"date"`
-	InstanceHour float64 `json:"instance_hour"`
-	InstanceNum  float64 `json:"instance_num"`
+	AccountID      string  `json:"account_id"`
+	UsageType      string  `json:"usage_type"`
+	Platform       string  `json:"platform,omitempty"`
+	DatabaseEngine string  `json:"database_engine,omitempty"`
+	CacheEngine    string  `json:"cache_engine,omitempty"`
+	Date           string  `json:"date"`
+	InstanceHour   float64 `json:"instance_hour"`
+	InstanceNum    float64 `json:"instance_num"`
 }
 
 func (u *UsageQuantity) String() string {
@@ -206,8 +207,12 @@ func (c *CostExp) getUsageQuantity(in *getUsageQuantityInput) (UsageQuantityList
 
 			if in.Dimension == "PLATFORM" {
 				q.Platform = *g.Keys[1]
-			} else {
-				q.Engine = *g.Keys[1]
+			}
+			if in.Dimension == "CACHE_ENGINE" {
+				q.CacheEngine = *g.Keys[1]
+			}
+			if in.Dimension == "DATABASE_ENGINE" {
+				q.DatabaseEngine = *g.Keys[1]
 			}
 
 			out = append(out, q)

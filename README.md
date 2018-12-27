@@ -1,11 +1,17 @@
 # awsri
 aws reserved instance
 
-## TODO
+## Memo
 
- - [ ] Engine -> CacheEngine/DatabaseEngine
- - [ ] convert costexp.Platform/awsprice.OperatingSystem
- - [ ] convert costexp.Engine/awsprice.Engine
+```
+# awsprice/OperatingSystem
+Linux
+Windows
+RHEL
+SUSE
+# costexp/Platform
+Linux/UNIX
+```
 
 ## example
 
@@ -29,7 +35,7 @@ for _, r := range rs {
 onDemandInstanceNum := 3
 reservedInstanceNum := 10
 for _, r := range rs {
-  fmt.Printf("%s\n", r.ExpectedCost(onDemandInstanceNum, reservedInstanceNum))
+  fmt.Printf("%s\n", r.GetCost(onDemandInstanceNum, reservedInstanceNum))
 }
 
 {"sku":"7MYWT7Y96UT3NJ2D","offer_term_code":"4NA7Y494T4","region":"ap-northeast-1","instance_type":"m4.large","usage_type":"APN1-BoxUsage:m4.large","lease_contract_length":"1yr","purchase_option":"No Upfront","ondemand":0.129,"reserved_quantity":0,"reserved_hrs":0.0871,"tenancy":"Shared","pre_installed":"NA","operating_system":"Linux","operation":"RunInstances","offering_class":"standard","normalization_size_factor":"4"}
@@ -111,23 +117,35 @@ forecast := []Forecast{
 
 fmt.Println(r.Recommend(forecast))
 {
-  "lease_contract_length":"1yr",
-  "purchase_option":"All Upfront",
+  "record":
+  {
+    "sku":"7MYWT7Y96UT3NJ2D",
+    "offer_term_code":"4NA7Y494T4",
+    "region":"ap-northeast-1",
+    "instance_type":"m4.large",
+    "usage_type":"APN1-BoxUsage:m4.large",
+    "lease_contract_length":"1yr",
+    "purchase_option":"All Upfront",
+    "ondemand":0.129,
+    "reserved_quantity":713,
+    "reserved_hrs":0,
+    "tenancy":"Shared",
+    "pre_installed":"NA",
+    "operating_system":"Linux",
+    "operation":"RunInstances",
+    "offering_class":"standard",
+    "normalization_size_factor":"4"
+  },
   "breakevenpoint_in_month":8,
   "ondemand_instance_num_avg":23.7,
   "reserved_instance_num":50,
-  "full_ondemand_cost":
-    {
-      "ondemand":83283.948,
-      "reserved":0,
-      "total":83283.948
-    },
+  "full_ondemand_cost":83283.948,
   "reserved_applied_cost":
-    {
-      "ondemand":26781.947999999997,
-      "reserved":35650,
-      "total":62431.948
-    },
+  {
+    "ondemand":26781.947999999997,
+    "reserved":35650,
+    "total":62431.948
+  },
   "reserved_quantity":35650,
   "subtraction":20852.000000000007,
   "discount_rate":0.2503723766793573

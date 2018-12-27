@@ -75,7 +75,7 @@ type OutputPrice struct {
 	ReservedHrs             float64 // common
 	OfferingClass           string  // ec2, rds
 	NormalizationSizeFactor string  // ec2, rds
-	Engine                  string  // rds, cache
+	DatabaseEngine          string  // rds
 }
 
 func ReadPrice(region string, dir ...string) (map[string]OutputPrice, error) {
@@ -209,7 +209,7 @@ func usage(region string, list PriceList) (map[string]OutputPrice, error) {
 				Region:                  region,
 				InstanceType:            pp.Attributes["instanceType"],
 				UsageType:               pp.Attributes["usagetype"],
-				Engine:                  pp.Attributes["databaseEngine"],
+				DatabaseEngine:          pp.Attributes["databaseEngine"],
 				LeaseContractLength:     v.LeaseContractLength,
 				PurchaseOption:          v.PurchaseOption,
 				OfferingClass:           v.OfferingClass,

@@ -3,10 +3,29 @@ package awsprice
 import (
 	"encoding/json"
 	"math"
+	"reflect"
 	"sort"
 )
 
 type RecordList []*Record
+
+func (list RecordList) Unique(fieldname string) []string {
+	uniq := make(map[string]bool)
+	for i := range list {
+		ref := reflect.ValueOf(*list[i]).FieldByName(fieldname)
+		val := ref.Interface().(string)
+		if len(val) > 0 {
+			uniq[val] = true
+		}
+	}
+
+	out := []string{}
+	for k := range uniq {
+		out = append(out, k)
+	}
+
+	return out
+}
 
 func (list RecordList) Region(region string) RecordList {
 	ret := RecordList{}
@@ -34,11 +53,24 @@ func (list RecordList) InstanceType(tipe string) RecordList {
 	return ret
 }
 
-func (list RecordList) Engine(engine string) RecordList {
+func (list RecordList) CacheEngine(engine string) RecordList {
 	ret := RecordList{}
 
 	for i := range list {
-		if list[i].Engine != engine {
+		if list[i].CacheEngine != engine {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
+func (list RecordList) DatabaseEngine(engine string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].DatabaseEngine != engine {
 			continue
 		}
 		ret = append(ret, list[i])
@@ -142,7 +174,8 @@ type Record struct {
 	Operation               string  `json:"operation,omitempty"`                 // ec2
 	OfferingClass           string  `json:"offering_class,omitempty"`            // ec2, rds
 	NormalizationSizeFactor string  `json:"normalization_size_factor,omitempty"` // ec2, rds
-	Engine                  string  `json:"engine,omitempty"`                    // rds, cache
+	DatabaseEngine          string  `json:"database_engine,omitempty"`           // rds
+	CacheEngine             string  `json:"cache_engine,omitempty"`              // cache
 }
 
 func (r *Record) String() string {
