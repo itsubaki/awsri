@@ -239,6 +239,7 @@ func TestRecommend1yr(t *testing.T) {
 	}
 
 	rec := r.Recommend(forecast)
+	fmt.Println(rec.Pretty())
 	if rec.OnDemandInstanceNumAvg != 23.7 {
 		t.Errorf("invalid ondemand instance num")
 	}

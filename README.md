@@ -221,53 +221,52 @@ r := &Record{
 }
 
 forecast := []Forecast{
-  {Month: "2018-01", InstanceNum: 120.4},
-  {Month: "2018-02", InstanceNum: 110.3},
-  {Month: "2018-03", InstanceNum: 100.1},
-  {Month: "2018-04", InstanceNum: 90.9},
-  {Month: "2018-05", InstanceNum: 80.9},
-  {Month: "2018-06", InstanceNum: 70.6},
-  {Month: "2018-07", InstanceNum: 60.3},
-  {Month: "2018-08", InstanceNum: 50.9},
-  {Month: "2018-09", InstanceNum: 40.7},
-  {Month: "2018-10", InstanceNum: 30.6},
-  {Month: "2018-11", InstanceNum: 20.2},
-  {Month: "2018-12", InstanceNum: 10.8},
+  {Date: "2018-01", InstanceNum: 120.4},
+  {Date: "2018-02", InstanceNum: 110.3},
+  {Date: "2018-03", InstanceNum: 100.1},
+  {Date: "2018-04", InstanceNum: 90.9},
+  {Date: "2018-05", InstanceNum: 80.9},
+  {Date: "2018-06", InstanceNum: 70.6},
+  {Date: "2018-07", InstanceNum: 60.3},
+  {Date: "2018-08", InstanceNum: 50.9},
+  {Date: "2018-09", InstanceNum: 40.7},
+  {Date: "2018-10", InstanceNum: 30.6},
+  {Date: "2018-11", InstanceNum: 20.2},
+  {Date: "2018-12", InstanceNum: 10.8},
 }
 
-fmt.Println(r.Recommend(forecast))
+fmt.Println(r.Recommend(forecast, "breakevenpoint"))
 {
-  "record":
-  {
-    "sku":"7MYWT7Y96UT3NJ2D",
-    "offer_term_code":"4NA7Y494T4",
-    "region":"ap-northeast-1",
-    "instance_type":"m4.large",
-    "usage_type":"APN1-BoxUsage:m4.large",
-    "lease_contract_length":"1yr",
-    "purchase_option":"All Upfront",
-    "ondemand":0.129,
-    "reserved_quantity":713,
-    "reserved_hrs":0,
-    "tenancy":"Shared",
-    "pre_installed":"NA",
-    "operating_system":"Linux",
-    "operation":"RunInstances",
-    "offering_class":"standard",
-    "normalization_size_factor":"4"
-  },
-  "breakevenpoint_in_month":8,
-  "ondemand_instance_num_avg":23.7,
-  "reserved_instance_num":50,
-  "full_ondemand_cost":83283.948,
-  "reserved_applied_cost":
-  {
-    "ondemand":26781.947999999997,
-    "reserved":35650,
-    "total":62431.948
-  },
-  "reserved_quantity":35650,
-  "subtraction":20852.000000000007,
-  "discount_rate":0.2503723766793573
+ "record": {
+  "sku": "7MYWT7Y96UT3NJ2D",
+  "offer_term_code": "4NA7Y494T4",
+  "region": "ap-northeast-1",
+  "instance_type": "m4.large",
+  "usage_type": "APN1-BoxUsage:m4.large",
+  "lease_contract_length": "1yr",
+  "purchase_option": "All Upfront",
+  "ondemand": 0.129,
+  "reserved_quantity": 713,
+  "reserved_hrs": 0,
+  "tenancy": "Shared",
+  "pre_installed": "NA",
+  "operating_system": "Linux",
+  "operation": "RunInstances",
+  "offering_class": "standard",
+  "normalization_size_factor": "4"
+ },
+ "breakevenpoint_in_month": 8,
+ "strategy": "breakevenpoint",
+ "ondemand_instance_num_avg": 23.7,
+ "reserved_instance_num": 50,
+ "full_ondemand_cost": 83283.948,
+ "reserved_applied_cost": {
+  "ondemand": 26781.947999999997,
+  "reserved": 35650,
+  "total": 62431.948
+ },
+ "reserved_quantity": 35650,
+ "subtraction": 20852.000000000007,
+ "discount_rate": 0.2503723766793573
 }
 ```
