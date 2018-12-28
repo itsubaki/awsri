@@ -5,12 +5,37 @@ aws reserved instance
 
 ```
 # awsprice/OperatingSystem
-Linux
-Windows
-RHEL
 SUSE
+Linux
+RHEL
+Windows
+Memcached
+Redis
+Aurora PostgreSQL
+Aurora MySQL
+SQL Server
+Oracle
+PostgreSQL
+MySQL
+MariaDB
+
 # costexp/Platform
+Windows with SQL Server Web
 Linux/UNIX
+Windows (Amazon VPC)
+Windows (BYOL)
+NoOperatingSystem
+Redis
+Memcached
+Aurora MySQL
+Aurora PostgreSQL
+PostgreSQL
+MySQL
+```
+
+```
+Linux/UNIX: Linux
+Windows (Amazon VPC): Windows
 ```
 
 ## example

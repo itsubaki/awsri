@@ -19,14 +19,6 @@ func TestUnique(t *testing.T) {
 		t.Errorf("new repository: %v", err)
 	}
 
-	for _, r := range repo.SelectAll().Unique("AccountID") {
-		fmt.Println(r)
-	}
-
-	for _, r := range repo.SelectAll().Unique("UsageType") {
-		fmt.Println(r)
-	}
-
 	for _, r := range repo.SelectAll().Unique("Platform") {
 		fmt.Println(r)
 	}
