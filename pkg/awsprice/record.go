@@ -1,10 +1,12 @@
 package awsprice
 
 import (
+	"bytes"
 	"encoding/json"
 	"math"
 	"reflect"
 	"sort"
+	"strings"
 )
 
 type RecordList []*Record
@@ -229,6 +231,20 @@ func (r *Recommended) String() string {
 	return string(bytea)
 }
 
+func (r *Recommended) Pretty() string {
+	bytea, err := json.Marshal(r)
+	if err != nil {
+		panic(err)
+	}
+
+	var out bytes.Buffer
+	if err := json.Indent(&out, bytea, "", " "); err != nil {
+		panic(err)
+	}
+
+	return string(out.Bytes())
+}
+
 type Forecast struct {
 	Date        string  `json:"month"` // 2018-11
 	InstanceNum float64 `json:"instance_num"`
@@ -259,8 +275,8 @@ type Cost struct {
 	Total    float64 `json:"total"`
 }
 
-func (r *Record) Recommend(forecast []Forecast) *Recommended {
-	ondemand, reserved := r.recommendedInstanceNum(forecast)
+func (r *Record) Recommend(forecast []Forecast, strategy ...string) *Recommended {
+	ondemand, reserved := r.recommendedInstanceNum(forecast, strategy...)
 	cost := r.GetCost(ondemand, reserved)
 
 	return &Recommended{
@@ -276,7 +292,7 @@ func (r *Record) Recommend(forecast []Forecast) *Recommended {
 	}
 }
 
-func (r *Record) recommendedInstanceNum(forecast []Forecast) (float64, int64) {
+func (r *Record) recommendedInstanceNum(forecast []Forecast, strategy ...string) (float64, int64) {
 	p := r.BreakevenPointInMonth()
 	if len(forecast) < p {
 		sum := 0.0
@@ -289,17 +305,27 @@ func (r *Record) recommendedInstanceNum(forecast []Forecast) (float64, int64) {
 
 	tmp := append([]Forecast{}, forecast...)
 	sort.Slice(tmp, func(i, j int) bool { return tmp[i].InstanceNum > tmp[j].InstanceNum })
-	rnum := int64(math.Floor(tmp[p-1].InstanceNum))
 
+	// strategy of reserved instance num
+	reserved := int64(math.Floor(tmp[p-1].InstanceNum)) // default strategy is breakevenpoint
+	if len(strategy) > 0 && strings.ToLower(strategy[0]) == "minimum" {
+		reserved = int64(math.Floor(tmp[len(tmp)-1].InstanceNum))
+	}
+	if len(strategy) > 0 && strings.ToLower(strategy[0]) == "breakevenpoint" {
+		reserved = int64(math.Floor(tmp[p-1].InstanceNum))
+	}
+
+	// ondemand average in 1year/3year
 	sum := 0.0
 	for i := range tmp {
-		ond := tmp[i].InstanceNum - float64(rnum)
+		ond := tmp[i].InstanceNum - float64(reserved)
 		if ond > 0 {
 			sum = sum + ond
 		}
 	}
+	ondemand := sum / float64(len(forecast))
 
-	return sum / float64(len(forecast)), rnum
+	return ondemand, reserved
 }
 
 // ondemandNum, reservedNum is Per Year  (LeaseContractLength=1yr)
