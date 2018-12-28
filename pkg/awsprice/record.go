@@ -213,6 +213,7 @@ func (r *Record) BreakevenPointInMonth() int {
 type Recommended struct {
 	Record                 *Record `json:"record"`
 	BreakevenPointInMonth  int     `json:"breakevenpoint_in_month"`
+	Strategy               string  `json:"strategy"`
 	OnDemandInstanceNumAvg float64 `json:"ondemand_instance_num_avg"`
 	ReservedInstanceNum    int64   `json:"reserved_instance_num"`
 	FullOnDemandCost       float64 `json:"full_ondemand_cost"`
@@ -276,12 +277,13 @@ type Cost struct {
 }
 
 func (r *Record) Recommend(forecast []Forecast, strategy ...string) *Recommended {
-	ondemand, reserved := r.recommendedInstanceNum(forecast, strategy...)
+	actual, ondemand, reserved := r.GetInstanceNum(forecast, strategy...)
 	cost := r.GetCost(ondemand, reserved)
 
 	return &Recommended{
 		Record:                 r,
 		BreakevenPointInMonth:  r.BreakevenPointInMonth(),
+		Strategy:               actual,
 		OnDemandInstanceNumAvg: ondemand,
 		ReservedInstanceNum:    reserved,
 		FullOnDemandCost:       cost.FullOnDemand,
@@ -292,7 +294,7 @@ func (r *Record) Recommend(forecast []Forecast, strategy ...string) *Recommended
 	}
 }
 
-func (r *Record) recommendedInstanceNum(forecast []Forecast, strategy ...string) (float64, int64) {
+func (r *Record) GetInstanceNum(forecast []Forecast, strategy ...string) (string, float64, int64) {
 	p := r.BreakevenPointInMonth()
 	if len(forecast) < p {
 		sum := 0.0
@@ -300,19 +302,18 @@ func (r *Record) recommendedInstanceNum(forecast []Forecast, strategy ...string)
 			sum = sum + forecast[i].InstanceNum
 		}
 
-		return sum / float64(len(forecast)), 0
+		return "", sum / float64(len(forecast)), 0
 	}
 
 	tmp := append([]Forecast{}, forecast...)
 	sort.Slice(tmp, func(i, j int) bool { return tmp[i].InstanceNum > tmp[j].InstanceNum })
 
-	// strategy of reserved instance num
-	reserved := int64(math.Floor(tmp[p-1].InstanceNum)) // default strategy is breakevenpoint
+	// default strategy is breakevenpoint
+	actual := "breakevenpoint"
+	reserved := int64(math.Floor(tmp[p-1].InstanceNum))
 	if len(strategy) > 0 && strings.ToLower(strategy[0]) == "minimum" {
+		actual = "minimum"
 		reserved = int64(math.Floor(tmp[len(tmp)-1].InstanceNum))
-	}
-	if len(strategy) > 0 && strings.ToLower(strategy[0]) == "breakevenpoint" {
-		reserved = int64(math.Floor(tmp[p-1].InstanceNum))
 	}
 
 	// ondemand average in 1year/3year
@@ -325,7 +326,7 @@ func (r *Record) recommendedInstanceNum(forecast []Forecast, strategy ...string)
 	}
 	ondemand := sum / float64(len(forecast))
 
-	return ondemand, reserved
+	return actual, ondemand, reserved
 }
 
 // ondemandNum, reservedNum is Per Year  (LeaseContractLength=1yr)
