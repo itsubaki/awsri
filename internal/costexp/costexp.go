@@ -19,6 +19,7 @@ type UsageQuantityList []*UsageQuantity
 
 type UsageQuantity struct {
 	AccountID      string  `json:"account_id"`
+	Description    string  `json:"description"`
 	UsageType      string  `json:"usage_type"`
 	Platform       string  `json:"platform,omitempty"`
 	DatabaseEngine string  `json:"database_engine,omitempty"`
@@ -72,10 +73,11 @@ func (c *CostExp) GetUsageQuantity(period *costexplorer.DateInterval) (UsageQuan
 			}
 
 			ec2, err := c.getUsageQuantity(&getUsageQuantityInput{
-				AccountID: linkedAccount[i].AccountID,
-				Dimension: "PLATFORM",
-				UsageType: ec2UsageType,
-				Period:    period,
+				AccountID:   linkedAccount[i].AccountID,
+				Description: linkedAccount[i].Description,
+				Dimension:   "PLATFORM",
+				UsageType:   ec2UsageType,
+				Period:      period,
 			})
 
 			if err != nil {
@@ -95,10 +97,11 @@ func (c *CostExp) GetUsageQuantity(period *costexplorer.DateInterval) (UsageQuan
 			}
 
 			cache, err := c.getUsageQuantity(&getUsageQuantityInput{
-				AccountID: linkedAccount[i].AccountID,
-				Dimension: "CACHE_ENGINE",
-				UsageType: cacheUsageType,
-				Period:    period,
+				AccountID:   linkedAccount[i].AccountID,
+				Description: linkedAccount[i].Description,
+				Dimension:   "CACHE_ENGINE",
+				UsageType:   cacheUsageType,
+				Period:      period,
 			})
 
 			if err != nil {
@@ -119,10 +122,11 @@ func (c *CostExp) GetUsageQuantity(period *costexplorer.DateInterval) (UsageQuan
 			}
 
 			db, err := c.getUsageQuantity(&getUsageQuantityInput{
-				AccountID: linkedAccount[i].AccountID,
-				Dimension: "DATABASE_ENGINE",
-				UsageType: dbUsageType,
-				Period:    period,
+				AccountID:   linkedAccount[i].AccountID,
+				Description: linkedAccount[i].Description,
+				Dimension:   "DATABASE_ENGINE",
+				UsageType:   dbUsageType,
+				Period:      period,
 			})
 
 			if err != nil {
@@ -136,10 +140,11 @@ func (c *CostExp) GetUsageQuantity(period *costexplorer.DateInterval) (UsageQuan
 }
 
 type getUsageQuantityInput struct {
-	AccountID string
-	Dimension string
-	UsageType []string
-	Period    *costexplorer.DateInterval
+	AccountID   string
+	Description string
+	Dimension   string
+	UsageType   []string
+	Period      *costexplorer.DateInterval
 }
 
 func (c *CostExp) getUsageQuantity(in *getUsageQuantityInput) (UsageQuantityList, error) {
@@ -199,6 +204,7 @@ func (c *CostExp) getUsageQuantity(in *getUsageQuantityInput) (UsageQuantityList
 			date := string(*in.Period.Start)[:index]
 			q := &UsageQuantity{
 				AccountID:    in.AccountID,
+				Description:  in.Description,
 				Date:         date,
 				UsageType:    *g.Keys[0],
 				InstanceHour: hrs,

@@ -230,7 +230,7 @@ func (r *Recommended) String() string {
 }
 
 type Forecast struct {
-	Month       string  `json:"month"` // 2018-11
+	Date        string  `json:"month"` // 2018-11
 	InstanceNum float64 `json:"instance_num"`
 }
 
@@ -242,6 +242,15 @@ type ReservedAppliedCost struct {
 	ReservedQuantity    float64 `json:"reserved_quantity"`
 	Subtraction         float64 `json:"subtraction"`
 	DiscountRate        float64 `json:"discount_rate"`
+}
+
+func (r *ReservedAppliedCost) String() string {
+	bytea, err := json.Marshal(r)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(bytea)
 }
 
 type Cost struct {

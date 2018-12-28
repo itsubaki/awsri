@@ -44,6 +44,7 @@ func Serialize(input *SerializeInput) error {
 		for _, qq := range q {
 			repo.Internal = append(repo.Internal, &costexp.Record{
 				AccountID:      qq.AccountID,
+				Description:    qq.Description,
 				Date:           qq.Date,
 				UsageType:      qq.UsageType,
 				Platform:       qq.Platform,

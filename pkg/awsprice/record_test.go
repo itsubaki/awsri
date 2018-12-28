@@ -57,9 +57,14 @@ func TestBreakevenPoint1yr(t *testing.T) {
 		Tenancy("Shared").
 		PreInstalled("NA").
 		OfferingClass("standard").
-		LeaseContractLength("1yr")
+		LeaseContractLength("1yr").
+		PurchaseOption("All Upfront")
 
 	for _, r := range rs {
+		fmt.Println(r)
+		fmt.Println(r.GetAnnualCost())
+		fmt.Println(r.GetCost(3, 10))
+
 		p := r.BreakevenPointInMonth()
 
 		if r.PurchaseOption == "No Upfront" && p != 1 {
@@ -176,12 +181,12 @@ func TestRecommendNoReserved(t *testing.T) {
 	}
 
 	forecast := []Forecast{
-		{Month: "2018-06", InstanceNum: 10},
-		{Month: "2018-07", InstanceNum: 20},
-		{Month: "2018-08", InstanceNum: 10},
-		{Month: "2018-09", InstanceNum: 20},
-		{Month: "2018-10", InstanceNum: 10},
-		{Month: "2018-11", InstanceNum: 20},
+		{Date: "2018-06", InstanceNum: 10},
+		{Date: "2018-07", InstanceNum: 20},
+		{Date: "2018-08", InstanceNum: 10},
+		{Date: "2018-09", InstanceNum: 20},
+		{Date: "2018-10", InstanceNum: 10},
+		{Date: "2018-11", InstanceNum: 20},
 	}
 
 	rec := r.Recommend(forecast)
@@ -219,18 +224,18 @@ func TestRecommend1yr(t *testing.T) {
 	}
 
 	forecast := []Forecast{
-		{Month: "2018-01", InstanceNum: 120.4},
-		{Month: "2018-02", InstanceNum: 110.3},
-		{Month: "2018-03", InstanceNum: 100.1},
-		{Month: "2018-04", InstanceNum: 90.9},
-		{Month: "2018-05", InstanceNum: 80.9},
-		{Month: "2018-06", InstanceNum: 70.6},
-		{Month: "2018-07", InstanceNum: 60.3},
-		{Month: "2018-08", InstanceNum: 50.9},
-		{Month: "2018-09", InstanceNum: 40.7},
-		{Month: "2018-10", InstanceNum: 30.6},
-		{Month: "2018-11", InstanceNum: 20.2},
-		{Month: "2018-12", InstanceNum: 10.8},
+		{Date: "2018-01", InstanceNum: 120.4},
+		{Date: "2018-02", InstanceNum: 110.3},
+		{Date: "2018-03", InstanceNum: 100.1},
+		{Date: "2018-04", InstanceNum: 90.9},
+		{Date: "2018-05", InstanceNum: 80.9},
+		{Date: "2018-06", InstanceNum: 70.6},
+		{Date: "2018-07", InstanceNum: 60.3},
+		{Date: "2018-08", InstanceNum: 50.9},
+		{Date: "2018-09", InstanceNum: 40.7},
+		{Date: "2018-10", InstanceNum: 30.6},
+		{Date: "2018-11", InstanceNum: 20.2},
+		{Date: "2018-12", InstanceNum: 10.8},
 	}
 
 	rec := r.Recommend(forecast)
@@ -277,42 +282,42 @@ func TestRecommend3yr(t *testing.T) {
 	}
 
 	forecast := []Forecast{
-		{Month: "2018-01", InstanceNum: 120.4},
-		{Month: "2018-02", InstanceNum: 110.3},
-		{Month: "2018-03", InstanceNum: 100.1},
-		{Month: "2018-04", InstanceNum: 90.9},
-		{Month: "2018-05", InstanceNum: 80.9},
-		{Month: "2018-06", InstanceNum: 70.6},
-		{Month: "2018-07", InstanceNum: 60.3},
-		{Month: "2018-08", InstanceNum: 50.9},
-		{Month: "2018-09", InstanceNum: 40.7},
-		{Month: "2018-10", InstanceNum: 30.6},
-		{Month: "2018-11", InstanceNum: 20.2},
-		{Month: "2018-12", InstanceNum: 10.8},
-		{Month: "2019-01", InstanceNum: 120.4},
-		{Month: "2019-02", InstanceNum: 110.3},
-		{Month: "2019-03", InstanceNum: 100.1},
-		{Month: "2019-04", InstanceNum: 90.9},
-		{Month: "2019-05", InstanceNum: 80.9},
-		{Month: "2019-06", InstanceNum: 70.6},
-		{Month: "2019-07", InstanceNum: 60.3},
-		{Month: "2019-08", InstanceNum: 50.9},
-		{Month: "2019-09", InstanceNum: 40.7},
-		{Month: "2019-10", InstanceNum: 30.6},
-		{Month: "2019-11", InstanceNum: 20.2},
-		{Month: "2019-12", InstanceNum: 10.8},
-		{Month: "2020-01", InstanceNum: 120.4},
-		{Month: "2020-02", InstanceNum: 110.3},
-		{Month: "2020-03", InstanceNum: 100.1},
-		{Month: "2020-04", InstanceNum: 90.9},
-		{Month: "2020-05", InstanceNum: 80.9},
-		{Month: "2020-06", InstanceNum: 70.6},
-		{Month: "2020-07", InstanceNum: 60.3},
-		{Month: "2020-08", InstanceNum: 50.9},
-		{Month: "2020-09", InstanceNum: 40.7},
-		{Month: "2020-10", InstanceNum: 30.6},
-		{Month: "2020-11", InstanceNum: 20.2},
-		{Month: "2020-12", InstanceNum: 10.8},
+		{Date: "2018-01", InstanceNum: 120.4},
+		{Date: "2018-02", InstanceNum: 110.3},
+		{Date: "2018-03", InstanceNum: 100.1},
+		{Date: "2018-04", InstanceNum: 90.9},
+		{Date: "2018-05", InstanceNum: 80.9},
+		{Date: "2018-06", InstanceNum: 70.6},
+		{Date: "2018-07", InstanceNum: 60.3},
+		{Date: "2018-08", InstanceNum: 50.9},
+		{Date: "2018-09", InstanceNum: 40.7},
+		{Date: "2018-10", InstanceNum: 30.6},
+		{Date: "2018-11", InstanceNum: 20.2},
+		{Date: "2018-12", InstanceNum: 10.8},
+		{Date: "2019-01", InstanceNum: 120.4},
+		{Date: "2019-02", InstanceNum: 110.3},
+		{Date: "2019-03", InstanceNum: 100.1},
+		{Date: "2019-04", InstanceNum: 90.9},
+		{Date: "2019-05", InstanceNum: 80.9},
+		{Date: "2019-06", InstanceNum: 70.6},
+		{Date: "2019-07", InstanceNum: 60.3},
+		{Date: "2019-08", InstanceNum: 50.9},
+		{Date: "2019-09", InstanceNum: 40.7},
+		{Date: "2019-10", InstanceNum: 30.6},
+		{Date: "2019-11", InstanceNum: 20.2},
+		{Date: "2019-12", InstanceNum: 10.8},
+		{Date: "2020-01", InstanceNum: 120.4},
+		{Date: "2020-02", InstanceNum: 110.3},
+		{Date: "2020-03", InstanceNum: 100.1},
+		{Date: "2020-04", InstanceNum: 90.9},
+		{Date: "2020-05", InstanceNum: 80.9},
+		{Date: "2020-06", InstanceNum: 70.6},
+		{Date: "2020-07", InstanceNum: 60.3},
+		{Date: "2020-08", InstanceNum: 50.9},
+		{Date: "2020-09", InstanceNum: 40.7},
+		{Date: "2020-10", InstanceNum: 30.6},
+		{Date: "2020-11", InstanceNum: 20.2},
+		{Date: "2020-12", InstanceNum: 10.8},
 	}
 
 	rec := r.Recommend(forecast)
