@@ -1,6 +1,10 @@
 # awsri
 aws reserved instance
 
+## TODO
+
+ - [ ] normalization factor convert
+
 ## Memo
 
 ```
