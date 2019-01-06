@@ -5,42 +5,32 @@ aws reserved instance
 
  - [ ] normalization factor convert
 
-## Memo
+## Install
 
 ```
-# awsprice/OperatingSystem
-SUSE
-Linux
-RHEL
-Windows
-Memcached
-Redis
-Aurora PostgreSQL
-Aurora MySQL
-SQL Server
-Oracle
-PostgreSQL
-MySQL
-MariaDB
+# set aws credential with "example"
+$ cat ~/.aws/credentials
+[example]
+aws_access_key_id = ********************
+aws_secret_access_key = ****************************************
+region = ap-northeast-1
 
-# costexp/Platform
-Windows with SQL Server Web
-Linux/UNIX
-Windows (Amazon VPC)
-Windows (BYOL)
-NoOperatingSystem
-Redis
-Memcached
-Aurora MySQL
-Aurora PostgreSQL
-PostgreSQL
-MySQL
+$ go get github.com/itsubaki/awsri
+$ cd ${GOPATH}/src/github.com/itsubaki/awsri
+$ make serialize
 ```
 
-## example
+## Example
 
 ```
-repo, _ := awsprice.NewRepository("/awsprice/ap-northeast-1.out")
+path := fmt.Sprintf(
+  "%s/%s/%s",
+  os.Getenv("GOPATH"),
+  "src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+  "ap-northeast-1.out",
+)
+
+repo, _ := awsprice.NewRepository(path)
 rs := repo.FindByInstanceType("m4.large").
   OperatingSystem("Linux").
   Tenancy("Shared").
@@ -109,7 +99,14 @@ for _, r := range rs {
 ```
 
 ```
-repo, _ := costexp.NewRepository("/costexp/example_2018-11.out")
+path := fmt.Sprintf(
+  "%s/%s/%s",
+  os.Getenv("GOPATH"),
+  "src/github.com/itsubaki/awsri/internal/_serialized/costexp",
+  "example_2018-11.out",
+)
+
+repo, _ := costexp.NewRepository(path)
 for _, r := range repo.SelectAll() {
   fmt.Println(r)
 }
@@ -273,4 +270,36 @@ fmt.Println(r.Recommend(forecast, "breakevenpoint"))
  "subtraction": 20852.000000000007,
  "discount_rate": 0.2503723766793573
 }
+```
+
+## Memo
+
+```
+# awsprice/OperatingSystem
+SUSE
+Linux
+RHEL
+Windows
+Memcached
+Redis
+Aurora PostgreSQL
+Aurora MySQL
+SQL Server
+Oracle
+PostgreSQL
+MySQL
+MariaDB
+
+# costexp/Platform
+Windows with SQL Server Web
+Linux/UNIX
+Windows (Amazon VPC)
+Windows (BYOL)
+NoOperatingSystem
+Redis
+Memcached
+Aurora MySQL
+Aurora PostgreSQL
+PostgreSQL
+MySQL
 ```

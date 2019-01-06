@@ -81,7 +81,7 @@ func (c *CostExp) GetUsageQuantity(period *costexplorer.DateInterval) (UsageQuan
 			})
 
 			if err != nil {
-				return out, fmt.Errorf("get usage quantity: %v", err)
+				return out, fmt.Errorf("get ec2 usage quantity: %v", err)
 			}
 			out = append(out, ec2...)
 		}
@@ -105,7 +105,7 @@ func (c *CostExp) GetUsageQuantity(period *costexplorer.DateInterval) (UsageQuan
 			})
 
 			if err != nil {
-				return out, fmt.Errorf("get usage quantity: %v", err)
+				return out, fmt.Errorf("get cache usage quantity: %v", err)
 			}
 			out = append(out, cache...)
 		}
@@ -130,7 +130,7 @@ func (c *CostExp) GetUsageQuantity(period *costexplorer.DateInterval) (UsageQuan
 			})
 
 			if err != nil {
-				return out, fmt.Errorf("get usage quantity: %v", err)
+				return out, fmt.Errorf("get database usage quantity: %v", err)
 			}
 			out = append(out, db...)
 		}
@@ -189,7 +189,7 @@ func (c *CostExp) getUsageQuantity(in *getUsageQuantityInput) (UsageQuantityList
 
 	usage, err := c.Client.GetCostAndUsage(&input)
 	if err != nil {
-		return out, fmt.Errorf("get cost and usage: %v", err)
+		return out, fmt.Errorf("get cost and usage. or=%v: %v", or, err)
 	}
 
 	for _, r := range usage.ResultsByTime {
