@@ -6,6 +6,36 @@ import (
 	"testing"
 )
 
+func TestFindMinimumDatabaseT2Medium(t *testing.T) {
+	path := fmt.Sprintf(
+		"%s/%s/%s",
+		os.Getenv("GOPATH"),
+		"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+		"ap-northeast-1.out",
+	)
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		t.Errorf("file not found: %v", path)
+	}
+
+	repo, err := NewRepository(path)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	rs := repo.FindByInstanceType("db.t2.medium").
+		PurchaseOption("All Upfront").
+		LeaseContractLength("1yr").
+		DatabaseEngine("Aurora MySQL")
+
+	min, err := repo.FindMinimumInstanceType(rs[0])
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	fmt.Println(min)
+}
+
 func TestFindMinimumDatabase(t *testing.T) {
 	path := fmt.Sprintf(
 		"%s/%s/%s",

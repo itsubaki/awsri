@@ -30,7 +30,14 @@ func (r *Repository) SelectAll() RecordList {
 }
 
 func (r *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
-	order := []string{
+	instanceType := record.InstanceType
+	familiy := instanceType[:strings.LastIndex(instanceType, ".")]
+
+	if strings.Contains(instanceType, "cache") {
+		return nil, fmt.Errorf("invalid input. cache hasn't normalization size factor")
+	}
+
+	defined := []string{
 		"nano",
 		"micro",
 		"small",
@@ -39,27 +46,24 @@ func (r *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
 		"xlarge",
 	}
 
-	instanceType := record.InstanceType
-	familiy := instanceType[:strings.LastIndex(instanceType, ".")]
-
-	tmp := RecordList{}
-	for i := range order {
-		suspect := fmt.Sprintf("%s.%s", familiy, order[i])
-		for j := range r.Internal {
-			if r.Internal[j].InstanceType == suspect {
-				tmp = append(tmp, r.Internal[j])
+	if len(record.OperatingSystem) > 0 {
+		tmp := RecordList{}
+		for i := range defined {
+			suspect := fmt.Sprintf("%s.%s", familiy, defined[i])
+			for j := range r.Internal {
+				if r.Internal[j].InstanceType == suspect {
+					tmp = append(tmp, r.Internal[j])
+				}
+			}
+			if len(tmp) > 0 {
+				break
 			}
 		}
-		if len(tmp) > 0 {
-			break
+
+		if len(tmp) < 1 {
+			return nil, fmt.Errorf("undefined instance type. defined=%v", defined)
 		}
-	}
 
-	if len(tmp) < 1 {
-		return nil, fmt.Errorf("undefined instance type. defined=%v", order)
-	}
-
-	if len(record.OperatingSystem) > 0 {
 		usageType := fmt.Sprintf("%s%s",
 			record.UsageType[:strings.LastIndex(record.UsageType, ".")],
 			tmp[0].UsageType[strings.LastIndex(tmp[0].UsageType, "."):],
@@ -70,16 +74,35 @@ func (r *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
 			LeaseContractLength(record.LeaseContractLength).
 			PurchaseOption(record.PurchaseOption).
 			PreInstalled(record.PreInstalled).
-			OfferingClass(record.OfferingClass)
+			OfferingClass(record.OfferingClass).
+			Region(record.Region)
 
 		if len(rs) != 1 {
-			return nil, fmt.Errorf("invalid ec2 usagetype=%s", usageType)
+			return nil, fmt.Errorf("invalid ec2 result set=%v", rs)
 		}
 
 		return rs[0], nil
 	}
 
 	if len(record.DatabaseEngine) > 0 {
+		tmp := RecordList{}
+		for i := range defined {
+			suspect := fmt.Sprintf("%s.%s", familiy, defined[i])
+			for j := range r.Internal {
+				if r.Internal[j].InstanceType == suspect &&
+					r.Internal[j].DatabaseEngine == record.DatabaseEngine {
+					tmp = append(tmp, r.Internal[j])
+				}
+			}
+			if len(tmp) > 0 {
+				break
+			}
+		}
+
+		if len(tmp) < 1 {
+			return nil, fmt.Errorf("undefined instance type. defined=%v", defined)
+		}
+
 		usageType := fmt.Sprintf("%s%s",
 			record.UsageType[:strings.LastIndex(record.UsageType, ".")],
 			tmp[0].UsageType[strings.LastIndex(tmp[0].UsageType, "."):],
@@ -88,10 +111,11 @@ func (r *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
 		rs := tmp.UsageType(usageType).
 			DatabaseEngine(record.DatabaseEngine).
 			LeaseContractLength(record.LeaseContractLength).
-			PurchaseOption(record.PurchaseOption)
+			PurchaseOption(record.PurchaseOption).
+			Region(record.Region)
 
 		if len(rs) != 1 {
-			return nil, fmt.Errorf("invalid database usagetype=%s", usageType)
+			return nil, fmt.Errorf("invalid database result set=%v", rs)
 		}
 
 		return rs[0], nil
