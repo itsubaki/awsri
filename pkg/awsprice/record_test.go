@@ -24,14 +24,21 @@ func TestUnique(t *testing.T) {
 	}
 
 	for _, r := range repo.SelectAll().Unique("OperatingSystem") {
-		fmt.Println(r)
+		if r != "Windows" && r != "SUSE" && r != "RHEL" && r != "Linux" {
+			t.Errorf("invalid OperatingSystem=%s", r)
+		}
 	}
 
 	for _, r := range repo.SelectAll().Unique("CacheEngine") {
-		fmt.Println(r)
+		if r != "Redis" && r != "Memcached" {
+			t.Errorf("invalid CacheEngine=%s", r)
+		}
 	}
+
 	for _, r := range repo.SelectAll().Unique("DatabaseEngine") {
-		fmt.Println(r)
+		if r != "SQL Server" && r != "PostgreSQL" && r != "Oracle" && r != "MySQL" && r != "MariaDB" && r != "Aurora PostgreSQL" && r != "Aurora MySQL" {
+			t.Errorf("invalid DatabaseEngine=%s", r)
+		}
 	}
 }
 
@@ -61,10 +68,6 @@ func TestBreakevenPoint1yr(t *testing.T) {
 		PurchaseOption("All Upfront")
 
 	for _, r := range rs {
-		fmt.Println(r)
-		fmt.Println(r.GetAnnualCost())
-		fmt.Println(r.GetCost(3, 10))
-
 		p := r.BreakevenPointInMonth()
 
 		if r.PurchaseOption == "No Upfront" && p != 1 {
@@ -239,7 +242,6 @@ func TestRecommend1yr(t *testing.T) {
 	}
 
 	rec := r.Recommend(forecast)
-	fmt.Println(rec.Pretty())
 	if rec.OnDemandInstanceNumAvg != 23.7 {
 		t.Errorf("invalid ondemand instance num")
 	}
@@ -297,8 +299,6 @@ func TestRecommend1yrMinimum(t *testing.T) {
 	}
 
 	rec := r.Recommend(forecast, "minimum")
-	fmt.Println(rec.Pretty())
-
 	if rec.ReservedInstanceNum != 10 {
 		t.Errorf("invalid reserved instance num")
 	}
@@ -364,5 +364,7 @@ func TestRecommend3yr(t *testing.T) {
 	}
 
 	rec := r.Recommend(forecast)
-	fmt.Println(rec.Pretty())
+	if rec.BreakevenPointInMonth != 16 {
+		t.Errorf("failed 3yr recommend")
+	}
 }

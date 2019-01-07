@@ -1,29 +1,20 @@
 package rds
 
 import (
-	"fmt"
 	"testing"
 )
 
 func TestReadPrice(t *testing.T) {
-	price, err := ReadPrice("ap-northeast-1")
+	_, err := ReadPrice("ap-northeast-1")
 	if err != nil {
 		t.Error(err)
-	}
-
-	for _, v := range price {
-		fmt.Printf("%v\n", v)
 	}
 }
 
 func TestGetPrice(t *testing.T) {
-	price, err := GetPrice("ap-northeast-1")
+	_, err := GetPrice("ap-northeast-1")
 	if err != nil {
 		t.Error(err)
-	}
-
-	for _, v := range price {
-		fmt.Printf("%v\n", v)
 	}
 }
 

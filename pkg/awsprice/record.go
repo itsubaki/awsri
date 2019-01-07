@@ -26,7 +26,21 @@ func (list RecordList) Unique(fieldname string) []string {
 		out = append(out, k)
 	}
 
+	sort.Slice(out, func(i, j int) bool { return out[i] > out[j] })
 	return out
+}
+
+func (list RecordList) UsageType(usage string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].UsageType != usage {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
 }
 
 func (list RecordList) Region(region string) RecordList {

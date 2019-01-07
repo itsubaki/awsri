@@ -145,17 +145,18 @@ func SerializeAWSPirice(input *SerializeAWSPriceInput) error {
 			for k := range price {
 				v := price[k]
 				repo.Internal = append(repo.Internal, &awsprice.Record{
-					DatabaseEngine:      v.DatabaseEngine,
-					InstanceType:        v.InstanceType,
-					LeaseContractLength: v.LeaseContractLength,
-					OfferTermCode:       v.OfferTermCode,
-					OnDemand:            v.OnDemand,
-					PurchaseOption:      v.PurchaseOption,
-					Region:              v.Region,
-					ReservedHrs:         v.ReservedHrs,
-					ReservedQuantity:    v.ReservedQuantity,
-					SKU:                 v.SKU,
-					UsageType:           v.UsageType,
+					DatabaseEngine:          v.DatabaseEngine,
+					InstanceType:            v.InstanceType,
+					LeaseContractLength:     v.LeaseContractLength,
+					NormalizationSizeFactor: v.NormalizationSizeFactor,
+					OfferTermCode:           v.OfferTermCode,
+					OnDemand:                v.OnDemand,
+					PurchaseOption:          v.PurchaseOption,
+					Region:                  v.Region,
+					ReservedHrs:             v.ReservedHrs,
+					ReservedQuantity:        v.ReservedQuantity,
+					SKU:                     v.SKU,
+					UsageType:               v.UsageType,
 				})
 			}
 		}
