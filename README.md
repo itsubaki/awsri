@@ -270,6 +270,41 @@ fmt.Println(r.Recommend(forecast, "breakevenpoint"))
  "subtraction": 20852.000000000007,
  "discount_rate": 0.2503723766793573
 }
+
+fmt.Println(r.Recommend(forecast, "minimum"))
+{
+ "record": {
+  "sku": "7MYWT7Y96UT3NJ2D",
+  "offer_term_code": "4NA7Y494T4",
+  "region": "ap-northeast-1",
+  "instance_type": "m4.large",
+  "usage_type": "APN1-BoxUsage:m4.large",
+  "lease_contract_length": "1yr",
+  "purchase_option": "All Upfront",
+  "ondemand": 0.129,
+  "reserved_quantity": 713,
+  "reserved_hrs": 0,
+  "tenancy": "Shared",
+  "pre_installed": "NA",
+  "operating_system": "Linux",
+  "operation": "RunInstances",
+  "offering_class": "standard",
+  "normalization_size_factor": "4"
+ },
+ "breakevenpoint_in_month": 8,
+ "strategy": "minimum",
+ "ondemand_instance_num_avg": 55.55833333333333,
+ "reserved_instance_num": 10,
+ "full_ondemand_cost": 74083.539,
+ "reserved_applied_cost": {
+  "ondemand": 62783.138999999996,
+  "reserved": 7130,
+  "total": 69913.139
+ },
+ "reserved_quantity": 7130,
+ "subtraction": 4170.400000000009,
+ "discount_rate": 0.05629320705102936
+}
 ```
 
 ## Memo
