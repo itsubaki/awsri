@@ -85,21 +85,32 @@ func TestFindMinimumCompute(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	rs := repo.FindByInstanceType("m4.4xlarge").
-		OperatingSystem("Linux").
-		Tenancy("Shared").
-		PreInstalled("NA").
-		OfferingClass("standard").
-		LeaseContractLength("1yr").
-		PurchaseOption("All Upfront")
+	r := &Record{
+		SKU:                     "XU2NYYPCRTK4T7CN",
+		OfferTermCode:           "6QCMYABX3D",
+		Region:                  "ap-northeast-1",
+		InstanceType:            "m4.4xlarge",
+		UsageType:               "APN1-BoxUsage:m4.4xlarge",
+		LeaseContractLength:     "1yr",
+		PurchaseOption:          "All Upfront",
+		OnDemand:                1.032,
+		ReservedQuantity:        5700,
+		ReservedHrs:             0,
+		Tenancy:                 "Shared",
+		PreInstalled:            "NA",
+		OperatingSystem:         "Linux",
+		Operation:               "RunInstances",
+		OfferingClass:           "standard",
+		NormalizationSizeFactor: "32",
+	}
 
-	r, err := repo.FindMinimumInstanceType(rs[0])
+	min, err := repo.FindMinimumInstanceType(r)
 	if err != nil {
 		t.Errorf("find minimum instance type: %v", err)
 	}
 
-	if r.InstanceType != "m4.large" {
-		t.Errorf("invalid minimum instance type=%s", r.InstanceType)
+	if min.InstanceType != "m4.large" {
+		t.Errorf("invalid minimum instance type=%s", min.InstanceType)
 	}
 }
 

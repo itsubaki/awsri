@@ -30,10 +30,7 @@ func (r *Repository) SelectAll() RecordList {
 }
 
 func (r *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
-	instanceType := record.InstanceType
-	familiy := instanceType[:strings.LastIndex(instanceType, ".")]
-
-	if strings.Contains(instanceType, "cache") {
+	if strings.Contains(record.InstanceType, "cache") {
 		return nil, fmt.Errorf("invalid input. cache hasn't normalization size factor")
 	}
 
@@ -45,6 +42,9 @@ func (r *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
 		"large",
 		"xlarge",
 	}
+
+	instanceType := record.InstanceType
+	familiy := instanceType[:strings.LastIndex(instanceType, ".")]
 
 	if len(record.OperatingSystem) > 0 {
 		tmp := RecordList{}

@@ -96,6 +96,47 @@ for _, r := range rs {
   "subtraction":4170.4000000000015,
   "discount_rate":0.28388375632720975
 }
+
+r := &Record{
+  SKU:                     "XU2NYYPCRTK4T7CN",
+  OfferTermCode:           "6QCMYABX3D",
+  Region:                  "ap-northeast-1",
+  InstanceType:            "m4.4xlarge",
+  UsageType:               "APN1-BoxUsage:m4.4xlarge",
+  LeaseContractLength:     "1yr",
+  PurchaseOption:          "All Upfront",
+  OnDemand:                1.032,
+  ReservedQuantity:        5700,
+  ReservedHrs:             0,
+  Tenancy:                 "Shared",
+  PreInstalled:            "NA",
+  OperatingSystem:         "Linux",
+  Operation:               "RunInstances",
+  OfferingClass:           "standard",
+  NormalizationSizeFactor: "32",
+}
+
+min, _ := repo.FindMinimumInstanceType(r)
+fmt.Println(min)
+
+{
+  "sku":"7MYWT7Y96UT3NJ2D",
+  "offer_term_code":"6QCMYABX3D",
+  "region":"ap-northeast-1",
+  "instance_type":"m4.large",
+  "usage_type":"APN1-BoxUsage:m4.large",
+  "lease_contract_length":"1yr",
+  "purchase_option":"All Upfront",
+  "ondemand":0.129,
+  "reserved_quantity":713,
+  "reserved_hrs":0,
+  "tenancy":"Shared",
+  "pre_installed":"NA",
+  "operating_system":"Linux",
+  "operation":"RunInstances",
+  "offering_class":"standard",
+  "normalization_size_factor":"4"
+}
 ```
 
 ```
