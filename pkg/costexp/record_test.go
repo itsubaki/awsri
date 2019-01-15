@@ -6,6 +6,7 @@ import (
 )
 
 func TestUnique(t *testing.T) {
+	dir := "/var/tmp/hermes/costexp"
 	path := fmt.Sprintf("%s/%s", dir, "example_2018-09.out")
 	repo, err := NewRepository(path)
 	if err != nil {

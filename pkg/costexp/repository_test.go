@@ -5,9 +5,8 @@ import (
 	"testing"
 )
 
-var dir = "/var/tmp/hermes/costexp"
-
 func TestMergedRepository(t *testing.T) {
+	dir := "/var/tmp/hermes/costexp"
 	path := []string{
 		fmt.Sprintf("%s/%s", dir, "example_2018-01.out"),
 		fmt.Sprintf("%s/%s", dir, "example_2018-02.out"),
@@ -44,6 +43,7 @@ func TestMergedRepository(t *testing.T) {
 }
 
 func TestRepository(t *testing.T) {
+	dir := "/var/tmp/hermes/costexp"
 	path := fmt.Sprintf("%s/%s", dir, "example_2018-09.out")
 	repo, err := NewRepository(path)
 	if err != nil {

@@ -6,9 +6,8 @@ import (
 	"testing"
 )
 
-var path = "/var/tmp/hermes/awsprice/ap-northeast-1.out"
-
 func TestFindMinimumDatabaseT2Medium(t *testing.T) {
+	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}
@@ -32,6 +31,7 @@ func TestFindMinimumDatabaseT2Medium(t *testing.T) {
 }
 
 func TestFindMinimumDatabase(t *testing.T) {
+	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}
@@ -57,6 +57,7 @@ func TestFindMinimumDatabase(t *testing.T) {
 }
 
 func TestFindMinimumCompute(t *testing.T) {
+	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}
@@ -96,6 +97,7 @@ func TestFindMinimumCompute(t *testing.T) {
 }
 
 func TestFindByInstanceType(t *testing.T) {
+	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}

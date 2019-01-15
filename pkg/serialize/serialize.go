@@ -63,6 +63,8 @@ func Serialize(input *SerializeInput) error {
 		if err := ioutil.WriteFile(path, bytes, os.ModePerm); err != nil {
 			return fmt.Errorf("write file: %v", err)
 		}
+
+		fmt.Printf("write file: %s\n", path)
 	}
 
 	return nil
@@ -169,6 +171,8 @@ func SerializeAWSPirice(input *SerializeAWSPriceInput) error {
 		if err := ioutil.WriteFile(path, bytes, os.ModePerm); err != nil {
 			return fmt.Errorf("write file: %v", err)
 		}
+
+		fmt.Printf("write file: %s\n", path)
 	}
 
 	return nil

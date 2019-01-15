@@ -12,7 +12,22 @@ aws_secret_access_key = ****************************************
 
 $ go get github.com/itsubaki/hermes
 $ cd ${GOPATH}/src/github.com/itsubaki/hermes
-$ make serialize
+$ make
+=== RUN   TestSerializeCostExp
+write file: /var/tmp/hermes/costexp/example_2018-01.out
+write file: /var/tmp/hermes/costexp/example_2018-02.out
+write file: /var/tmp/hermes/costexp/example_2018-03.out
+write file: /var/tmp/hermes/costexp/example_2018-04.out
+write file: /var/tmp/hermes/costexp/example_2018-05.out
+write file: /var/tmp/hermes/costexp/example_2018-06.out
+write file: /var/tmp/hermes/costexp/example_2018-07.out
+write file: /var/tmp/hermes/costexp/example_2018-08.out
+write file: /var/tmp/hermes/costexp/example_2018-09.out
+=== RUN   TestSerializeAWSPrice
+write file: /var/tmp/hermes/awsprice/ap-northeast-1.out
+write file: /var/tmp/hermes/awsprice/eu-central-1.out
+write file: /var/tmp/hermes/awsprice/us-west-1.out
+write file: /var/tmp/hermes/awsprice/us-west-2.out
 ```
 
 ## Example

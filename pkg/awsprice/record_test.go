@@ -6,6 +6,7 @@ import (
 )
 
 func TestUnique(t *testing.T) {
+	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}
@@ -35,6 +36,7 @@ func TestUnique(t *testing.T) {
 }
 
 func TestBreakevenPoint1yr(t *testing.T) {
+	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}
@@ -68,6 +70,7 @@ func TestBreakevenPoint1yr(t *testing.T) {
 }
 
 func TestBreakevenPoint3yr(t *testing.T) {
+	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}
@@ -100,6 +103,7 @@ func TestBreakevenPoint3yr(t *testing.T) {
 }
 
 func TestFindByInstanceTypeCache(t *testing.T) {
+	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}
