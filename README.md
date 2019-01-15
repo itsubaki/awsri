@@ -9,7 +9,6 @@ $ cat ~/.aws/credentials
 [example]
 aws_access_key_id = ********************
 aws_secret_access_key = ****************************************
-region = ap-northeast-1
 
 $ go get github.com/itsubaki/hermes
 $ cd ${GOPATH}/src/github.com/itsubaki/hermes
@@ -19,14 +18,7 @@ $ make serialize
 ## Example
 
 ```
-path := fmt.Sprintf(
-  "%s/%s/%s",
-  os.Getenv("GOPATH"),
-  "src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
-  "ap-northeast-1.out",
-)
-
-repo, _ := awsprice.NewRepository(path)
+repo, _ := awsprice.NewRepository("/var/tmp/hermes/awsprice/ap-northeast-1.out")
 rs := repo.FindByInstanceType("m4.large").
   OperatingSystem("Linux").
   Tenancy("Shared").
@@ -136,14 +128,7 @@ fmt.Println(min)
 ```
 
 ```
-path := fmt.Sprintf(
-  "%s/%s/%s",
-  os.Getenv("GOPATH"),
-  "src/github.com/itsubaki/hermes/internal/_serialized/costexp",
-  "example_2018-11.out",
-)
-
-repo, _ := costexp.NewRepository(path)
+repo, _ := costexp.NewRepository("/var/tmp/hermes/costexp/example_2018-11.out")
 for _, r := range repo.SelectAll() {
   fmt.Println(r)
 }

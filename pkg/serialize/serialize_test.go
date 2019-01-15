@@ -1,8 +1,6 @@
 package serialize
 
 import (
-	"fmt"
-	"os"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -11,10 +9,6 @@ import (
 
 func TestSerializeCostExp(t *testing.T) {
 	date := []*costexplorer.DateInterval{
-		{
-			Start: aws.String("2017-12-01"),
-			End:   aws.String("2018-01-01"),
-		},
 		{
 			Start: aws.String("2018-01-01"),
 			End:   aws.String("2018-02-01"),
@@ -59,16 +53,16 @@ func TestSerializeCostExp(t *testing.T) {
 			Start: aws.String("2018-11-01"),
 			End:   aws.String("2018-12-01"),
 		},
+		{
+			Start: aws.String("2018-12-01"),
+			End:   aws.String("2019-01-01"),
+		},
 	}
 
 	input := SerializeInput{
-		Profile: "example",
-		Date:    date,
-		OutputDir: fmt.Sprintf(
-			"%s/%s",
-			os.Getenv("GOPATH"),
-			"src/github.com/itsubaki/hermes/internal/_serialized/costexp",
-		),
+		Profile:   "example",
+		Date:      date,
+		OutputDir: "/var/tmp/hermes/costexp",
 	}
 
 	if err := Serialize(&input); err != nil {
@@ -85,12 +79,8 @@ func TestSerializeAWSPrice(t *testing.T) {
 	}
 
 	input := SerializeAWSPriceInput{
-		Region: region,
-		OutputDir: fmt.Sprintf(
-			"%s/%s",
-			os.Getenv("GOPATH"),
-			"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
-		),
+		Region:    region,
+		OutputDir: "/var/tmp/hermes/awsprice",
 	}
 
 	if err := SerializeAWSPirice(&input); err != nil {
