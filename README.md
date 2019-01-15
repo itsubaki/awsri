@@ -1,5 +1,5 @@
-# awsri
-aws reserved instance
+# hermes
+aws reserved instance purchase recommendation library
 
 ## Install
 
@@ -11,8 +11,8 @@ aws_access_key_id = ********************
 aws_secret_access_key = ****************************************
 region = ap-northeast-1
 
-$ go get github.com/itsubaki/awsri
-$ cd ${GOPATH}/src/github.com/itsubaki/awsri
+$ go get github.com/itsubaki/hermes
+$ cd ${GOPATH}/src/github.com/itsubaki/hermes
 $ make serialize
 ```
 
@@ -22,7 +22,7 @@ $ make serialize
 path := fmt.Sprintf(
   "%s/%s/%s",
   os.Getenv("GOPATH"),
-  "src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+  "src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
   "ap-northeast-1.out",
 )
 
@@ -139,7 +139,7 @@ fmt.Println(min)
 path := fmt.Sprintf(
   "%s/%s/%s",
   os.Getenv("GOPATH"),
-  "src/github.com/itsubaki/awsri/internal/_serialized/costexp",
+  "src/github.com/itsubaki/hermes/internal/_serialized/costexp",
   "example_2018-11.out",
 )
 

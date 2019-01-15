@@ -7,12 +7,12 @@ import (
 	"os"
 
 	"github.com/aws/aws-sdk-go/service/costexplorer"
-	"github.com/itsubaki/awsri/internal/awsprice/cache"
-	"github.com/itsubaki/awsri/internal/awsprice/ec2"
-	"github.com/itsubaki/awsri/internal/awsprice/rds"
-	internal "github.com/itsubaki/awsri/internal/costexp"
-	"github.com/itsubaki/awsri/pkg/awsprice"
-	"github.com/itsubaki/awsri/pkg/costexp"
+	"github.com/itsubaki/hermes/internal/awsprice/cache"
+	"github.com/itsubaki/hermes/internal/awsprice/ec2"
+	"github.com/itsubaki/hermes/internal/awsprice/rds"
+	internal "github.com/itsubaki/hermes/internal/costexp"
+	"github.com/itsubaki/hermes/pkg/awsprice"
+	"github.com/itsubaki/hermes/pkg/costexp"
 )
 
 type SerializeInput struct {

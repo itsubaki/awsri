@@ -10,7 +10,7 @@ func TestUnique(t *testing.T) {
 	path := fmt.Sprintf(
 		"%s/%s/%s",
 		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
 		"ap-northeast-1.out",
 	)
 
@@ -46,7 +46,7 @@ func TestBreakevenPoint1yr(t *testing.T) {
 	path := fmt.Sprintf(
 		"%s/%s/%s",
 		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
 		"ap-northeast-1.out",
 	)
 
@@ -86,7 +86,7 @@ func TestBreakevenPoint3yr(t *testing.T) {
 	path := fmt.Sprintf(
 		"%s/%s/%s",
 		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
 		"ap-northeast-1.out",
 	)
 
@@ -125,7 +125,7 @@ func TestFindByInstanceTypeCache(t *testing.T) {
 	path := fmt.Sprintf(
 		"%s/%s/%s",
 		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
 		"ap-northeast-1.out",
 	)
 

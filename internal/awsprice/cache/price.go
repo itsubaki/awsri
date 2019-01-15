@@ -80,7 +80,7 @@ func ReadPrice(region string, dir ...string) (map[string]OutputPrice, error) {
 	dirpath := fmt.Sprintf(
 		"%s/%s",
 		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/awsri/internal/awsprice/_json/",
+		"src/github.com/itsubaki/hermes/internal/awsprice/_json/",
 	)
 
 	path := fmt.Sprintf("%s/%s/%s.json", dirpath, "cache", region)

@@ -10,7 +10,7 @@ func TestUnique(t *testing.T) {
 	path := fmt.Sprintf(
 		"%s/%s/%s",
 		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/awsri/internal/_serialized/costexp",
+		"src/github.com/itsubaki/hermes/internal/_serialized/costexp",
 		"example_2018-09.out",
 	)
 

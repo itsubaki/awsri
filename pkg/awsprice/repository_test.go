@@ -10,7 +10,7 @@ func TestFindMinimumDatabaseT2Medium(t *testing.T) {
 	path := fmt.Sprintf(
 		"%s/%s/%s",
 		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
 		"ap-northeast-1.out",
 	)
 
@@ -40,7 +40,7 @@ func TestFindMinimumDatabase(t *testing.T) {
 	path := fmt.Sprintf(
 		"%s/%s/%s",
 		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
 		"ap-northeast-1.out",
 	)
 
@@ -72,7 +72,7 @@ func TestFindMinimumCompute(t *testing.T) {
 	path := fmt.Sprintf(
 		"%s/%s/%s",
 		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
 		"ap-northeast-1.out",
 	)
 
@@ -118,7 +118,7 @@ func TestFindByInstanceType(t *testing.T) {
 	path := fmt.Sprintf(
 		"%s/%s/%s",
 		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
 		"ap-northeast-1.out",
 	)
 

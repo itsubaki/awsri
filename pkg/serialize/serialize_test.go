@@ -67,7 +67,7 @@ func TestSerializeCostExp(t *testing.T) {
 		OutputDir: fmt.Sprintf(
 			"%s/%s",
 			os.Getenv("GOPATH"),
-			"src/github.com/itsubaki/awsri/internal/_serialized/costexp",
+			"src/github.com/itsubaki/hermes/internal/_serialized/costexp",
 		),
 	}
 
@@ -89,7 +89,7 @@ func TestSerializeAWSPrice(t *testing.T) {
 		OutputDir: fmt.Sprintf(
 			"%s/%s",
 			os.Getenv("GOPATH"),
-			"src/github.com/itsubaki/awsri/internal/_serialized/awsprice",
+			"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
 		),
 	}
 
