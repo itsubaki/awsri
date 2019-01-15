@@ -6,14 +6,9 @@ import (
 	"testing"
 )
 
-func TestFindMinimumDatabaseT2Medium(t *testing.T) {
-	path := fmt.Sprintf(
-		"%s/%s/%s",
-		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
-		"ap-northeast-1.out",
-	)
+var path = "/var/tmp/hermes/awsprice/ap-northeast-1.out"
 
+func TestFindMinimumDatabaseT2Medium(t *testing.T) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}
@@ -37,13 +32,6 @@ func TestFindMinimumDatabaseT2Medium(t *testing.T) {
 }
 
 func TestFindMinimumDatabase(t *testing.T) {
-	path := fmt.Sprintf(
-		"%s/%s/%s",
-		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
-		"ap-northeast-1.out",
-	)
-
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}
@@ -69,13 +57,6 @@ func TestFindMinimumDatabase(t *testing.T) {
 }
 
 func TestFindMinimumCompute(t *testing.T) {
-	path := fmt.Sprintf(
-		"%s/%s/%s",
-		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
-		"ap-northeast-1.out",
-	)
-
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}
@@ -115,13 +96,6 @@ func TestFindMinimumCompute(t *testing.T) {
 }
 
 func TestFindByInstanceType(t *testing.T) {
-	path := fmt.Sprintf(
-		"%s/%s/%s",
-		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
-		"ap-northeast-1.out",
-	)
-
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}

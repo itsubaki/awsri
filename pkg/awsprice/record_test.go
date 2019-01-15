@@ -1,19 +1,11 @@
 package awsprice
 
 import (
-	"fmt"
 	"os"
 	"testing"
 )
 
 func TestUnique(t *testing.T) {
-	path := fmt.Sprintf(
-		"%s/%s/%s",
-		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
-		"ap-northeast-1.out",
-	)
-
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}
@@ -43,13 +35,6 @@ func TestUnique(t *testing.T) {
 }
 
 func TestBreakevenPoint1yr(t *testing.T) {
-	path := fmt.Sprintf(
-		"%s/%s/%s",
-		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
-		"ap-northeast-1.out",
-	)
-
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}
@@ -83,13 +68,6 @@ func TestBreakevenPoint1yr(t *testing.T) {
 }
 
 func TestBreakevenPoint3yr(t *testing.T) {
-	path := fmt.Sprintf(
-		"%s/%s/%s",
-		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
-		"ap-northeast-1.out",
-	)
-
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}
@@ -122,13 +100,6 @@ func TestBreakevenPoint3yr(t *testing.T) {
 }
 
 func TestFindByInstanceTypeCache(t *testing.T) {
-	path := fmt.Sprintf(
-		"%s/%s/%s",
-		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/hermes/internal/_serialized/awsprice",
-		"ap-northeast-1.out",
-	)
-
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		t.Errorf("file not found: %v", path)
 	}
