@@ -227,31 +227,13 @@ func SerializeReserved(input *SerializeReservedInput) error {
 
 		{
 			client := awscache.New(session.Must(session.NewSession()))
-			input := &awscache.DescribeReservedCacheNodesInput{}
-			output, err := client.DescribeReservedCacheNodes(input)
-			if err != nil {
-				return fmt.Errorf("describe reserved cachenode: %v", err)
-			}
-			for _, r := range output.ReservedCacheNodes {
-				repo.Internal = append(repo.Internal, &reserved.Record{
-					Duration:           *r.Duration,
-					OfferingType:       *r.OfferingType,
-					ProductDescription: *r.ProductDescription,
-					CacheNodeType:      *r.CacheNodeType,
-					CacheNodeCount:     *r.CacheNodeCount,
-					Start:              *r.StartTime,
-				})
-			}
-
-			maker := output.Marker
+			var maker *string
 			for {
-				if maker == nil {
-					break
+				input := &awscache.DescribeReservedCacheNodesInput{}
+				if maker != nil {
+					input.Marker = maker
 				}
 
-				input := &awscache.DescribeReservedCacheNodesInput{
-					Marker: maker,
-				}
 				output, err := client.DescribeReservedCacheNodes(input)
 				if err != nil {
 					return fmt.Errorf("describe reserved cachenode: %v", err)
@@ -267,41 +249,27 @@ func SerializeReserved(input *SerializeReservedInput) error {
 						Start:              *r.StartTime,
 					})
 				}
+
+				if maker == nil {
+					break
+				}
 			}
 		}
 
 		{
 			client := awsrds.New(session.Must(session.NewSession()))
-			input := &awsrds.DescribeReservedDBInstancesInput{}
-			output, err := client.DescribeReservedDBInstances(input)
-			if err != nil {
-				return fmt.Errorf("describe reserved db instance: %v", err)
-			}
-			for _, r := range output.ReservedDBInstances {
-				repo.Internal = append(repo.Internal, &reserved.Record{
-					Duration:           *r.Duration,
-					OfferingType:       *r.OfferingType,
-					ProductDescription: *r.ProductDescription,
-					DBInstanceClass:    *r.DBInstanceClass,
-					DBInstanceCount:    *r.DBInstanceCount,
-					Start:              *r.StartTime,
-					MultiAZ:            *r.MultiAZ,
-				})
-			}
-
-			maker := output.Marker
+			var maker *string
 			for {
-				if maker == nil {
-					break
+				input := &awsrds.DescribeReservedDBInstancesInput{}
+				if maker != nil {
+					input.Marker = maker
 				}
 
-				input := &awsrds.DescribeReservedDBInstancesInput{
-					Marker: maker,
-				}
 				output, err := client.DescribeReservedDBInstances(input)
 				if err != nil {
 					return fmt.Errorf("describe reserved db instance: %v", err)
 				}
+
 				for _, r := range output.ReservedDBInstances {
 					repo.Internal = append(repo.Internal, &reserved.Record{
 						Duration:           *r.Duration,
@@ -312,6 +280,10 @@ func SerializeReserved(input *SerializeReservedInput) error {
 						Start:              *r.StartTime,
 						MultiAZ:            *r.MultiAZ,
 					})
+				}
+
+				if maker == nil {
+					break
 				}
 			}
 		}
