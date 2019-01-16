@@ -91,6 +91,7 @@ func TestSerializeAWSPrice(t *testing.T) {
 func TestSerializeReserved(t *testing.T) {
 	input := SerializeReservedInput{
 		Profile:   "example",
+		Region:    []string{"ap-northeast-1"},
 		OutputDir: "/var/tmp/hermes/reserved",
 	}
 

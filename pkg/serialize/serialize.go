@@ -186,6 +186,7 @@ func SerializeAWSPirice(input *SerializeAWSPriceInput) error {
 
 type SerializeReservedInput struct {
 	Profile   string
+	Region    []string
 	OutputDir string
 }
 
@@ -194,64 +195,43 @@ func SerializeReserved(input *SerializeReservedInput) error {
 
 	repo := &reserved.Repository{
 		Profile: input.Profile,
+		Region:  input.Region,
 	}
 
-	{
-		client := awsec2.New(session.Must(session.NewSession()))
-		output, err := client.DescribeReservedInstances(&awsec2.DescribeReservedInstancesInput{
-			Filters: []*awsec2.Filter{
-				{Name: aws.String("state"), Values: []*string{aws.String("active")}},
-			},
-		})
-		if err != nil {
-			return fmt.Errorf("describe reserved instances: %v", err)
-		}
+	for _, r := range input.Region {
+		os.Setenv("AWS_REGION", r)
 
-		for _, r := range output.ReservedInstances {
-			repo.Internal = append(repo.Internal, &reserved.Record{
-				Duration:           *r.Duration,
-				OfferingType:       *r.OfferingType,
-				OfferingClass:      *r.OfferingClass,
-				ProductDescription: *r.ProductDescription,
-				InstanceType:       *r.InstanceType,
-				InstanceCount:      *r.InstanceCount,
-				Start:              *r.Start,
+		{
+			client := awsec2.New(session.Must(session.NewSession()))
+			output, err := client.DescribeReservedInstances(&awsec2.DescribeReservedInstancesInput{
+				Filters: []*awsec2.Filter{
+					{Name: aws.String("state"), Values: []*string{aws.String("active")}},
+				},
 			})
-		}
-	}
-
-	{
-		client := awscache.New(session.Must(session.NewSession()))
-		input := &awscache.DescribeReservedCacheNodesInput{}
-		output, err := client.DescribeReservedCacheNodes(input)
-		if err != nil {
-			return fmt.Errorf("describe reserved cachenode: %v", err)
-		}
-		for _, r := range output.ReservedCacheNodes {
-			repo.Internal = append(repo.Internal, &reserved.Record{
-				Duration:           *r.Duration,
-				OfferingType:       *r.OfferingType,
-				ProductDescription: *r.ProductDescription,
-				CacheNodeType:      *r.CacheNodeType,
-				CacheNodeCount:     *r.CacheNodeCount,
-				Start:              *r.StartTime,
-			})
-		}
-
-		maker := output.Marker
-		for {
-			if maker == nil {
-				break
+			if err != nil {
+				return fmt.Errorf("describe reserved instances: %v", err)
 			}
 
-			input := &awscache.DescribeReservedCacheNodesInput{
-				Marker: maker,
+			for _, r := range output.ReservedInstances {
+				repo.Internal = append(repo.Internal, &reserved.Record{
+					Duration:           *r.Duration,
+					OfferingType:       *r.OfferingType,
+					OfferingClass:      *r.OfferingClass,
+					ProductDescription: *r.ProductDescription,
+					InstanceType:       *r.InstanceType,
+					InstanceCount:      *r.InstanceCount,
+					Start:              *r.Start,
+				})
 			}
+		}
+
+		{
+			client := awscache.New(session.Must(session.NewSession()))
+			input := &awscache.DescribeReservedCacheNodesInput{}
 			output, err := client.DescribeReservedCacheNodes(input)
 			if err != nil {
 				return fmt.Errorf("describe reserved cachenode: %v", err)
 			}
-
 			for _, r := range output.ReservedCacheNodes {
 				repo.Internal = append(repo.Internal, &reserved.Record{
 					Duration:           *r.Duration,
@@ -262,37 +242,37 @@ func SerializeReserved(input *SerializeReservedInput) error {
 					Start:              *r.StartTime,
 				})
 			}
-		}
-	}
 
-	{
-		client := awsrds.New(session.Must(session.NewSession()))
-		input := &awsrds.DescribeReservedDBInstancesInput{}
-		output, err := client.DescribeReservedDBInstances(input)
-		if err != nil {
-			return fmt.Errorf("describe reserved db instance: %v", err)
-		}
-		for _, r := range output.ReservedDBInstances {
-			repo.Internal = append(repo.Internal, &reserved.Record{
-				Duration:           *r.Duration,
-				OfferingType:       *r.OfferingType,
-				ProductDescription: *r.ProductDescription,
-				DBInstanceClass:    *r.DBInstanceClass,
-				DBInstanceCount:    *r.DBInstanceCount,
-				Start:              *r.StartTime,
-				MultiAZ:            *r.MultiAZ,
-			})
-		}
+			maker := output.Marker
+			for {
+				if maker == nil {
+					break
+				}
 
-		maker := output.Marker
-		for {
-			if maker == nil {
-				break
+				input := &awscache.DescribeReservedCacheNodesInput{
+					Marker: maker,
+				}
+				output, err := client.DescribeReservedCacheNodes(input)
+				if err != nil {
+					return fmt.Errorf("describe reserved cachenode: %v", err)
+				}
+
+				for _, r := range output.ReservedCacheNodes {
+					repo.Internal = append(repo.Internal, &reserved.Record{
+						Duration:           *r.Duration,
+						OfferingType:       *r.OfferingType,
+						ProductDescription: *r.ProductDescription,
+						CacheNodeType:      *r.CacheNodeType,
+						CacheNodeCount:     *r.CacheNodeCount,
+						Start:              *r.StartTime,
+					})
+				}
 			}
+		}
 
-			input := &awsrds.DescribeReservedDBInstancesInput{
-				Marker: maker,
-			}
+		{
+			client := awsrds.New(session.Must(session.NewSession()))
+			input := &awsrds.DescribeReservedDBInstancesInput{}
 			output, err := client.DescribeReservedDBInstances(input)
 			if err != nil {
 				return fmt.Errorf("describe reserved db instance: %v", err)
@@ -307,6 +287,32 @@ func SerializeReserved(input *SerializeReservedInput) error {
 					Start:              *r.StartTime,
 					MultiAZ:            *r.MultiAZ,
 				})
+			}
+
+			maker := output.Marker
+			for {
+				if maker == nil {
+					break
+				}
+
+				input := &awsrds.DescribeReservedDBInstancesInput{
+					Marker: maker,
+				}
+				output, err := client.DescribeReservedDBInstances(input)
+				if err != nil {
+					return fmt.Errorf("describe reserved db instance: %v", err)
+				}
+				for _, r := range output.ReservedDBInstances {
+					repo.Internal = append(repo.Internal, &reserved.Record{
+						Duration:           *r.Duration,
+						OfferingType:       *r.OfferingType,
+						ProductDescription: *r.ProductDescription,
+						DBInstanceClass:    *r.DBInstanceClass,
+						DBInstanceCount:    *r.DBInstanceCount,
+						Start:              *r.StartTime,
+						MultiAZ:            *r.MultiAZ,
+					})
+				}
 			}
 		}
 	}
