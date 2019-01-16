@@ -87,3 +87,14 @@ func TestSerializeAWSPrice(t *testing.T) {
 		t.Errorf("serialize aws price: %v", err)
 	}
 }
+
+func TestSerializeReserved(t *testing.T) {
+	input := SerializeReservedInput{
+		Profile:   "example",
+		OutputDir: "/var/tmp/hermes/reserved",
+	}
+
+	if err := SerializeReserved(&input); err != nil {
+		t.Errorf("serialize reserved instance: %v", err)
+	}
+}

@@ -6,13 +6,19 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/costexplorer"
+	awsec2 "github.com/aws/aws-sdk-go/service/ec2"
+	awscache "github.com/aws/aws-sdk-go/service/elasticache"
+	awsrds "github.com/aws/aws-sdk-go/service/rds"
 	"github.com/itsubaki/hermes/internal/awsprice/cache"
 	"github.com/itsubaki/hermes/internal/awsprice/ec2"
 	"github.com/itsubaki/hermes/internal/awsprice/rds"
 	internal "github.com/itsubaki/hermes/internal/costexp"
 	"github.com/itsubaki/hermes/pkg/awsprice"
 	"github.com/itsubaki/hermes/pkg/costexp"
+	"github.com/itsubaki/hermes/pkg/reserved"
 )
 
 type SerializeInput struct {
@@ -173,6 +179,140 @@ func SerializeAWSPirice(input *SerializeAWSPriceInput) error {
 		}
 
 		fmt.Printf("write file: %s\n", path)
+	}
+
+	return nil
+}
+
+type SerializeReservedInput struct {
+	Profile   string
+	OutputDir string
+}
+
+func SerializeReserved(input *SerializeReservedInput) error {
+	os.Setenv("AWS_PROFILE", input.Profile)
+
+	repo := &reserved.Repository{
+		Profile: input.Profile,
+	}
+
+	{
+		client := awsec2.New(session.Must(session.NewSession()))
+		output, err := client.DescribeReservedInstances(&awsec2.DescribeReservedInstancesInput{
+			Filters: []*awsec2.Filter{
+				{Name: aws.String("state"), Values: []*string{aws.String("active")}},
+			},
+		})
+		if err != nil {
+			return fmt.Errorf("describe reserved instances: %v", err)
+		}
+
+		for _, r := range output.ReservedInstances {
+			repo.Internal = append(repo.Internal, &reserved.Record{
+				Duration:           *r.Duration,
+				OfferingType:       *r.OfferingType,
+				OfferingClass:      *r.OfferingClass,
+				ProductDescription: *r.ProductDescription,
+				InstanceType:       *r.InstanceType,
+				InstanceCount:      *r.InstanceCount,
+				Start:              *r.Start,
+			})
+		}
+	}
+
+	{
+		client := awscache.New(session.Must(session.NewSession()))
+		input := &awscache.DescribeReservedCacheNodesInput{}
+		output, err := client.DescribeReservedCacheNodes(input)
+		if err != nil {
+			return fmt.Errorf("describe reserved cachenode: %v", err)
+		}
+		for _, r := range output.ReservedCacheNodes {
+			repo.Internal = append(repo.Internal, &reserved.Record{
+				Duration:           *r.Duration,
+				OfferingType:       *r.OfferingType,
+				ProductDescription: *r.ProductDescription,
+				CacheNodeType:      *r.CacheNodeType,
+				CacheNodeCount:     *r.CacheNodeCount,
+				Start:              *r.StartTime,
+			})
+		}
+
+		maker := output.Marker
+		for {
+			if maker == nil {
+				break
+			}
+
+			input := &awscache.DescribeReservedCacheNodesInput{
+				Marker: maker,
+			}
+			output, err := client.DescribeReservedCacheNodes(input)
+			if err != nil {
+				return fmt.Errorf("describe reserved cachenode: %v", err)
+			}
+
+			for _, r := range output.ReservedCacheNodes {
+				repo.Internal = append(repo.Internal, &reserved.Record{
+					Duration:           *r.Duration,
+					OfferingType:       *r.OfferingType,
+					ProductDescription: *r.ProductDescription,
+					CacheNodeType:      *r.CacheNodeType,
+					CacheNodeCount:     *r.CacheNodeCount,
+					Start:              *r.StartTime,
+				})
+			}
+		}
+	}
+
+	{
+		client := awsrds.New(session.Must(session.NewSession()))
+		input := &awsrds.DescribeReservedDBInstancesInput{}
+		output, err := client.DescribeReservedDBInstances(input)
+		if err != nil {
+			return fmt.Errorf("describe reserved db instance: %v", err)
+		}
+		for _, r := range output.ReservedDBInstances {
+			repo.Internal = append(repo.Internal, &reserved.Record{
+				Duration:           *r.Duration,
+				OfferingType:       *r.OfferingType,
+				ProductDescription: *r.ProductDescription,
+				DBInstanceClass:    *r.DBInstanceClass,
+				DBInstanceCount:    *r.DBInstanceCount,
+				Start:              *r.StartTime,
+				MultiAZ:            *r.MultiAZ,
+			})
+		}
+
+		maker := output.Marker
+		for {
+			if maker == nil {
+				break
+			}
+
+			input := &awsrds.DescribeReservedDBInstancesInput{
+				Marker: maker,
+			}
+			output, err := client.DescribeReservedDBInstances(input)
+			if err != nil {
+				return fmt.Errorf("describe reserved db instance: %v", err)
+			}
+			for _, r := range output.ReservedDBInstances {
+				repo.Internal = append(repo.Internal, &reserved.Record{
+					Duration:           *r.Duration,
+					OfferingType:       *r.OfferingType,
+					ProductDescription: *r.ProductDescription,
+					DBInstanceClass:    *r.DBInstanceClass,
+					DBInstanceCount:    *r.DBInstanceCount,
+					Start:              *r.StartTime,
+					MultiAZ:            *r.MultiAZ,
+				})
+			}
+		}
+	}
+
+	for _, r := range repo.SelectAll() {
+		fmt.Printf("%v\n", r)
 	}
 
 	return nil
