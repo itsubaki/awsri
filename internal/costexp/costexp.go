@@ -169,9 +169,6 @@ func (c *CostExp) getUsageQuantity(in *getUsageQuantityInput) (UsageQuantityList
 	}
 
 	input := costexplorer.GetCostAndUsageInput{
-		Filter: &costexplorer.Expression{
-			And: append(and, &costexplorer.Expression{Or: or}),
-		},
 		Metrics:     []*string{aws.String("UsageQuantity")},
 		Granularity: aws.String("MONTHLY"),
 		GroupBy: []*costexplorer.GroupDefinition{
@@ -185,6 +182,12 @@ func (c *CostExp) getUsageQuantity(in *getUsageQuantityInput) (UsageQuantityList
 			},
 		},
 		TimePeriod: in.Period,
+	}
+
+	if len(or) > 1 {
+		input.Filter = &costexplorer.Expression{
+			And: append(and, &costexplorer.Expression{Or: or}),
+		}
 	}
 
 	usage, err := c.Client.GetCostAndUsage(&input)

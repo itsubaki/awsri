@@ -17,12 +17,9 @@ func TestGetReserved(t *testing.T) {
 		t.Errorf("file not found: %v", path)
 	}
 
-	repo, err := awsprice.NewRepository(path)
-	if err != nil {
-		t.Errorf("%v", err)
-	}
-
 	os.Setenv("AWS_PROFILE", "example")
+	os.Setenv("AWS_REGION", "ap-northeast-1")
+
 	client := ec2.New(session.Must(session.NewSession()))
 	input := &ec2.DescribeReservedInstancesInput{
 		Filters: []*ec2.Filter{
@@ -32,6 +29,10 @@ func TestGetReserved(t *testing.T) {
 	output, err := client.DescribeReservedInstances(input)
 	if err != nil {
 		t.Errorf("%v", err)
+	}
+
+	if len(output.ReservedInstances) < 1 {
+		return
 	}
 
 	r := output.ReservedInstances[0]
@@ -46,6 +47,10 @@ func TestGetReserved(t *testing.T) {
 		os = "Windows"
 	}
 
+	repo, err := awsprice.NewRepository(path)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
 	rs := repo.FindByInstanceType(*r.InstanceType).
 		OfferingClass(*r.OfferingClass).
 		PurchaseOption(*r.OfferingType).
