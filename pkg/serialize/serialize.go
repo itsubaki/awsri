@@ -83,7 +83,6 @@ type SerializeAWSPriceInput struct {
 
 func SerializeAWSPirice(input *SerializeAWSPriceInput) error {
 	for _, r := range input.Region {
-
 		path := fmt.Sprintf("%s/%s.out", input.OutputDir, r)
 		if _, err := os.Stat(path); !os.IsNotExist(err) {
 			continue
@@ -191,7 +190,10 @@ type SerializeReservedInput struct {
 }
 
 func SerializeReserved(input *SerializeReservedInput) error {
-	os.Setenv("AWS_PROFILE", input.Profile)
+	path := fmt.Sprintf("%s/%s.out", input.OutputDir, input.Profile)
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		return err
+	}
 
 	repo := &reserved.Repository{
 		Profile: input.Profile,
@@ -199,6 +201,7 @@ func SerializeReserved(input *SerializeReservedInput) error {
 	}
 
 	for _, region := range input.Region {
+		os.Setenv("AWS_PROFILE", input.Profile)
 		os.Setenv("AWS_REGION", region)
 
 		{
@@ -241,6 +244,9 @@ func SerializeReserved(input *SerializeReservedInput) error {
 				}
 
 				for _, r := range output.ReservedCacheNodes {
+					if *r.State != "active" {
+						continue
+					}
 					repo.Internal = append(repo.Internal, &reserved.Record{
 						Region:             region,
 						Duration:           *r.Duration,
@@ -273,6 +279,9 @@ func SerializeReserved(input *SerializeReservedInput) error {
 				}
 
 				for _, r := range output.ReservedDBInstances {
+					if *r.State != "active" {
+						continue
+					}
 					repo.Internal = append(repo.Internal, &reserved.Record{
 						Region:             region,
 						Duration:           *r.Duration,
@@ -290,12 +299,18 @@ func SerializeReserved(input *SerializeReservedInput) error {
 				}
 			}
 		}
-
 	}
 
-	for _, r := range repo.SelectAll() {
-		fmt.Printf("%v\n", r)
+	bytes, err := json.Marshal(repo)
+	if err != nil {
+		return fmt.Errorf("marshal: %v", err)
 	}
+
+	if err := ioutil.WriteFile(path, bytes, os.ModePerm); err != nil {
+		return fmt.Errorf("write file: %v", err)
+	}
+
+	fmt.Printf("write file: %s\n", path)
 
 	return nil
 }
