@@ -344,6 +344,25 @@ fmt.Println(r.Recommend(forecast, "minimum"))
 }
 ```
 
+```
+repo, _ := NewRepository("/var/tmp/hermes/reserved/example.out")
+for _, r := range repo.SelectAll() {
+  fmt.Println(r)
+}
+
+{
+  "region":"ap-northeast-1",
+  "duration":31536000, // 1yr
+  "offering_type":"All Upfront",
+  "offering_class":"standard",
+  "product_description":"Linux/UNIX (Amazon VPC)",
+  "instance_type":"t3.nano",
+  "instance_count":100,
+  "start":"2019-01-01T12:00:00Z"
+}
+```
+
+
 ## Memo
 
 ```
