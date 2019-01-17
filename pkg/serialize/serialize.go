@@ -198,8 +198,8 @@ func SerializeReserved(input *SerializeReservedInput) error {
 		Region:  input.Region,
 	}
 
-	for _, r := range input.Region {
-		os.Setenv("AWS_REGION", r)
+	for _, region := range input.Region {
+		os.Setenv("AWS_REGION", region)
 
 		{
 			client := awsec2.New(session.Must(session.NewSession()))
@@ -214,6 +214,7 @@ func SerializeReserved(input *SerializeReservedInput) error {
 
 			for _, r := range output.ReservedInstances {
 				repo.Internal = append(repo.Internal, &reserved.Record{
+					Region:             region,
 					Duration:           *r.Duration,
 					OfferingType:       *r.OfferingType,
 					OfferingClass:      *r.OfferingClass,
@@ -241,6 +242,7 @@ func SerializeReserved(input *SerializeReservedInput) error {
 
 				for _, r := range output.ReservedCacheNodes {
 					repo.Internal = append(repo.Internal, &reserved.Record{
+						Region:             region,
 						Duration:           *r.Duration,
 						OfferingType:       *r.OfferingType,
 						ProductDescription: *r.ProductDescription,
@@ -272,6 +274,7 @@ func SerializeReserved(input *SerializeReservedInput) error {
 
 				for _, r := range output.ReservedDBInstances {
 					repo.Internal = append(repo.Internal, &reserved.Record{
+						Region:             region,
 						Duration:           *r.Duration,
 						OfferingType:       *r.OfferingType,
 						ProductDescription: *r.ProductDescription,
@@ -287,6 +290,7 @@ func SerializeReserved(input *SerializeReservedInput) error {
 				}
 			}
 		}
+
 	}
 
 	for _, r := range repo.SelectAll() {

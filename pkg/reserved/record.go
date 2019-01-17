@@ -17,9 +17,10 @@ func (list RecordList) String() string {
 }
 
 type Record struct {
+	Region             string    `json:"region"`
 	Duration           int64     `json:"duration"`
 	OfferingType       string    `json:"offering_type"`
-	OfferingClass      string    `json:"offering_class"`
+	OfferingClass      string    `json:"offering_class,omitempty"`
 	ProductDescription string    `json:"product_description"`
 	InstanceType       string    `json:"instance_type,omitempty"`
 	InstanceCount      int64     `json:"instance_count,omitempty"`
