@@ -348,17 +348,42 @@ fmt.Println(r.Recommend(forecast, "minimum"))
 repo, _ := NewRepository("/var/tmp/hermes/reserved/example.out")
 for _, r := range repo.SelectAll() {
   fmt.Println(r)
+
+  path := fmt.Sprintf("%s/%s.out", "/var/tmp/hermes/awsprice", r.Region)
+  repo, _ := awsprice.NewRepository(path)
+  price, _ := r.Price(repo)
+
+  fmt.Println(price)
 }
 
 {
   "region":"ap-northeast-1",
-  "duration":31536000, // 1yr
+  "instance_type":"t3.nano",
+  "duration":31536000,
   "offering_type":"All Upfront",
   "offering_class":"standard",
   "product_description":"Linux/UNIX (Amazon VPC)",
-  "instance_type":"t3.nano",
   "instance_count":100,
   "start":"2019-01-01T12:00:00Z"
+}
+
+{
+  "sku":"TZG97WFA265PFBMW",
+  "offer_term_code":"6QCMYABX3D",
+  "region":"ap-northeast-1",
+  "instance_type":"t3.nano",
+  "usage_type":"APN1-BoxUsage:t3.nano",
+  "lease_contract_length":"1yr",
+  "purchase_option":"All Upfront",
+  "ondemand":0.0068,
+  "reserved_quantity":38,
+  "reserved_hrs":0,
+  "tenancy":"Shared",
+  "pre_installed":"NA",
+  "operating_system":"Linux",
+  "operation":"RunInstances",
+  "offering_class":"standard",
+  "normalization_size_factor":"0.25"
 }
 ```
 
