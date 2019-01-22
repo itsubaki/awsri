@@ -2,7 +2,6 @@ package reserved
 
 import (
 	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/itsubaki/hermes/pkg/awsprice"
@@ -30,32 +29,20 @@ func TestGetReserved(t *testing.T) {
 	if err != nil {
 		t.Errorf("new repository: %v", err)
 	}
-
 	r := repo.SelectAll()[0]
-	yr := "1yr"
-	if r.Duration == 94608000 {
-		yr = "3yr"
-	}
-
-	os := "Linux"
-	if strings.Contains(r.ProductDescription, "Windows") {
-		os = "Windows"
-	}
 
 	{
-		repo, err := awsprice.NewRepository("/var/tmp/hermes/awsprice/ap-northeast-1.out")
+		path := fmt.Sprintf("%s/%s.out", "/var/tmp/hermes/awsprice", r.Region)
+		repo, err := awsprice.NewRepository(path)
 		if err != nil {
-			t.Errorf("%v", err)
+			t.Errorf("new repository: %v", err)
 		}
 
-		rs := repo.FindByInstanceType(r.InstanceType).
-			OfferingClass(r.OfferingClass).
-			PurchaseOption(r.OfferingType).
-			OperatingSystem(os).
-			LeaseContractLength(yr)
-
-		if len(rs) != 1 {
-			t.Errorf("invalid resultset length")
+		price, err := r.Price(repo)
+		if err != nil {
+			t.Errorf("get price: %v", err)
 		}
+
+		fmt.Println(price)
 	}
 }
