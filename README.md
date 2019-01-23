@@ -1,10 +1,30 @@
 # hermes
 aws reserved instance purchase recommendation library
 
+## IAM Policy
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "hermes",
+      "Effect": "Allow",
+      "Action": [
+        "organizations:List*",
+        "organizations:Describe*",
+        "ce:Get*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
 ## Install
 
 ```
-# set aws credential with "example"
+# set aws credential "example" with iam policy "hermes"
 $ cat ~/.aws/credentials
 [example]
 aws_access_key_id = ********************

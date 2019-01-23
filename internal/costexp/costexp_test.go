@@ -47,7 +47,6 @@ func TestReservationCoverage(t *testing.T) {
 
 		fmt.Println(out)
 	}
-
 }
 
 func TestLinkedAccount(t *testing.T) {
