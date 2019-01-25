@@ -2,7 +2,11 @@ package reserved
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
 	"time"
+
+	"github.com/itsubaki/hermes/pkg/awsprice"
 )
 
 type RecordList []*Record
@@ -39,4 +43,29 @@ func (r *Record) String() string {
 	}
 
 	return string(bytea)
+}
+
+func (r *Record) Price(repo *awsprice.Repository) (*awsprice.Record, error) {
+	yr := "1yr"
+	if r.Duration == 94608000 {
+		yr = "3yr"
+	}
+
+	os := "Linux"
+	if strings.Contains(r.ProductDescription, "Windows") {
+		os = "Windows"
+	}
+
+	rs := repo.FindByInstanceType(r.InstanceType).
+		OfferingClass(r.OfferingClass).
+		PurchaseOption(r.OfferingType).
+		OperatingSystem(os).
+		LeaseContractLength(yr).
+		Region(r.Region)
+
+	if len(rs) != 1 {
+		return nil, fmt.Errorf("invalid query to awsprice repository")
+	}
+
+	return rs[0], nil
 }
