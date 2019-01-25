@@ -129,7 +129,7 @@ func TestFindByInstanceTypeCache(t *testing.T) {
 		}
 
 		if e.Subtraction < 0 {
-			t.Error("invalid substraction")
+			t.Error("invalid subtraction")
 		}
 
 		if e.DiscountRate < 0 {
@@ -230,7 +230,7 @@ func TestRecommend1yr(t *testing.T) {
 	}
 
 	if rec.Subtraction != 20852.000000000007 {
-		t.Error("invalid substraction")
+		t.Error("invalid subtraction")
 	}
 
 	if rec.DiscountRate != 0.2503723766793573 {

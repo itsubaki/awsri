@@ -1,5 +1,8 @@
 # hermes
-aws reserved instance purchase recommendation library
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/itsubaki/hermes?style=flat-square)](https://goreportcard.com/report/github.com/itsubaki/hermes)
+
+ - aws reserved instance purchase recommendation library
 
 ## Install
 
