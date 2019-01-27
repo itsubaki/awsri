@@ -6,7 +6,7 @@
 
 ## Motivation
 
- We want to reduce AWS cost.
+ In order to reduce AWS cost,
  It is necessary to effectively buy Reserved Instance.
  But AWS pricing is complicated and difficult.
  This library shows the RI that you should buy now,
