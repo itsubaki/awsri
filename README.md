@@ -143,6 +143,7 @@ fmt.Println(repo.Recommend(rs[0], forecast))
 }
 
 # Buy m4.large x400 instead of m4.4xlarge x50
+# and
 
 repo, _ := reserved.NewRepository("example",[]string{"ap-northeast-1"})
 for _, r := range repo.SelectAll() {
@@ -157,7 +158,7 @@ for _, r := range repo.SelectAll() {
   "offering_class":"standard",
   "product_description":"Linux/UNIX (Amazon VPC)",
   "instance_count":100,
-  "start":"2019-01-01T12:00:00Z"
+  "start":"2020-12-01T12:00:00Z"
 }
 
 # Buy m4.large x300 instead of m4.large x400
