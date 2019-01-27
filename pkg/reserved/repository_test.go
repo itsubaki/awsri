@@ -7,12 +7,28 @@ import (
 	"github.com/itsubaki/hermes/pkg/awsprice"
 )
 
-func TestRepository(t *testing.T) {
-	dir := "/var/tmp/hermes/reserved"
-	path := fmt.Sprintf("%s/%s", dir, "example.out")
-	repo, err := NewRepository(path)
+func TestSerialize(t *testing.T) {
+	region := []string{
+		"ap-northeast-1",
+		"eu-central-1",
+		"us-west-1",
+		"us-west-2",
+	}
+
+	repo, err := NewRepository("example", region)
 	if err != nil {
 		t.Errorf("new repository: %v", err)
+	}
+
+	if err := repo.Write("/var/tmp/hermes/reserved/example.out"); err != nil {
+		t.Errorf("write file: %v", err)
+	}
+}
+
+func TestDeserialize(t *testing.T) {
+	repo, err := Read("/var/tmp/hermes/reserved/example.out")
+	if err != nil {
+		t.Errorf("read file: %v", err)
 	}
 
 	if len(repo.SelectAll()) < 1 {
@@ -24,21 +40,24 @@ func TestRepository(t *testing.T) {
 	}
 }
 
-func TestGetReserved(t *testing.T) {
-	repo, err := NewRepository("/var/tmp/hermes/reserved/example.out")
+func TestGetSKU(t *testing.T) {
+	repo, err := Read("/var/tmp/hermes/reserved/example.out")
 	if err != nil {
-		t.Errorf("new repository: %v", err)
+		t.Errorf("read file: %v", err)
 	}
-	r := repo.SelectAll()[0]
 
-	{
-		path := fmt.Sprintf("%s/%s.out", "/var/tmp/hermes/awsprice", r.Region)
-		repo, err := awsprice.NewRepository(path)
+	if len(repo.SelectAll()) < 1 {
+		t.Errorf("repository is empty")
+	}
+
+	for _, r := range repo.SelectAll() {
+		path := fmt.Sprintf("/var/tmp/hermes/awsprice/%s.out", r.Region)
+		rep, err := awsprice.Read(path)
 		if err != nil {
 			t.Errorf("new repository: %v", err)
 		}
 
-		price, err := r.Price(repo)
+		price, err := r.Price(rep)
 		if err != nil {
 			t.Errorf("get price: %v", err)
 		}

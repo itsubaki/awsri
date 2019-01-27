@@ -1,17 +1,10 @@
 package awsprice
 
-import (
-	"os"
-	"testing"
-)
+import "testing"
 
 func TestUnique(t *testing.T) {
 	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		t.Errorf("file not found: %v", path)
-	}
-
-	repo, err := NewRepository(path)
+	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("%v", err)
 	}
@@ -37,11 +30,7 @@ func TestUnique(t *testing.T) {
 
 func TestBreakevenPoint1yr(t *testing.T) {
 	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		t.Errorf("file not found: %v", path)
-	}
-
-	repo, err := NewRepository(path)
+	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("%v", err)
 	}
@@ -71,11 +60,7 @@ func TestBreakevenPoint1yr(t *testing.T) {
 
 func TestBreakevenPoint3yr(t *testing.T) {
 	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		t.Errorf("file not found: %v", path)
-	}
-
-	repo, err := NewRepository(path)
+	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("%v", err)
 	}
@@ -104,11 +89,7 @@ func TestBreakevenPoint3yr(t *testing.T) {
 
 func TestFindByInstanceTypeCache(t *testing.T) {
 	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		t.Errorf("file not found: %v", path)
-	}
-
-	repo, err := NewRepository(path)
+	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("%v", err)
 	}

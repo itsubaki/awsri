@@ -2,17 +2,33 @@ package awsprice
 
 import (
 	"fmt"
-	"os"
 	"testing"
 )
 
-func TestFindMinimumDatabaseT2Medium(t *testing.T) {
-	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		t.Errorf("file not found: %v", path)
+func TestSerialize(t *testing.T) {
+	region := []string{
+		"ap-northeast-1",
+		"eu-central-1",
+		"us-west-1",
+		"us-west-2",
 	}
 
-	repo, err := NewRepository(path)
+	for i := range region {
+		repo, err := NewRepository([]string{region[i]})
+		if err != nil {
+			t.Errorf("new repository: %v", err)
+		}
+
+		path := fmt.Sprintf("/var/tmp/hermes/awsprice/%s.out", region[i])
+		if err := repo.Write(path); err != nil {
+			t.Errorf("write file: %v", err)
+		}
+	}
+}
+
+func TestFindMinimumDatabaseT2Medium(t *testing.T) {
+	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
+	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("%v", err)
 	}
@@ -32,11 +48,7 @@ func TestFindMinimumDatabaseT2Medium(t *testing.T) {
 
 func TestFindMinimumDatabase(t *testing.T) {
 	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		t.Errorf("file not found: %v", path)
-	}
-
-	repo, err := NewRepository(path)
+	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("%v", err)
 	}
@@ -58,11 +70,7 @@ func TestFindMinimumDatabase(t *testing.T) {
 
 func TestFindMinimumCompute(t *testing.T) {
 	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		t.Errorf("file not found: %v", path)
-	}
-
-	repo, err := NewRepository(path)
+	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("%v", err)
 	}
@@ -98,11 +106,7 @@ func TestFindMinimumCompute(t *testing.T) {
 
 func TestFindByInstanceType(t *testing.T) {
 	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		t.Errorf("file not found: %v", path)
-	}
-
-	repo, err := NewRepository(path)
+	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("%v", err)
 	}

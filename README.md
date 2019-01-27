@@ -56,7 +56,7 @@ write file: /var/tmp/hermes/awsprice/us-west-2.out
 ## Example
 
 ```
-repo, _ := awsprice.NewRepository("/var/tmp/hermes/awsprice/ap-northeast-1.out")
+repo, _ := awsprice.NewRepository([]string{"ap-northeast-1.out"})
 rs := repo.FindByInstanceType("m4.large").
   OperatingSystem("Linux").
   Tenancy("Shared").
@@ -166,7 +166,7 @@ fmt.Println(min)
 ```
 
 ```
-repo, _ := costexp.NewRepository("/var/tmp/hermes/costexp/example_2018-11.out")
+repo, _ := costexp.NewRepository("example", []string{"ap-northeast-1"})
 for _, r := range repo.SelectAll() {
   fmt.Println(r)
 }
@@ -368,7 +368,7 @@ fmt.Println(r.Recommend(forecast, "minimum"))
 ```
 
 ```
-repo, _ := NewRepository("/var/tmp/hermes/reserved/example.out")
+repo, _ := NewRepository("example",[]string{"ap-northeast-1"})
 for _, r := range repo.SelectAll() {
   fmt.Println(r)
 

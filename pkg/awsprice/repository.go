@@ -4,7 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
+
+	"github.com/itsubaki/hermes/internal/awsprice/cache"
+	"github.com/itsubaki/hermes/internal/awsprice/ec2"
+	"github.com/itsubaki/hermes/internal/awsprice/rds"
 )
 
 type Repository struct {
@@ -12,17 +17,138 @@ type Repository struct {
 	Internal RecordList `json:"internal"`
 }
 
-func NewRepository(path string) (*Repository, error) {
+func NewRepository(region []string) (*Repository, error) {
+	repo := &Repository{
+		Region: region,
+	}
+
+	for _, r := range region {
+		{
+			price, err := ec2.ReadPrice(r)
+			if err != nil {
+				return nil, fmt.Errorf("read ec2 price file: %v", err)
+			}
+
+			for k := range price {
+				v := price[k]
+				repo.Internal = append(repo.Internal, &Record{
+					InstanceType:            v.InstanceType,
+					LeaseContractLength:     v.LeaseContractLength,
+					NormalizationSizeFactor: v.NormalizationSizeFactor,
+					OfferTermCode:           v.OfferTermCode,
+					OfferingClass:           v.OfferingClass,
+					OnDemand:                v.OnDemand,
+					OperatingSystem:         v.OperatingSystem,
+					Operation:               v.Operation,
+					PreInstalled:            v.PreInstalled,
+					PurchaseOption:          v.PurchaseOption,
+					Region:                  v.Region,
+					ReservedHrs:             v.ReservedHrs,
+					ReservedQuantity:        v.ReservedQuantity,
+					SKU:                     v.SKU,
+					Tenancy:                 v.Tenancy,
+					UsageType:               v.UsageType,
+				})
+			}
+		}
+
+		{
+			price, err := cache.ReadPrice(r)
+			if err != nil {
+				return nil, fmt.Errorf("read cache price file: %v", err)
+			}
+			for k := range price {
+				v := price[k]
+				repo.Internal = append(repo.Internal, &Record{
+					CacheEngine:         v.CacheEngine,
+					InstanceType:        v.InstanceType,
+					LeaseContractLength: v.LeaseContractLength,
+					OfferTermCode:       v.OfferTermCode,
+					OnDemand:            v.OnDemand,
+					PurchaseOption:      v.PurchaseOption,
+					Region:              v.Region,
+					ReservedHrs:         v.ReservedHrs,
+					ReservedQuantity:    v.ReservedQuantity,
+					SKU:                 v.SKU,
+					UsageType:           v.UsageType,
+				})
+			}
+		}
+
+		{
+			price, err := rds.ReadPrice(r)
+			if err != nil {
+				return nil, fmt.Errorf("read cache price file: %v", err)
+			}
+			for k := range price {
+				v := price[k]
+				repo.Internal = append(repo.Internal, &Record{
+					DatabaseEngine:          v.DatabaseEngine,
+					InstanceType:            v.InstanceType,
+					LeaseContractLength:     v.LeaseContractLength,
+					NormalizationSizeFactor: v.NormalizationSizeFactor,
+					OfferTermCode:           v.OfferTermCode,
+					OnDemand:                v.OnDemand,
+					PurchaseOption:          v.PurchaseOption,
+					Region:                  v.Region,
+					ReservedHrs:             v.ReservedHrs,
+					ReservedQuantity:        v.ReservedQuantity,
+					SKU:                     v.SKU,
+					UsageType:               v.UsageType,
+				})
+			}
+		}
+	}
+
+	return repo, nil
+}
+
+func Read(path string) (*Repository, error) {
 	read, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("read file: %v", err)
 	}
 
-	var repo Repository
-	if err := json.Unmarshal(read, &repo); err != nil {
-		return nil, fmt.Errorf("unmarshal: %v", err)
+	repo := &Repository{}
+	if err := repo.Deserialize(read); err != nil {
+		return nil, fmt.Errorf("new repository: %v", err)
 	}
-	return &repo, nil
+
+	return repo, nil
+}
+
+func (r *Repository) Write(path string) error {
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		return nil
+	}
+
+	bytes, err := r.Serialize()
+	if err != nil {
+		return fmt.Errorf("serialize: %v", err)
+	}
+
+	if err := ioutil.WriteFile(path, bytes, os.ModePerm); err != nil {
+		return fmt.Errorf("write file: %v", err)
+	}
+
+	return nil
+}
+
+func (r *Repository) Serialize() ([]byte, error) {
+	bytes, err := json.Marshal(r)
+	if err != nil {
+		return []byte{}, fmt.Errorf("marshal: %v", err)
+	}
+
+	return bytes, nil
+}
+
+func (r *Repository) Deserialize(bytes []byte) error {
+	if err := json.Unmarshal(bytes, r); err != nil {
+		return fmt.Errorf("unmarshal: %v", err)
+	}
+
+	return nil
 }
 
 func (r *Repository) SelectAll() RecordList {

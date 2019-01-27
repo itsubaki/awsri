@@ -6,11 +6,10 @@ import (
 )
 
 func TestUnique(t *testing.T) {
-	dir := "/var/tmp/hermes/costexp"
-	path := fmt.Sprintf("%s/%s", dir, "example_2018-09.out")
-	repo, err := NewRepository(path)
+	path := fmt.Sprintf("/var/tmp/hermes/costexp/%s.out", "example_2018-09")
+	repo, err := Read(path)
 	if err != nil {
-		t.Errorf("new repository: %v", err)
+		t.Errorf("read file: %v", err)
 	}
 
 	for _, r := range repo.SelectAll().Unique("Platform") {
