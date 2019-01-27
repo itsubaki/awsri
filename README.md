@@ -53,18 +53,18 @@ rs := repo.FindByInstanceType("m4.4xlarge").
   OfferingClass("standard")
 
 forecast := []Forecast{
-  {Date: "2018-01", InstanceNum: 120.4},
-  {Date: "2018-02", InstanceNum: 110.3},
-  {Date: "2018-03", InstanceNum: 100.1},
-  {Date: "2018-04", InstanceNum: 90.9},
-  {Date: "2018-05", InstanceNum: 80.9},
-  {Date: "2018-06", InstanceNum: 70.6},
-  {Date: "2018-07", InstanceNum: 60.3},
-  {Date: "2018-08", InstanceNum: 50.9},
-  {Date: "2018-09", InstanceNum: 40.7},
-  {Date: "2018-10", InstanceNum: 30.6},
-  {Date: "2018-11", InstanceNum: 20.2},
-  {Date: "2018-12", InstanceNum: 10.8},
+  {Date: "2021-01", InstanceNum: 120.4},
+  {Date: "2021-02", InstanceNum: 110.3},
+  {Date: "2021-03", InstanceNum: 100.1},
+  {Date: "2021-04", InstanceNum: 90.9},
+  {Date: "2021-05", InstanceNum: 80.9},
+  {Date: "2021-06", InstanceNum: 70.6},
+  {Date: "2021-07", InstanceNum: 60.3},
+  {Date: "2021-08", InstanceNum: 50.9},
+  {Date: "2021-09", InstanceNum: 40.7},
+  {Date: "2021-10", InstanceNum: 30.6},
+  {Date: "2021-11", InstanceNum: 20.2},
+  {Date: "2021-12", InstanceNum: 10.8},
 }
 
 fmt.Println(rs[0])
