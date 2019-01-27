@@ -67,27 +67,8 @@ forecast := []Forecast{
   {Date: "2021-12", InstanceNum: 10.8},
 }
 
-fmt.Println(rs[0])
-fmt.Println(repo.Recommend(rs[0], forecast))
-
-{
-  "sku":"XU2NYYPCRTK4T7CN",
-  "offer_term_code":"6QCMYABX3D",
-  "region":"ap-northeast-1",
-  "instance_type":"m4.4xlarge",
-  "usage_type":"APN1-BoxUsage:m4.4xlarge",
-  "lease_contract_length":"1yr",
-  "purchase_option":"All Upfront",
-  "ondemand":1.032,
-  "reserved_quantity":5700,
-  "reserved_hrs":0,
-  "tenancy":"Shared",
-  "pre_installed":"NA",
-  "operating_system":"Linux",
-  "operation":"RunInstances",
-  "offering_class":"standard",
-  "normalization_size_factor":"32"
-}
+result, _ := repo.Recommend(rs[0], forecast)
+fmt.Println(result)
 
 {
   "record":{
