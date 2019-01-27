@@ -364,7 +364,6 @@ for _, r := range repo.SelectAll() {
   fmt.Println(r.Price(price))
 }
 
-
 {
   "region":"ap-northeast-1",
   "instance_type":"t3.nano",
