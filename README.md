@@ -4,7 +4,15 @@
 
  - aws reserved instance purchase recommendation library
 
-## IAM Policy
+## Prepare
+
+```
+# set aws credential "example" with iam policy "hermes"
+$ cat ~/.aws/credentials
+[example]
+aws_access_key_id = ********************
+aws_secret_access_key = ****************************************
+```
 
 ```
 {
@@ -24,39 +32,10 @@
 }
 ```
 
-## Install
-
-```
-# set aws credential "example" with iam policy "hermes"
-$ cat ~/.aws/credentials
-[example]
-aws_access_key_id = ********************
-aws_secret_access_key = ****************************************
-
-$ go get github.com/itsubaki/hermes
-$ cd ${GOPATH}/src/github.com/itsubaki/hermes
-$ make
-=== RUN   TestSerializeCostExp
-write file: /var/tmp/hermes/costexp/example_2018-01.out
-write file: /var/tmp/hermes/costexp/example_2018-02.out
-write file: /var/tmp/hermes/costexp/example_2018-03.out
-write file: /var/tmp/hermes/costexp/example_2018-04.out
-write file: /var/tmp/hermes/costexp/example_2018-05.out
-write file: /var/tmp/hermes/costexp/example_2018-06.out
-write file: /var/tmp/hermes/costexp/example_2018-07.out
-write file: /var/tmp/hermes/costexp/example_2018-08.out
-write file: /var/tmp/hermes/costexp/example_2018-09.out
-=== RUN   TestSerializeAWSPrice
-write file: /var/tmp/hermes/awsprice/ap-northeast-1.out
-write file: /var/tmp/hermes/awsprice/eu-central-1.out
-write file: /var/tmp/hermes/awsprice/us-west-1.out
-write file: /var/tmp/hermes/awsprice/us-west-2.out
-```
-
 ## Example
 
 ```
-repo, _ := awsprice.NewRepository([]string{"ap-northeast-1.out"})
+repo, _ := awsprice.NewRepository([]string{"ap-northeast-1"})
 rs := repo.FindByInstanceType("m4.large").
   OperatingSystem("Linux").
   Tenancy("Shared").
@@ -166,7 +145,14 @@ fmt.Println(min)
 ```
 
 ```
-repo, _ := costexp.NewRepository("example", []string{"ap-northeast-1"})
+date := []*costexplorer.DateInterval{
+  {
+    Start: aws.String("2018-11-01"),
+    End:   aws.String("2018-12-01"),
+  },
+}
+
+repo, _ := costexp.NewRepository("example", date)
 for _, r := range repo.SelectAll() {
   fmt.Println(r)
 }
@@ -370,13 +356,11 @@ fmt.Println(r.Recommend(forecast, "minimum"))
 ```
 repo, _ := NewRepository("example",[]string{"ap-northeast-1"})
 for _, r := range repo.SelectAll() {
+  price, _ := awsprice.NewRepository([]string{"ap-northeast-1"})
+  sku, _ := r.Price(price)
+
   fmt.Println(r)
-
-  path := fmt.Sprintf("%s/%s.out", "/var/tmp/hermes/awsprice", r.Region)
-  repo, _ := awsprice.NewRepository(path)
-  price, _ := r.Price(repo)
-
-  fmt.Println(price)
+  fmt.Println(sku)
 }
 
 {
