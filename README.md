@@ -4,6 +4,14 @@
 
  - aws reserved instance purchase recommendation library
 
+## Motivation
+
+ We want to reduce AWS cost.
+ It is necessary to effectively buy Reserved Instance.
+ But AWS pricing is complicated and difficult.
+ This library shows the RI that you should buy now,
+ based on the future instance usage and the current RI purchase.
+
 ## Prepare
 
 ```
