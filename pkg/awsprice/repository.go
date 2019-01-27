@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/itsubaki/hermes/internal/awsprice/cache"
@@ -270,4 +271,29 @@ func (r *Repository) FindByUsageType(tipe string) RecordList {
 	}
 
 	return out
+}
+
+func (r *Repository) Recommend(record *Record, forecast []Forecast, strategy ...string) (*Recommended, error) {
+	min, err := r.FindMinimumInstanceType(record)
+	if err != nil {
+		return nil, fmt.Errorf("find minimum instance type: %v", err)
+	}
+
+	rf64, err := strconv.ParseFloat(record.NormalizationSizeFactor, 64)
+	if err != nil {
+		return nil, fmt.Errorf("parse float normalization size factor in record: %v", err)
+	}
+
+	mf64, err := strconv.ParseFloat(min.NormalizationSizeFactor, 64)
+	if err != nil {
+		return nil, fmt.Errorf("parse float normalization size factor in minimum: %v", err)
+	}
+
+	scale := rf64 / mf64
+
+	out := record.Recommend(forecast, strategy...)
+	out.MinimumRecord = min
+	out.MinimumReservedInstanceNum = float64(out.ReservedInstanceNum) * scale
+
+	return out, nil
 }

@@ -2,6 +2,7 @@ package reserved
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/itsubaki/hermes/pkg/awsprice"
@@ -15,12 +16,17 @@ func TestSerialize(t *testing.T) {
 		"us-west-2",
 	}
 
+	path := "/var/tmp/hermes/reserved/example.out"
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		continue
+	}
+
 	repo, err := NewRepository("example", region)
 	if err != nil {
 		t.Errorf("new repository: %v", err)
 	}
 
-	if err := repo.Write("/var/tmp/hermes/reserved/example.out"); err != nil {
+	if err := repo.Write(path); err != nil {
 		t.Errorf("write file: %v", err)
 	}
 }

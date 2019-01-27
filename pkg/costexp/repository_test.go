@@ -2,6 +2,7 @@ package costexp
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -61,13 +62,17 @@ func TestSerialize(t *testing.T) {
 	}
 
 	for i := range date {
+		start := *date[i].Start
+		path := fmt.Sprintf("/var/tmp/hermes/costexp/example_%s.out", start[:7])
+		if _, err := os.Stat(path); !os.IsNotExist(err) {
+			continue
+		}
+
 		repo, err := NewRepository("example", []*costexplorer.DateInterval{date[i]})
 		if err != nil {
 			t.Errorf("new repository: %v", err)
 		}
 
-		start := *date[i].Start
-		path := fmt.Sprintf("/var/tmp/hermes/costexp/example_%s.out", start[:7])
 		if err := repo.Write(path); err != nil {
 			t.Errorf("write file: %v", err)
 		}

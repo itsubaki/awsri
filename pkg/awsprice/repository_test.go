@@ -2,6 +2,7 @@ package awsprice
 
 import (
 	"fmt"
+	"os"
 	"testing"
 )
 
@@ -14,12 +15,16 @@ func TestSerialize(t *testing.T) {
 	}
 
 	for i := range region {
+		path := fmt.Sprintf("/var/tmp/hermes/awsprice/%s.out", region[i])
+		if _, err := os.Stat(path); !os.IsNotExist(err) {
+			continue
+		}
+
 		repo, err := NewRepository([]string{region[i]})
 		if err != nil {
 			t.Errorf("new repository: %v", err)
 		}
 
-		path := fmt.Sprintf("/var/tmp/hermes/awsprice/%s.out", region[i])
 		if err := repo.Write(path); err != nil {
 			t.Errorf("write file: %v", err)
 		}
@@ -137,4 +142,84 @@ func TestFindByInstanceType(t *testing.T) {
 			t.Error("invalid discount rate")
 		}
 	}
+}
+
+func TestRecommendM4large(t *testing.T) {
+	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
+	repo, err := Read(path)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	r := &Record{
+		SKU:                     "7MYWT7Y96UT3NJ2D",
+		OfferTermCode:           "6QCMYABX3D",
+		Region:                  "ap-northeast-1",
+		InstanceType:            "m4.large",
+		UsageType:               "APN1-BoxUsage:m4.large",
+		LeaseContractLength:     "1yr",
+		PurchaseOption:          "All Upfront",
+		OnDemand:                0.129,
+		ReservedHrs:             0,
+		ReservedQuantity:        713,
+		Tenancy:                 "Shared",
+		PreInstalled:            "NA",
+		OperatingSystem:         "Linux",
+		Operation:               "RunInstances",
+		OfferingClass:           "standard",
+		NormalizationSizeFactor: "4",
+	}
+
+	forecast := []Forecast{
+		{Date: "2018-01", InstanceNum: 120.4},
+		{Date: "2018-02", InstanceNum: 110.3},
+		{Date: "2018-03", InstanceNum: 100.1},
+		{Date: "2018-04", InstanceNum: 90.9},
+		{Date: "2018-05", InstanceNum: 80.9},
+		{Date: "2018-06", InstanceNum: 70.6},
+		{Date: "2018-07", InstanceNum: 60.3},
+		{Date: "2018-08", InstanceNum: 50.9},
+		{Date: "2018-09", InstanceNum: 40.7},
+		{Date: "2018-10", InstanceNum: 30.6},
+		{Date: "2018-11", InstanceNum: 20.2},
+		{Date: "2018-12", InstanceNum: 10.8},
+	}
+
+	fmt.Println(r.Recommend(forecast))
+	fmt.Println(repo.Recommend(r, forecast))
+}
+
+func TestRecommendM44xlarge(t *testing.T) {
+	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
+	repo, err := Read(path)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	rs := repo.FindByInstanceType("m4.4xlarge").
+		Region("ap-northeast-1").
+		OperatingSystem("Linux").
+		Tenancy("Shared").
+		PreInstalled("NA").
+		LeaseContractLength("1yr").
+		PurchaseOption("All Upfront").
+		OfferingClass("standard")
+
+	forecast := []Forecast{
+		{Date: "2018-01", InstanceNum: 120.4},
+		{Date: "2018-02", InstanceNum: 110.3},
+		{Date: "2018-03", InstanceNum: 100.1},
+		{Date: "2018-04", InstanceNum: 90.9},
+		{Date: "2018-05", InstanceNum: 80.9},
+		{Date: "2018-06", InstanceNum: 70.6},
+		{Date: "2018-07", InstanceNum: 60.3},
+		{Date: "2018-08", InstanceNum: 50.9},
+		{Date: "2018-09", InstanceNum: 40.7},
+		{Date: "2018-10", InstanceNum: 30.6},
+		{Date: "2018-11", InstanceNum: 20.2},
+		{Date: "2018-12", InstanceNum: 10.8},
+	}
+
+	fmt.Println(rs[0])
+	fmt.Println(repo.Recommend(rs[0], forecast))
 }

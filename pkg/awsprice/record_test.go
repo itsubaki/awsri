@@ -165,7 +165,7 @@ func TestRecommendNoReserved(t *testing.T) {
 func TestRecommend1yr(t *testing.T) {
 	r := &Record{
 		SKU:                     "7MYWT7Y96UT3NJ2D",
-		OfferTermCode:           "4NA7Y494T4",
+		OfferTermCode:           "6QCMYABX3D",
 		Region:                  "ap-northeast-1",
 		InstanceType:            "m4.large",
 		UsageType:               "APN1-BoxUsage:m4.large",
