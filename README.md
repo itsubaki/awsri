@@ -143,6 +143,24 @@ fmt.Println(repo.Recommend(rs[0], forecast))
 }
 
 # Buy m4.large x400 instead of m4.4xlarge x50
+
+repo, _ := reserved.NewRepository("example",[]string{"ap-northeast-1"})
+for _, r := range repo.SelectAll() {
+  fmt.Println(r)
+}
+
+{
+  "region":"ap-northeast-1",
+  "instance_type":"m4.large",
+  "duration":31536000,
+  "offering_type":"All Upfront",
+  "offering_class":"standard",
+  "product_description":"Linux/UNIX (Amazon VPC)",
+  "instance_count":100,
+  "start":"2019-01-01T12:00:00Z"
+}
+
+# Buy m4.large x300 instead of m4.large x400
 ```
 
 ## Memo
@@ -360,48 +378,6 @@ fmt.Println(r.Recommend(forecast, "minimum"))
  "reserved_quantity": 7130,
  "subtraction": 4170.400000000009,
  "discount_rate": 0.05629320705102936
-}
-```
-
-```
-repo, _ := reserved.NewRepository("example",[]string{"ap-northeast-1"})
-for _, r := range repo.SelectAll() {
-  fmt.Println(r)
-}
-
-price, _ := awsprice.NewRepository([]string{"ap-northeast-1"})
-for _, r := range repo.SelectAll() {
-  fmt.Println(r.Price(price))
-}
-
-{
-  "region":"ap-northeast-1",
-  "instance_type":"t3.nano",
-  "duration":31536000,
-  "offering_type":"All Upfront",
-  "offering_class":"standard",
-  "product_description":"Linux/UNIX (Amazon VPC)",
-  "instance_count":100,
-  "start":"2019-01-01T12:00:00Z"
-}
-
-{
-  "sku":"TZG97WFA265PFBMW",
-  "offer_term_code":"6QCMYABX3D",
-  "region":"ap-northeast-1",
-  "instance_type":"t3.nano",
-  "usage_type":"APN1-BoxUsage:t3.nano",
-  "lease_contract_length":"1yr",
-  "purchase_option":"All Upfront",
-  "ondemand":0.0068,
-  "reserved_quantity":38,
-  "reserved_hrs":0,
-  "tenancy":"Shared",
-  "pre_installed":"NA",
-  "operating_system":"Linux",
-  "operation":"RunInstances",
-  "offering_class":"standard",
-  "normalization_size_factor":"0.25"
 }
 ```
 

@@ -3,7 +3,10 @@ package awsprice
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
+
+	"github.com/itsubaki/hermes/pkg/reserved"
 )
 
 func TestSerialize(t *testing.T) {
@@ -48,7 +51,9 @@ func TestFindMinimumDatabaseT2Medium(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	fmt.Println(min)
+	if min.UsageType != "APN1-InstanceUsage:db.t2.small" {
+		t.Errorf("invalid usage type=%s", min.UsageType)
+	}
 }
 
 func TestFindMinimumDatabase(t *testing.T) {
@@ -185,8 +190,12 @@ func TestRecommendM4large(t *testing.T) {
 		{Date: "2018-12", InstanceNum: 10.8},
 	}
 
-	fmt.Println(r.Recommend(forecast))
-	fmt.Println(repo.Recommend(r, forecast))
+	r0 := r.Recommend(forecast)
+	r1, _ := repo.Recommend(r, forecast)
+
+	if r0.Record.UsageType != r1.MinimumRecord.UsageType {
+		t.Errorf("invalid usage type in recommend")
+	}
 }
 
 func TestRecommendM44xlarge(t *testing.T) {
@@ -220,6 +229,35 @@ func TestRecommendM44xlarge(t *testing.T) {
 		{Date: "2018-12", InstanceNum: 10.8},
 	}
 
+	rec, _ := repo.Recommend(rs[0], forecast)
 	fmt.Println(rs[0])
-	fmt.Println(repo.Recommend(rs[0], forecast))
+	fmt.Println(rec)
+
+	rsv, err := reserved.Read("/var/tmp/hermes/reserved/example.out")
+	if err != nil {
+		t.Errorf("read file: %v", err)
+	}
+
+	for _, r := range rsv.SelectAll() {
+		yr := "1yr"
+		if r.Duration == 94608000 {
+			yr = "3yr"
+		}
+
+		os := "Linux"
+		if strings.Contains(r.ProductDescription, "Windows") {
+			os = "Windows"
+		}
+
+		rs := repo.FindByInstanceType(r.InstanceType).
+			Region(r.Region).
+			OperatingSystem(os).
+			LeaseContractLength(yr).
+			PurchaseOption(r.OfferingType).
+			OfferingClass(r.OfferingClass)
+
+		if len(rs) == 1 {
+			fmt.Println(r)
+		}
+	}
 }
