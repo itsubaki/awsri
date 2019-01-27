@@ -205,8 +205,7 @@ func TestRecommendM44xlarge(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	rs := repo.FindByInstanceType("m4.4xlarge").
-		Region("ap-northeast-1").
+	rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
 		OperatingSystem("Linux").
 		Tenancy("Shared").
 		PreInstalled("NA").

@@ -43,15 +43,38 @@ aws_secret_access_key = ****************************************
 ## Example
 
 ```
+# get current usage
+date := []*costexplorer.DateInterval{
+  {
+    Start: aws.String("2019-11-01"),
+    End:   aws.String("2019-12-01"),
+  },
+}
+
+repo, _ := costexp.NewRepository("example", date)
+for _, r := range repo.SelectAll() {
+  fmt.Println(r)
+}
+
+{
+  "account_id":"123456789012",
+  "date":"2019-11",
+  "usage_type":"APN1-BoxUsage:m4.4xlarge",
+  "platform":"Linux/UNIX",
+  "instance_hour":2264.238066,
+  "instance_num":3.1447750916666664
+}
+
+# find aws pricing of current usage
 repo, _ := awsprice.NewRepository([]string{"ap-northeast-1"})
-rs := repo.FindByInstanceType("m4.4xlarge").
-  Region("ap-northeast-1").
+rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
   OperatingSystem("Linux").
   Tenancy("Shared").
   LeaseContractLength("1yr").
   PurchaseOption("All Upfront").
   OfferingClass("standard")
 
+# predict future usage (the method is various)
 forecast := []Forecast{
   {Date: "2021-01", InstanceNum: 120.4},
   {Date: "2021-02", InstanceNum: 110.3},
@@ -67,6 +90,7 @@ forecast := []Forecast{
   {Date: "2021-12", InstanceNum: 10.8},
 }
 
+# get recommended reserved instance
 result, _ := repo.Recommend(rs[0], forecast)
 fmt.Println(result)
 
@@ -123,7 +147,7 @@ fmt.Println(result)
   "minimum_reserved_instance_num":400
 }
 
-# Buy m4.large x400 instead of m4.4xlarge x50
+# buy m4.large x400 instead of m4.4xlarge x50
 # and
 
 repo, _ := reserved.NewRepository("example",[]string{"ap-northeast-1"})
@@ -142,7 +166,7 @@ for _, r := range repo.SelectAll() {
   "start":"2020-12-01T12:00:00Z"
 }
 
-# Buy m4.large x300 instead of m4.large x400
+# buy m4.large x300 instead of m4.large x400
 ```
 
 ## Memo
@@ -165,10 +189,10 @@ for _, r := range rs {
   fmt.Printf("%s\n", r.GetAnnualCost())
 }
 
-onDemandInstanceNum := 3
-reservedInstanceNum := 10
+ondemand := 3
+reserved := 10
 for _, r := range rs {
-  fmt.Printf("%s\n", r.GetCost(onDemandInstanceNum, reservedInstanceNum))
+  fmt.Printf("%s\n", r.GetCost(ondemand, reserved))
 }
 
 {
@@ -213,256 +237,6 @@ for _, r := range rs {
   "reserved_quantity":7130,
   "subtraction":4170.4000000000015,
   "discount_rate":0.28388375632720975
-}
-
-r := &Record{
-  SKU:                     "XU2NYYPCRTK4T7CN",
-  OfferTermCode:           "6QCMYABX3D",
-  Region:                  "ap-northeast-1",
-  InstanceType:            "m4.4xlarge",
-  UsageType:               "APN1-BoxUsage:m4.4xlarge",
-  LeaseContractLength:     "1yr",
-  PurchaseOption:          "All Upfront",
-  OnDemand:                1.032,
-  ReservedQuantity:        5700,
-  ReservedHrs:             0,
-  Tenancy:                 "Shared",
-  PreInstalled:            "NA",
-  OperatingSystem:         "Linux",
-  Operation:               "RunInstances",
-  OfferingClass:           "standard",
-  NormalizationSizeFactor: "32",
-}
-
-min, _ := repo.FindMinimumInstanceType(r)
-fmt.Println(min)
-
-{
-  "sku":"7MYWT7Y96UT3NJ2D",
-  "offer_term_code":"6QCMYABX3D",
-  "region":"ap-northeast-1",
-  "instance_type":"m4.large",
-  "usage_type":"APN1-BoxUsage:m4.large",
-  "lease_contract_length":"1yr",
-  "purchase_option":"All Upfront",
-  "ondemand":0.129,
-  "reserved_quantity":713,
-  "reserved_hrs":0,
-  "tenancy":"Shared",
-  "pre_installed":"NA",
-  "operating_system":"Linux",
-  "operation":"RunInstances",
-  "offering_class":"standard",
-  "normalization_size_factor":"4"
-}
-```
-
-```
-r := &Record{
-  SKU:                     "7MYWT7Y96UT3NJ2D",
-  OfferTermCode:           "4NA7Y494T4",
-  Region:                  "ap-northeast-1",
-  InstanceType:            "m4.large",
-  UsageType:               "APN1-BoxUsage:m4.large",
-  LeaseContractLength:     "1yr",
-  PurchaseOption:          "All Upfront",
-  OnDemand:                0.129,
-  ReservedHrs:             0,
-  ReservedQuantity:        713,
-  Tenancy:                 "Shared",
-  PreInstalled:            "NA",
-  OperatingSystem:         "Linux",
-  Operation:               "RunInstances",
-  OfferingClass:           "standard",
-  NormalizationSizeFactor: "4",
-}
-
-forecast := []Forecast{
-  {Date: "2018-01", InstanceNum: 120.4},
-  {Date: "2018-02", InstanceNum: 110.3},
-  {Date: "2018-03", InstanceNum: 100.1},
-  {Date: "2018-04", InstanceNum: 90.9},
-  {Date: "2018-05", InstanceNum: 80.9},
-  {Date: "2018-06", InstanceNum: 70.6},
-  {Date: "2018-07", InstanceNum: 60.3},
-  {Date: "2018-08", InstanceNum: 50.9},
-  {Date: "2018-09", InstanceNum: 40.7},
-  {Date: "2018-10", InstanceNum: 30.6},
-  {Date: "2018-11", InstanceNum: 20.2},
-  {Date: "2018-12", InstanceNum: 10.8},
-}
-
-fmt.Println(r.Recommend(forecast, "breakevenpoint"))
-{
- "record": {
-  "sku": "7MYWT7Y96UT3NJ2D",
-  "offer_term_code": "4NA7Y494T4",
-  "region": "ap-northeast-1",
-  "instance_type": "m4.large",
-  "usage_type": "APN1-BoxUsage:m4.large",
-  "lease_contract_length": "1yr",
-  "purchase_option": "All Upfront",
-  "ondemand": 0.129,
-  "reserved_quantity": 713,
-  "reserved_hrs": 0,
-  "tenancy": "Shared",
-  "pre_installed": "NA",
-  "operating_system": "Linux",
-  "operation": "RunInstances",
-  "offering_class": "standard",
-  "normalization_size_factor": "4"
- },
- "breakevenpoint_in_month": 8,
- "strategy": "breakevenpoint",
- "ondemand_instance_num_avg": 23.7,
- "reserved_instance_num": 50,
- "full_ondemand_cost": 83283.948,
- "reserved_applied_cost": {
-  "ondemand": 26781.947999999997,
-  "reserved": 35650,
-  "total": 62431.948
- },
- "reserved_quantity": 35650,
- "subtraction": 20852.000000000007,
- "discount_rate": 0.2503723766793573
-}
-
-fmt.Println(r.Recommend(forecast, "minimum"))
-{
- "record": {
-  "sku": "7MYWT7Y96UT3NJ2D",
-  "offer_term_code": "4NA7Y494T4",
-  "region": "ap-northeast-1",
-  "instance_type": "m4.large",
-  "usage_type": "APN1-BoxUsage:m4.large",
-  "lease_contract_length": "1yr",
-  "purchase_option": "All Upfront",
-  "ondemand": 0.129,
-  "reserved_quantity": 713,
-  "reserved_hrs": 0,
-  "tenancy": "Shared",
-  "pre_installed": "NA",
-  "operating_system": "Linux",
-  "operation": "RunInstances",
-  "offering_class": "standard",
-  "normalization_size_factor": "4"
- },
- "breakevenpoint_in_month": 8,
- "strategy": "minimum",
- "ondemand_instance_num_avg": 55.55833333333333,
- "reserved_instance_num": 10,
- "full_ondemand_cost": 74083.539,
- "reserved_applied_cost": {
-  "ondemand": 62783.138999999996,
-  "reserved": 7130,
-  "total": 69913.139
- },
- "reserved_quantity": 7130,
- "subtraction": 4170.400000000009,
- "discount_rate": 0.05629320705102936
-}
-```
-
-```
-date := []*costexplorer.DateInterval{
-  {
-    Start: aws.String("2018-11-01"),
-    End:   aws.String("2018-12-01"),
-  },
-}
-
-repo, _ := costexp.NewRepository("example", date)
-for _, r := range repo.SelectAll() {
-  fmt.Println(r)
-}
-
-{
-  "account_id":"123456789012",
-  "date":"2018-11",
-  "usage_type":"APN1-BoxUsage:c4.2xlarge",
-  "platform":"Linux/UNIX",
-  "instance_hour":175.600833,
-  "instance_num":0.24389004583333332
-}
-{
-  "account_id":"123456789012",
-  "date":"2018-11",
-  "usage_type":"APN1-BoxUsage:c4.large",
-  "platform":"Linux/UNIX",
-  "instance_hour":720,
-  "instance_num":1
-}
-{
-  "account_id":"123456789012",
-  "date":"2018-11",
-  "usage_type":"APN1-BoxUsage:t2.micro",
-  "platform":"Linux/UNIX",
-  "instance_hour":2264.238066,
-  "instance_num":3.1447750916666664
-}
-{
-  "account_id":"123456789012",
-  "date":"2018-11",
-  "usage_type":"APN1-BoxUsage:t2.nano",
-  "platform":"Linux/UNIX",
-  "instance_hour":720,
-  "instance_num":1
-}
-{
-  "account_id":"123456789012",
-  "date":"2018-11",
-  "usage_type":"APN1-BoxUsage:t2.small",
-  "platform":"Linux/UNIX",
-  "instance_hour":1440,
-  "instance_num":2
-}
-{
-  "account_id":"123456789012",
-  "date":"2018-11",
-  "usage_type":"APN1-NodeUsage:cache.r5.large",
-  "engine":"Redis",
-  "instance_hour":2,
-  "instance_num":0.002777777777777778
-}
-{
-  "account_id":"123456789012",
-  "date":"2018-11",
-  "usage_type":"APN1-NodeUsage:cache.t2.micro",
-  "engine":"Redis",
-  "instance_hour":344,
-  "instance_num":0.4777777777777778
-}
-{
-  "account_id":"123456789012",
-  "date":"2018-11",
-  "usage_type":"APN1-NodeUsage:cache.t2.small",
-  "engine":"Redis",
-  "instance_hour":72,
-  "instance_num":0.1
-}
-{
-  "account_id":"123456789012",
-  "date":"2018-11",
-  "usage_type":"APN1-InstanceUsage:db.r3.large",
-  "engine":"Aurora MySQL",
-  "instance_hour":1,
-  "instance_num":0.001388888888888889
-}
-{
-  "account_id":"123456789012",
-  "date":"2018-11",
-  "usage_type":"APN1-InstanceUsage:db.r4.large",
-  "engine":"Aurora MySQL",
-  "instance_hour":2,
-  "instance_num":0.002777777777777778
-}
-{
-  "account_id":"123456789012",
-  "date":"2018-11",
-  "usage_type":"APN1-InstanceUsage:db.t2.small",
-  "engine":"Aurora MySQL",
-  "instance_hour":237,
-  "instance_num":0.32916666666666666
 }
 ```
 
