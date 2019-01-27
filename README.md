@@ -355,13 +355,15 @@ fmt.Println(r.Recommend(forecast, "minimum"))
 
 ```
 repo, _ := reserved.NewRepository("example",[]string{"ap-northeast-1"})
+for _, r := range repo.SelectAll() {
+  fmt.Println(r)
+}
+
 price, _ := awsprice.NewRepository([]string{"ap-northeast-1"})
 for _, r := range repo.SelectAll() {
-  sku, _ := r.Price(price)
-
-  fmt.Println(r)
-  fmt.Println(sku)
+  fmt.Println(r.Price(price))
 }
+
 
 {
   "region":"ap-northeast-1",
