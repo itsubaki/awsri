@@ -42,6 +42,22 @@ func (r *Record) String() string {
 	return string(bytea)
 }
 
+func (r *Record) Count() int64 {
+	if r.InstanceCount > 0 {
+		return r.InstanceCount
+	}
+
+	if r.DBInstanceCount > 0 {
+		return r.DBInstanceCount
+	}
+
+	if r.CacheNodeCount > 0 {
+		return r.CacheNodeCount
+	}
+
+	return 0
+}
+
 func (list RecordList) Region(region string) RecordList {
 	ret := RecordList{}
 

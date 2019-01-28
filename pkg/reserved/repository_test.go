@@ -1,7 +1,6 @@
 package reserved
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -78,8 +77,9 @@ func TestRecommendM44xlarge(t *testing.T) {
 	}
 
 	rec, _ := repo.Recommend(rs[0], forecast)
-	fmt.Println(rs[0])
-	fmt.Println(rec)
+	if rs[0].OfferTermCode != rec.MinimumRecord.OfferTermCode {
+		t.Errorf("invalid offer term")
+	}
 
 	rsv, err := Read("/var/tmp/hermes/reserved/example.out")
 	if err != nil {
@@ -87,5 +87,7 @@ func TestRecommendM44xlarge(t *testing.T) {
 	}
 
 	r, _ := rsv.FindByAWSPrice(rec.MinimumRecord)
-	fmt.Println(r)
+	if r.Count() != r.InstanceCount {
+		t.Errorf("invalid count")
+	}
 }
