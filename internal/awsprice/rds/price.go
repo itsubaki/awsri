@@ -79,6 +79,10 @@ type OutputPrice struct {
 }
 
 func GetPrice(region string) (map[string]OutputPrice, error) {
+	return GetPriceWithClient(region, http.DefaultClient)
+}
+
+func GetPriceWithClient(region string, client *http.Client) (map[string]OutputPrice, error) {
 	var input InputPrice
 	{
 		url := fmt.Sprintf("%s/offers/v1.0/aws/AmazonRDS/current/region_index.json", BaseURL)

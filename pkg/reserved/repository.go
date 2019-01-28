@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -14,21 +15,28 @@ import (
 )
 
 type Repository struct {
-	Profile  string     `json:"profile"`
 	Region   []string   `json:"region"`
 	Internal RecordList `json:"internal"`
 }
 
-func NewRepository(profile string, region []string) (*Repository, error) {
-	repo := &Repository{
-		Profile: profile,
-		Region:  region,
-	}
+func NewRepository() *Repository {
+	return &Repository{}
+}
 
+func (repo *Repository) Fetch(region []string) error {
+	return repo.FetchWithClient(region, http.DefaultClient)
+}
+
+func (repo *Repository) FetchWithClient(region []string, client *http.Client) error {
 	for _, r := range region {
-		ses, err := session.NewSession(&aws.Config{Region: aws.String(r)})
+		ses, err := session.NewSession(
+			&aws.Config{
+				Region:     aws.String(r),
+				HTTPClient: client,
+			},
+		)
 		if err != nil {
-			return nil, fmt.Errorf("new session (region=%s): %v", r, err)
+			return fmt.Errorf("new session (region=%s): %v", r, err)
 		}
 
 		{
@@ -38,7 +46,7 @@ func NewRepository(profile string, region []string) (*Repository, error) {
 				},
 			})
 			if err != nil {
-				return nil, fmt.Errorf("describe reserved instances: %v", err)
+				return fmt.Errorf("describe reserved instances: %v", err)
 			}
 
 			for _, i := range output.ReservedInstances {
@@ -66,7 +74,7 @@ func NewRepository(profile string, region []string) (*Repository, error) {
 
 				output, err := client.DescribeReservedCacheNodes(input)
 				if err != nil {
-					return nil, fmt.Errorf("describe reserved cachenode: %v", err)
+					return fmt.Errorf("describe reserved cachenode: %v", err)
 				}
 
 				for _, i := range output.ReservedCacheNodes {
@@ -102,7 +110,7 @@ func NewRepository(profile string, region []string) (*Repository, error) {
 
 				output, err := client.DescribeReservedDBInstances(input)
 				if err != nil {
-					return nil, fmt.Errorf("describe reserved db instance: %v", err)
+					return fmt.Errorf("describe reserved db instance: %v", err)
 				}
 
 				for _, i := range output.ReservedDBInstances {
@@ -129,7 +137,7 @@ func NewRepository(profile string, region []string) (*Repository, error) {
 		}
 	}
 
-	return repo, nil
+	return nil
 }
 
 func Read(path string) (*Repository, error) {

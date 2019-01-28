@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -18,16 +19,20 @@ type Repository struct {
 	Internal RecordList `json:"internal"`
 }
 
-func NewRepository(region []string) (*Repository, error) {
-	repo := &Repository{
-		Region: region,
-	}
+func NewRepository() *Repository {
+	return &Repository{}
+}
 
+func (repo *Repository) Fetch(region []string) error {
+	return repo.FetchWithClient(region, http.DefaultClient)
+}
+
+func (repo *Repository) FetchWithClient(region []string, client *http.Client) error {
 	for _, r := range region {
 		{
-			price, err := ec2.GetPrice(r)
+			price, err := ec2.GetPriceWithClient(r, client)
 			if err != nil {
-				return nil, fmt.Errorf("get ec2 price: %v", err)
+				return fmt.Errorf("get ec2 price: %v", err)
 			}
 
 			for k := range price {
@@ -54,10 +59,11 @@ func NewRepository(region []string) (*Repository, error) {
 		}
 
 		{
-			price, err := cache.GetPrice(r)
+			price, err := cache.GetPriceWithClient(r, client)
 			if err != nil {
-				return nil, fmt.Errorf("get cache price: %v", err)
+				return fmt.Errorf("get cache price: %v", err)
 			}
+
 			for k := range price {
 				v := price[k]
 				repo.Internal = append(repo.Internal, &Record{
@@ -77,10 +83,11 @@ func NewRepository(region []string) (*Repository, error) {
 		}
 
 		{
-			price, err := rds.GetPrice(r)
+			price, err := rds.GetPriceWithClient(r, client)
 			if err != nil {
-				return nil, fmt.Errorf("cache price: %v", err)
+				return fmt.Errorf("cache price: %v", err)
 			}
+
 			for k := range price {
 				v := price[k]
 				repo.Internal = append(repo.Internal, &Record{
@@ -101,7 +108,7 @@ func NewRepository(region []string) (*Repository, error) {
 		}
 	}
 
-	return repo, nil
+	return nil
 }
 
 func Read(path string) (*Repository, error) {

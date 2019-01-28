@@ -20,8 +20,8 @@ func TestSerialize(t *testing.T) {
 			continue
 		}
 
-		repo, err := NewRepository([]string{region[i]})
-		if err != nil {
+		repo := NewRepository()
+		if err := repo.Fetch([]string{region[i]}); err != nil {
 			t.Errorf("new repository: %v", err)
 		}
 

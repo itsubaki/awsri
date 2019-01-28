@@ -1,8 +1,6 @@
 package rds
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestGetPrice(t *testing.T) {
 	_, err := GetPrice("ap-northeast-1")

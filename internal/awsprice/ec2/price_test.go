@@ -1,8 +1,6 @@
 package ec2
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestGetPriceAPN1(t *testing.T) {
 	_, err := GetPrice("ap-northeast-1")

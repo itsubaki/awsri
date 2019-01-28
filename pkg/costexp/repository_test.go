@@ -8,7 +8,6 @@ import (
 
 func TestSerialize(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
-
 	date := []*Date{
 		{Start: "2018-01-01", End: "2018-02-01"},
 		{Start: "2018-02-01", End: "2018-03-01"},
@@ -30,8 +29,8 @@ func TestSerialize(t *testing.T) {
 			continue
 		}
 
-		repo, err := NewRepository("example", []*Date{date[i]})
-		if err != nil {
+		repo := NewRepository()
+		if err := repo.Fetch([]*Date{date[i]}); err != nil {
 			t.Errorf("new repository: %v", err)
 		}
 
@@ -55,10 +54,7 @@ func TestMergedRepository(t *testing.T) {
 		fmt.Sprintf("%s/%s.out", dir, "example_2018-09"),
 	}
 
-	repo := &Repository{
-		Profile: "example",
-	}
-
+	repo := &Repository{}
 	for _, p := range path {
 		tmp, err := Read(p)
 		if err != nil {
@@ -88,10 +84,6 @@ func TestRepository(t *testing.T) {
 
 	if len(repo.SelectAll()) < 1 {
 		t.Errorf("repository is empty")
-	}
-
-	if repo.Profile != "example" {
-		t.Errorf("invalid profile")
 	}
 
 }

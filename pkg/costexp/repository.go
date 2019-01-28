@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"sort"
 
@@ -11,23 +12,27 @@ import (
 )
 
 type Repository struct {
-	Profile  string     `json:"profile"`
 	Internal RecordList `json:"internal"`
 }
 
-func NewRepository(profile string, date []*Date) (*Repository, error) {
-	repo := &Repository{
-		Profile: profile,
-	}
+func NewRepository() *Repository {
+	return &Repository{}
+}
 
-	// start[:7] => 2018-12-01 -> 2018-12
+func (repo *Repository) Fetch(date []*Date) error {
+	return repo.FetchWithClient(date, http.DefaultClient)
+}
+
+func (repo *Repository) FetchWithClient(date []*Date, client *http.Client) error {
+	cli := costexp.New()
+	cli.Client.Config.WithHTTPClient(client)
 	for i := range date {
-		q, err := costexp.New().GetUsageQuantity(&costexp.Date{
+		q, err := cli.GetUsageQuantity(&costexp.Date{
 			Start: date[i].Start,
 			End:   date[i].End,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("get usage quantity: %v", err)
+			return fmt.Errorf("get usage quantity: %v", err)
 		}
 
 		for _, qq := range q {
@@ -45,7 +50,7 @@ func NewRepository(profile string, date []*Date) (*Repository, error) {
 		}
 	}
 
-	return repo, nil
+	return nil
 }
 
 func Read(path string) (*Repository, error) {

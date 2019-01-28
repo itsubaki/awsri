@@ -21,8 +21,8 @@ func TestSerialize(t *testing.T) {
 		return
 	}
 
-	repo, err := NewRepository("example", region)
-	if err != nil {
+	repo := NewRepository()
+	if err := repo.Fetch(region); err != nil {
 		t.Errorf("new repository: %v", err)
 	}
 
@@ -39,10 +39,6 @@ func TestDeserialize(t *testing.T) {
 
 	if len(repo.SelectAll()) < 1 {
 		t.Errorf("repository is empty")
-	}
-
-	if repo.Profile != "example" {
-		t.Errorf("invalid profile")
 	}
 }
 
