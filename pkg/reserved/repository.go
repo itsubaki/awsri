@@ -11,7 +11,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/elasticache"
 	"github.com/aws/aws-sdk-go/service/rds"
-	"github.com/itsubaki/hermes/pkg/awsprice"
 )
 
 type Repository struct {
@@ -185,27 +184,13 @@ func (r *Repository) SelectAll() RecordList {
 	return r.Internal
 }
 
-func (r *Repository) FindByAWSPrice(record *awsprice.Record) (*Record, error) {
-	duration := 31536000
-	if record.LeaseContractLength == "3yr" {
-		duration = 94608000
+func (r *Repository) FindByInstanceType(tipe string) RecordList {
+	out := RecordList{}
+	for i := range r.Internal {
+		if r.Internal[i].InstanceType == tipe {
+			out = append(out, r.Internal[i])
+		}
 	}
 
-	rs := r.SelectAll().
-		Region(record.Region).
-		InstanceType(record.InstanceType).
-		Duration(int64(duration)).
-		OfferingClass(record.OfferingClass).
-		OfferingType(record.PurchaseOption).
-		ContainsProductDescription(record.OperatingSystem)
-
-	if len(rs) < 1 {
-		return nil, fmt.Errorf("not found")
-	}
-
-	if len(rs) > 1 {
-		return nil, fmt.Errorf("invalid query to awsprice repository")
-	}
-
-	return rs[0], nil
+	return out
 }

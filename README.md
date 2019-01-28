@@ -155,8 +155,19 @@ fmt.Println(result)
 # and
 
 rsv, _ := reserved.NewRepository("example", []string{"ap-northeast-1"})
-bought, _ := rsv.FindByAWSPrice(result.MinimumRecord)
-fmt.Println(bought)
+rs := rsv.FindByInstanceType(min.InstanceType).
+  Region(min.Region).
+  Duration(func(length string) int64 {
+    duration := 31536000
+    if length == "3yr" {
+      duration = 94608000
+    }
+    return int64(duration)
+  }(min.LeaseContractLength)).
+  OfferingClass(min.OfferingClass).
+  OfferingType(min.PurchaseOption).
+  ContainsProductDescription(min.OperatingSystem)
+fmt.Println(rs[0])
 
 {
   "region":"ap-northeast-1",
@@ -168,6 +179,9 @@ fmt.Println(bought)
   "instance_count":100,
   "start":"2020-12-01T12:00:00Z"
 }
+
+fmt.Println(result.MinimumReservedInstanceNum - float64(rs[0].Count()))
+// -> 300
 
 # buy m4.large x300 instead of m4.large x400
 ```

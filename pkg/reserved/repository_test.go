@@ -77,7 +77,9 @@ func TestRecommendM44xlarge(t *testing.T) {
 	}
 
 	rec, _ := repo.Recommend(rs[0], forecast)
-	if rs[0].OfferTermCode != rec.MinimumRecord.OfferTermCode {
+	min := rec.MinimumRecord
+
+	if rs[0].OfferTermCode != min.OfferTermCode {
 		t.Errorf("invalid offer term")
 	}
 
@@ -86,8 +88,20 @@ func TestRecommendM44xlarge(t *testing.T) {
 		t.Errorf("read file: %v", err)
 	}
 
-	r, _ := rsv.FindByAWSPrice(rec.MinimumRecord)
-	if r.Count() != r.InstanceCount {
+	rs2 := rsv.FindByInstanceType(min.InstanceType).
+		Region(min.Region).
+		Duration(func(length string) int64 {
+			duration := 31536000
+			if length == "3yr" {
+				duration = 94608000
+			}
+			return int64(duration)
+		}(min.LeaseContractLength)).
+		OfferingClass(min.OfferingClass).
+		OfferingType(min.PurchaseOption).
+		ContainsProductDescription(min.OperatingSystem)
+
+	if rs2[0].Count() != rs2[0].InstanceCount {
 		t.Errorf("invalid count")
 	}
 }
