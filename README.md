@@ -155,6 +155,7 @@ fmt.Println(result)
 # and
 
 rsv, _ := reserved.NewRepository("example", []string{"ap-northeast-1"})
+min := result.MinimumRecord
 rs := rsv.FindByInstanceType(min.InstanceType).
   Region(min.Region).
   Duration(func(length string) int64 {
