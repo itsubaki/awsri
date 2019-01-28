@@ -178,7 +178,8 @@ func (r *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
 		for i := range defined {
 			suspect := fmt.Sprintf("%s.%s", familiy, defined[i])
 			for j := range r.Internal {
-				if r.Internal[j].InstanceType == suspect {
+				if r.Internal[j].InstanceType == suspect &&
+					strings.LastIndex(r.Internal[j].UsageType, ".") > 0 {
 					tmp = append(tmp, r.Internal[j])
 				}
 			}
@@ -217,7 +218,8 @@ func (r *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
 			suspect := fmt.Sprintf("%s.%s", familiy, defined[i])
 			for j := range r.Internal {
 				if r.Internal[j].InstanceType == suspect &&
-					r.Internal[j].DatabaseEngine == record.DatabaseEngine {
+					r.Internal[j].DatabaseEngine == record.DatabaseEngine &&
+					strings.LastIndex(r.Internal[j].UsageType, ".") > 0 {
 					tmp = append(tmp, r.Internal[j])
 				}
 			}

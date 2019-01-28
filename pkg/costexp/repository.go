@@ -7,7 +7,6 @@ import (
 	"os"
 	"sort"
 
-	"github.com/aws/aws-sdk-go/service/costexplorer"
 	"github.com/itsubaki/hermes/internal/costexp"
 )
 
@@ -16,14 +15,17 @@ type Repository struct {
 	Internal RecordList `json:"internal"`
 }
 
-func NewRepository(profile string, date []*costexplorer.DateInterval) (*Repository, error) {
+func NewRepository(profile string, date []*Date) (*Repository, error) {
 	repo := &Repository{
 		Profile: profile,
 	}
 
 	// start[:7] => 2018-12-01 -> 2018-12
 	for i := range date {
-		q, err := costexp.New().GetUsageQuantity(date[i])
+		q, err := costexp.New().GetUsageQuantity(&costexp.Date{
+			Start: date[i].Start,
+			End:   date[i].End,
+		})
 		if err != nil {
 			return nil, fmt.Errorf("get usage quantity: %v", err)
 		}

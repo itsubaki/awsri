@@ -71,6 +71,19 @@ func (list RecordList) Region(region string) RecordList {
 	return ret
 }
 
+func (list RecordList) CacheNodeType(tipe string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].CacheNodeType != tipe {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
 func (list RecordList) InstanceType(tipe string) RecordList {
 	ret := RecordList{}
 

@@ -48,10 +48,10 @@ aws_secret_access_key = ****************************************
 
 ```
 # get current usage
-date := []*costexplorer.DateInterval{
+date := []*costexp.Date{
   {
-    Start: aws.String("2019-11-01"),
-    End:   aws.String("2019-12-01"),
+    Start: "2019-11-01",
+    End:   "2019-12-01",
   },
 }
 

@@ -52,12 +52,10 @@ func TestReservationCoverage(t *testing.T) {
 func TestLinkedAccount(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	period := &costexplorer.DateInterval{
-		Start: aws.String("2018-11-01"),
-		End:   aws.String("2018-12-01"),
-	}
-
-	list, err := New().GetLinkedAccount(period)
+	list, err := New().GetLinkedAccount(&Date{
+		Start: "2018-11-01",
+		End:   "2018-12-01",
+	})
 	if err != nil {
 		t.Errorf("get linked account: %v", err)
 	}
@@ -70,12 +68,10 @@ func TestLinkedAccount(t *testing.T) {
 func TestUsageType(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	period := &costexplorer.DateInterval{
-		Start: aws.String("2018-11-01"),
-		End:   aws.String("2018-12-01"),
-	}
-
-	list, err := New().GetUsageType(period)
+	list, err := New().GetUsageType(&Date{
+		Start: "2018-11-01",
+		End:   "2018-12-01",
+	})
 	if err != nil {
 		t.Errorf("get usage type: %v", err)
 	}
@@ -88,12 +84,10 @@ func TestUsageType(t *testing.T) {
 func TestGetUsageQuantity(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	period := &costexplorer.DateInterval{
-		Start: aws.String("2018-11-01"),
-		End:   aws.String("2018-11-02"),
-	}
-
-	list, err := New().GetUsageQuantity(period)
+	list, err := New().GetUsageQuantity(&Date{
+		Start: "2018-11-01",
+		End:   "2018-11-02",
+	})
 	if err != nil {
 		t.Errorf("get usage quantity: %v", err)
 	}

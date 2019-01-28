@@ -48,15 +48,15 @@ func New() *CostExp {
 	}
 }
 
-func (c *CostExp) GetUsageQuantity(period *costexplorer.DateInterval) (UsageQuantityList, error) {
+func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
 	out := UsageQuantityList{}
 
-	linkedAccount, err := c.GetLinkedAccount(period)
+	linkedAccount, err := c.GetLinkedAccount(date)
 	if err != nil {
 		return out, fmt.Errorf("get linked account: %v", err)
 	}
 
-	usageType, err := c.GetUsageType(period)
+	usageType, err := c.GetUsageType(date)
 	if err != nil {
 		return out, fmt.Errorf("get usage type: %v", err)
 	}
@@ -77,7 +77,10 @@ func (c *CostExp) GetUsageQuantity(period *costexplorer.DateInterval) (UsageQuan
 				Description: linkedAccount[i].Description,
 				Dimension:   "PLATFORM",
 				UsageType:   ec2UsageType,
-				Period:      period,
+				Period: &costexplorer.DateInterval{
+					Start: &date.Start,
+					End:   &date.End,
+				},
 			})
 
 			if err != nil {
@@ -101,7 +104,10 @@ func (c *CostExp) GetUsageQuantity(period *costexplorer.DateInterval) (UsageQuan
 				Description: linkedAccount[i].Description,
 				Dimension:   "CACHE_ENGINE",
 				UsageType:   cacheUsageType,
-				Period:      period,
+				Period: &costexplorer.DateInterval{
+					Start: &date.Start,
+					End:   &date.End,
+				},
 			})
 
 			if err != nil {
@@ -126,7 +132,10 @@ func (c *CostExp) GetUsageQuantity(period *costexplorer.DateInterval) (UsageQuan
 				Description: linkedAccount[i].Description,
 				Dimension:   "DATABASE_ENGINE",
 				UsageType:   dbUsageType,
-				Period:      period,
+				Period: &costexplorer.DateInterval{
+					Start: &date.Start,
+					End:   &date.End,
+				},
 			})
 
 			if err != nil {
@@ -231,11 +240,14 @@ func (c *CostExp) getUsageQuantity(in *getUsageQuantityInput) (UsageQuantityList
 	return out, nil
 }
 
-func (c *CostExp) GetUsageType(period *costexplorer.DateInterval) ([]string, error) {
+func (c *CostExp) GetUsageType(date *Date) ([]string, error) {
 	usageTypeUnique := make(map[string]bool)
 	input := costexplorer.GetDimensionValuesInput{
-		Dimension:  aws.String("USAGE_TYPE"),
-		TimePeriod: period,
+		Dimension: aws.String("USAGE_TYPE"),
+		TimePeriod: &costexplorer.DateInterval{
+			Start: &date.Start,
+			End:   &date.End,
+		},
 	}
 
 	val, err := c.Client.GetDimensionValues(&input)
@@ -266,12 +278,15 @@ func (c *CostExp) GetUsageType(period *costexplorer.DateInterval) ([]string, err
 	return out, nil
 }
 
-func (c *CostExp) GetLinkedAccount(period *costexplorer.DateInterval) ([]LinkedAccount, error) {
+func (c *CostExp) GetLinkedAccount(date *Date) ([]LinkedAccount, error) {
 	out := []LinkedAccount{}
 
 	input := costexplorer.GetDimensionValuesInput{
-		Dimension:  aws.String("LINKED_ACCOUNT"),
-		TimePeriod: period,
+		Dimension: aws.String("LINKED_ACCOUNT"),
+		TimePeriod: &costexplorer.DateInterval{
+			Start: &date.Start,
+			End:   &date.End,
+		},
 	}
 
 	val, err := c.Client.GetDimensionValues(&input)
