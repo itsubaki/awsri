@@ -79,7 +79,7 @@ rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
   OfferingClass("standard")
 
 # predict future usage (the method is various)
-forecast := []Forecast{
+forecast := []awsprice.Forecast{
   {Date: "2021-01", InstanceNum: 120.4},
   {Date: "2021-02", InstanceNum: 110.3},
   {Date: "2021-03", InstanceNum: 100.1},
@@ -180,9 +180,6 @@ fmt.Println(rs[0])
   "instance_count":100,
   "start":"2020-12-01T12:00:00Z"
 }
-
-fmt.Println(result.MinimumReservedInstanceNum - float64(rs[0].Count()))
-// -> 300
 
 # buy m4.large x300 instead of m4.large x400
 ```
