@@ -12,10 +12,11 @@
  This library shows the RI that you should buy now,
  based on the future instance usage and the current RI purchase.
 
-## Prepare
+## Required
 
 ```
 # set aws credential "example" with iam policy "hermes"
+
 $ cat ~/.aws/credentials
 [example]
 aws_access_key_id = ********************
@@ -30,6 +31,9 @@ aws_secret_access_key = ****************************************
       "Sid": "hermes",
       "Effect": "Allow",
       "Action": [
+        "ec2:DescribeReserved*",
+        "elasticache:DescribeReserved*",
+        "rds:DescribeReserved*",
         "organizations:List*",
         "organizations:Describe*",
         "ce:Get*"
@@ -150,10 +154,9 @@ fmt.Println(result)
 # buy m4.large x400 instead of m4.4xlarge x50
 # and
 
-repo, _ := reserved.NewRepository("example",[]string{"ap-northeast-1"})
-for _, r := range repo.SelectAll() {
-  fmt.Println(r)
-}
+rsv, _ := reserved.NewRepository("example", []string{"ap-northeast-1"})
+bought, _ := rsv.FindByAWSPrice(result.MinimumRecord)
+fmt.Println(bought)
 
 {
   "region":"ap-northeast-1",

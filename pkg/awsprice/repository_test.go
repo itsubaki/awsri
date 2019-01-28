@@ -3,10 +3,7 @@ package awsprice
 import (
 	"fmt"
 	"os"
-	"strings"
 	"testing"
-
-	"github.com/itsubaki/hermes/pkg/reserved"
 )
 
 func TestSerialize(t *testing.T) {
@@ -195,68 +192,5 @@ func TestRecommendM4large(t *testing.T) {
 
 	if r0.Record.UsageType != r1.MinimumRecord.UsageType {
 		t.Errorf("invalid usage type in recommend")
-	}
-}
-
-func TestRecommendM44xlarge(t *testing.T) {
-	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
-	repo, err := Read(path)
-	if err != nil {
-		t.Errorf("%v", err)
-	}
-
-	rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
-		OperatingSystem("Linux").
-		Tenancy("Shared").
-		PreInstalled("NA").
-		LeaseContractLength("1yr").
-		PurchaseOption("All Upfront").
-		OfferingClass("standard")
-
-	forecast := []Forecast{
-		{Date: "2018-01", InstanceNum: 120.4},
-		{Date: "2018-02", InstanceNum: 110.3},
-		{Date: "2018-03", InstanceNum: 100.1},
-		{Date: "2018-04", InstanceNum: 90.9},
-		{Date: "2018-05", InstanceNum: 80.9},
-		{Date: "2018-06", InstanceNum: 70.6},
-		{Date: "2018-07", InstanceNum: 60.3},
-		{Date: "2018-08", InstanceNum: 50.9},
-		{Date: "2018-09", InstanceNum: 40.7},
-		{Date: "2018-10", InstanceNum: 30.6},
-		{Date: "2018-11", InstanceNum: 20.2},
-		{Date: "2018-12", InstanceNum: 10.8},
-	}
-
-	rec, _ := repo.Recommend(rs[0], forecast)
-	fmt.Println(rs[0])
-	fmt.Println(rec)
-
-	rsv, err := reserved.Read("/var/tmp/hermes/reserved/example.out")
-	if err != nil {
-		t.Errorf("read file: %v", err)
-	}
-
-	for _, r := range rsv.SelectAll() {
-		yr := "1yr"
-		if r.Duration == 94608000 {
-			yr = "3yr"
-		}
-
-		os := "Linux"
-		if strings.Contains(r.ProductDescription, "Windows") {
-			os = "Windows"
-		}
-
-		rs := repo.FindByInstanceType(r.InstanceType).
-			Region(r.Region).
-			OperatingSystem(os).
-			LeaseContractLength(yr).
-			PurchaseOption(r.OfferingType).
-			OfferingClass(r.OfferingClass)
-
-		if len(rs) == 1 {
-			fmt.Println(r)
-		}
 	}
 }

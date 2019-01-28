@@ -1,11 +1,15 @@
 package reserved
 
 import (
+	"fmt"
 	"os"
 	"testing"
+
+	"github.com/itsubaki/hermes/pkg/awsprice"
 )
 
 func TestSerialize(t *testing.T) {
+	os.Setenv("AWS_PROFILE", "example")
 	region := []string{
 		"ap-northeast-1",
 		"eu-central-1",
@@ -41,4 +45,47 @@ func TestDeserialize(t *testing.T) {
 	if repo.Profile != "example" {
 		t.Errorf("invalid profile")
 	}
+}
+
+func TestRecommendM44xlarge(t *testing.T) {
+	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
+	repo, err := awsprice.Read(path)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
+		OperatingSystem("Linux").
+		Tenancy("Shared").
+		PreInstalled("NA").
+		LeaseContractLength("1yr").
+		PurchaseOption("All Upfront").
+		OfferingClass("standard")
+
+	forecast := []awsprice.Forecast{
+		{Date: "2018-01", InstanceNum: 120.4},
+		{Date: "2018-02", InstanceNum: 110.3},
+		{Date: "2018-03", InstanceNum: 100.1},
+		{Date: "2018-04", InstanceNum: 90.9},
+		{Date: "2018-05", InstanceNum: 80.9},
+		{Date: "2018-06", InstanceNum: 70.6},
+		{Date: "2018-07", InstanceNum: 60.3},
+		{Date: "2018-08", InstanceNum: 50.9},
+		{Date: "2018-09", InstanceNum: 40.7},
+		{Date: "2018-10", InstanceNum: 30.6},
+		{Date: "2018-11", InstanceNum: 20.2},
+		{Date: "2018-12", InstanceNum: 10.8},
+	}
+
+	rec, _ := repo.Recommend(rs[0], forecast)
+	fmt.Println(rs[0])
+	fmt.Println(rec)
+
+	rsv, err := Read("/var/tmp/hermes/reserved/example.out")
+	if err != nil {
+		t.Errorf("read file: %v", err)
+	}
+
+	r, _ := rsv.FindByAWSPrice(rec.MinimumRecord)
+	fmt.Println(r)
 }

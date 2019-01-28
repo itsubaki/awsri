@@ -17,8 +17,6 @@ type Repository struct {
 }
 
 func NewRepository(profile string, date []*costexplorer.DateInterval) (*Repository, error) {
-	os.Setenv("AWS_PROFILE", profile)
-
 	repo := &Repository{
 		Profile: profile,
 	}

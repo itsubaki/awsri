@@ -2,6 +2,7 @@ package reserved
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 )
 
@@ -39,4 +40,95 @@ func (r *Record) String() string {
 	}
 
 	return string(bytea)
+}
+
+func (list RecordList) Region(region string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].Region != region {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
+func (list RecordList) InstanceType(tipe string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].InstanceType != tipe {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
+func (list RecordList) Duration(duration int64) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].Duration != duration {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
+func (list RecordList) OfferingType(tipe string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].OfferingType != tipe {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
+func (list RecordList) OfferingClass(class string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].OfferingClass != class {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
+func (list RecordList) ProductDescription(desc string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].ProductDescription != desc {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
+func (list RecordList) ContainsProductDescription(desc string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if !strings.Contains(list[i].ProductDescription, desc) {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
 }

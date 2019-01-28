@@ -10,6 +10,7 @@ import (
 )
 
 func TestSerialize(t *testing.T) {
+	os.Setenv("AWS_PROFILE", "example")
 	date := []*costexplorer.DateInterval{
 		{
 			Start: aws.String("2018-01-01"),

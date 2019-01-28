@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/elasticache"
 	"github.com/aws/aws-sdk-go/service/rds"
+	"github.com/itsubaki/hermes/pkg/awsprice"
 )
 
 type Repository struct {
@@ -25,13 +26,14 @@ func NewRepository(profile string, region []string) (*Repository, error) {
 		Region:  region,
 	}
 
-	os.Setenv("AWS_PROFILE", profile)
 	for _, r := range region {
-		os.Setenv("AWS_REGION", r)
+		ses, err := session.NewSession(&aws.Config{Region: aws.String(r)})
+		if err != nil {
+			return nil, fmt.Errorf("new session (region=%s): %v", r, err)
+		}
 
 		{
-			client := ec2.New(session.Must(session.NewSession()))
-			output, err := client.DescribeReservedInstances(&ec2.DescribeReservedInstancesInput{
+			output, err := ec2.New(ses).DescribeReservedInstances(&ec2.DescribeReservedInstancesInput{
 				Filters: []*ec2.Filter{
 					{Name: aws.String("state"), Values: []*string{aws.String("active")}},
 				},
@@ -55,7 +57,7 @@ func NewRepository(profile string, region []string) (*Repository, error) {
 		}
 
 		{
-			client := elasticache.New(session.Must(session.NewSession()))
+			client := elasticache.New(ses)
 			var maker *string
 			for {
 				input := &elasticache.DescribeReservedCacheNodesInput{}
@@ -91,7 +93,7 @@ func NewRepository(profile string, region []string) (*Repository, error) {
 		}
 
 		{
-			client := rds.New(session.Must(session.NewSession()))
+			client := rds.New(ses)
 			var maker *string
 			for {
 				input := &rds.DescribeReservedDBInstancesInput{}
@@ -181,4 +183,29 @@ func (r *Repository) Deserialize(bytes []byte) error {
 
 func (r *Repository) SelectAll() RecordList {
 	return r.Internal
+}
+
+func (r *Repository) FindByAWSPrice(record *awsprice.Record) (*Record, error) {
+	duration := 31536000
+	if record.LeaseContractLength == "3yr" {
+		duration = 94608000
+	}
+
+	rs := r.SelectAll().
+		Region(record.Region).
+		InstanceType(record.InstanceType).
+		Duration(int64(duration)).
+		OfferingClass(record.OfferingClass).
+		OfferingType(record.PurchaseOption).
+		ContainsProductDescription(record.OperatingSystem)
+
+	if len(rs) < 1 {
+		return nil, fmt.Errorf("not found")
+	}
+
+	if len(rs) > 1 {
+		return nil, fmt.Errorf("invalid query to awsprice repository")
+	}
+
+	return rs[0], nil
 }
