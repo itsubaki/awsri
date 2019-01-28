@@ -23,9 +23,10 @@ type RegionUrl struct {
 }
 
 type PriceList struct {
-	Version  string                                `json:"formatVersion"`
-	Term     map[string]map[string]map[string]Term `json:"terms"`
-	Products map[string]Product                    `json:"products"`
+	FormatVersion string                                `json:"formatVersion"`
+	Version       string                                `json:"version"`
+	Term          map[string]map[string]map[string]Term `json:"terms"`
+	Products      map[string]Product                    `json:"products"`
 }
 
 type Term struct {

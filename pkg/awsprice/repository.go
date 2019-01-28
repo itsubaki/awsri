@@ -25,9 +25,9 @@ func NewRepository(region []string) (*Repository, error) {
 
 	for _, r := range region {
 		{
-			price, err := ec2.ReadPrice(r)
+			price, err := ec2.GetPrice(r)
 			if err != nil {
-				return nil, fmt.Errorf("read ec2 price file: %v", err)
+				return nil, fmt.Errorf("get ec2 price: %v", err)
 			}
 
 			for k := range price {
@@ -54,9 +54,9 @@ func NewRepository(region []string) (*Repository, error) {
 		}
 
 		{
-			price, err := cache.ReadPrice(r)
+			price, err := cache.GetPrice(r)
 			if err != nil {
-				return nil, fmt.Errorf("read cache price file: %v", err)
+				return nil, fmt.Errorf("get cache price: %v", err)
 			}
 			for k := range price {
 				v := price[k]
@@ -77,9 +77,9 @@ func NewRepository(region []string) (*Repository, error) {
 		}
 
 		{
-			price, err := rds.ReadPrice(r)
+			price, err := rds.GetPrice(r)
 			if err != nil {
-				return nil, fmt.Errorf("read cache price file: %v", err)
+				return nil, fmt.Errorf("cache price: %v", err)
 			}
 			for k := range price {
 				v := price[k]
