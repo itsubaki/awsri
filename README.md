@@ -32,8 +32,8 @@ aws_secret_access_key = ****************************************
       "Effect": "Allow",
       "Action": [
         "ec2:DescribeReserved*",
-        "elasticache:DescribeReserved*",
         "rds:DescribeReserved*",
+        "elasticache:DescribeReserved*",
         "organizations:List*",
         "organizations:Describe*",
         "ce:Get*"

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -82,31 +81,6 @@ type OutputPrice struct {
 	NormalizationSizeFactor string  // ec2
 }
 
-func ReadPrice(region string, dir ...string) (map[string]OutputPrice, error) {
-	dirpath := fmt.Sprintf(
-		"%s/%s",
-		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/hermes/internal/awsprice/_json/",
-	)
-
-	path := fmt.Sprintf("%s/%s/%s.json", dirpath, "ec2", region)
-	if len(dir) > 0 {
-		path = fmt.Sprintf("%s/%s/%s.json", dir[0], "ec2", region)
-	}
-
-	buf, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("read body: %v", err)
-	}
-
-	var list PriceList
-	if err := json.Unmarshal(buf, &list); err != nil {
-		return nil, fmt.Errorf("unmarshal: %v", err)
-	}
-
-	return usage(region, list)
-}
-
 func GetPrice(region string) (map[string]OutputPrice, error) {
 	var input InputPrice
 	{
@@ -129,8 +103,6 @@ func GetPrice(region string) (map[string]OutputPrice, error) {
 	var list PriceList
 	{
 		url := fmt.Sprintf("%s%s", BaseURL, input.Regions[region].CurrentVersionUrl)
-		fmt.Println(url)
-
 		resp, err := http.Get(url)
 		if err != nil {
 			return nil, fmt.Errorf("get %s: %v", BaseURL, err)

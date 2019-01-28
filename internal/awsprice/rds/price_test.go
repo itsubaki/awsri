@@ -4,13 +4,6 @@ import (
 	"testing"
 )
 
-func TestReadPrice(t *testing.T) {
-	_, err := ReadPrice("ap-northeast-1")
-	if err != nil {
-		t.Error(err)
-	}
-}
-
 func TestGetPrice(t *testing.T) {
 	_, err := GetPrice("ap-northeast-1")
 	if err != nil {

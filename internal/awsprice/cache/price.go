@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -75,31 +74,6 @@ type OutputPrice struct {
 	ReservedQuantity    float64 // common
 	ReservedHrs         float64 // common
 	CacheEngine         string  // cache
-}
-
-func ReadPrice(region string, dir ...string) (map[string]OutputPrice, error) {
-	dirpath := fmt.Sprintf(
-		"%s/%s",
-		os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/hermes/internal/awsprice/_json/",
-	)
-
-	path := fmt.Sprintf("%s/%s/%s.json", dirpath, "cache", region)
-	if len(dir) > 0 {
-		path = fmt.Sprintf("%s/%s/%s.json", dir[0], "cache", region)
-	}
-
-	buf, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("read body: %v", err)
-	}
-
-	var list PriceList
-	if err := json.Unmarshal(buf, &list); err != nil {
-		return nil, fmt.Errorf("unmarshal: %v", err)
-	}
-
-	return usage(region, list)
 }
 
 func GetPrice(region string) (map[string]OutputPrice, error) {
