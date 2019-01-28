@@ -50,8 +50,8 @@ aws_secret_access_key = ****************************************
 # get current usage
 date := []*costexp.Date{
   {
-    Start: "2019-11-01",
-    End:   "2019-12-01",
+    Start: "2020-11-01",
+    End:   "2020-12-01",
   },
 }
 
@@ -62,7 +62,7 @@ for _, r := range repo.SelectAll() {
 
 {
   "account_id":"123456789012",
-  "date":"2019-11",
+  "date":"2020-11",
   "usage_type":"APN1-BoxUsage:m4.4xlarge",
   "platform":"Linux/UNIX",
   "instance_hour":2264.238066,
