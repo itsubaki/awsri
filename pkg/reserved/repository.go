@@ -19,6 +19,11 @@ type Repository struct {
 	Internal RecordList `json:"internal"`
 }
 
+func New(region []string) (*Repository, error) {
+	repo := NewRepository(region)
+	return repo, repo.Fetch()
+}
+
 func NewRepository(region []string) *Repository {
 	return &Repository{
 		Region: region,

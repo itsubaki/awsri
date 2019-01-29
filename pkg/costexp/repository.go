@@ -16,6 +16,11 @@ type Repository struct {
 	Internal RecordList `json:"internal"`
 }
 
+func New(date []*Date) (*Repository, error) {
+	repo := NewRepository(date)
+	return repo, repo.Fetch()
+}
+
 func NewRepository(date []*Date) *Repository {
 	return &Repository{
 		Date: date,
