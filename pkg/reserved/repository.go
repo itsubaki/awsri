@@ -46,7 +46,7 @@ func (repo *Repository) FetchWithClient(region []string, client *http.Client) er
 				},
 			})
 			if err != nil {
-				return fmt.Errorf("describe reserved instances: %v", err)
+				return fmt.Errorf("describe reserved instances (region=%s): %v", r, err)
 			}
 
 			for _, i := range output.ReservedInstances {
@@ -74,7 +74,7 @@ func (repo *Repository) FetchWithClient(region []string, client *http.Client) er
 
 				output, err := client.DescribeReservedCacheNodes(input)
 				if err != nil {
-					return fmt.Errorf("describe reserved cachenode: %v", err)
+					return fmt.Errorf("describe reserved cache node (region=%s): %v", r, err)
 				}
 
 				for _, i := range output.ReservedCacheNodes {
@@ -111,7 +111,7 @@ func (repo *Repository) FetchWithClient(region []string, client *http.Client) er
 
 				output, err := client.DescribeReservedDBInstances(input)
 				if err != nil {
-					return fmt.Errorf("describe reserved db instance: %v", err)
+					return fmt.Errorf("describe reserved db instance (region=%s): %v", r, err)
 				}
 
 				for _, i := range output.ReservedDBInstances {

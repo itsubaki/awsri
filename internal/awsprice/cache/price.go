@@ -82,6 +82,15 @@ type OutputPrice struct {
 	CacheEngine         string  // cache
 }
 
+func ReadPrice(region string, buf []byte) (map[string]OutputPrice, error) {
+	var list PriceList
+	if err := json.Unmarshal(buf, &list); err != nil {
+		return nil, fmt.Errorf("unmarshal: %v", err)
+	}
+
+	return usage(region, list)
+}
+
 func GetPrice(region string) (map[string]OutputPrice, error) {
 	return GetPriceWithClient(region, http.DefaultClient)
 }

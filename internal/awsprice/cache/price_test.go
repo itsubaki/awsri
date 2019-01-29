@@ -1,11 +1,35 @@
 package cache
 
-import "testing"
+import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"testing"
+)
 
 func TestGetPrice(t *testing.T) {
 	_, err := GetPrice("ap-northeast-1")
 	if err != nil {
 		t.Error(err)
+	}
+}
+
+func TestReadPrice(t *testing.T) {
+	path := fmt.Sprintf("%s/%s", os.Getenv("GOPATH"),
+		"src/github.com/itsubaki/hermes/internal/awsprice/_json/cache/ap-northeast-1.json",
+	)
+	buf, err := ioutil.ReadFile(path)
+	if err != nil {
+		t.Errorf("read body: %v", err)
+	}
+
+	price, err := ReadPrice("ap-northeast-1", buf)
+	if err != nil {
+		t.Error(err)
+	}
+
+	for _, v := range price {
+		fmt.Printf("%v\n", v)
 	}
 }
 
