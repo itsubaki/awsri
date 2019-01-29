@@ -90,12 +90,7 @@ func GetPriceWithClient(region string, client *http.Client) (map[string]OutputPr
 	var input InputPrice
 	{
 		url := fmt.Sprintf("%s/offers/v1.0/aws/AmazonElastiCache/current/region_index.json", BaseURL)
-		req, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			return nil, fmt.Errorf("new request: %v", err)
-		}
-
-		resp, err := client.Do(req)
+		resp, err := client.Get(url)
 		if err != nil {
 			return nil, fmt.Errorf("get %s: %v", BaseURL, err)
 		}
@@ -113,12 +108,7 @@ func GetPriceWithClient(region string, client *http.Client) (map[string]OutputPr
 	var list PriceList
 	{
 		url := fmt.Sprintf("%s%s", BaseURL, input.Regions[region].CurrentVersionUrl)
-		req, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			return nil, fmt.Errorf("new request: %v", err)
-		}
-
-		resp, err := client.Do(req)
+		resp, err := client.Get(url)
 		if err != nil {
 			return nil, fmt.Errorf("get %s: %v", BaseURL, err)
 		}
