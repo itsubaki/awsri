@@ -174,6 +174,7 @@ func (list RecordList) OfferingClass(class string) RecordList {
 }
 
 type Record struct {
+	Version                 string  `json:"version"`                             // common
 	SKU                     string  `json:"sku"`                                 // common
 	OfferTermCode           string  `json:"offer_term_code"`                     // common
 	Region                  string  `json:"region"`                              // common

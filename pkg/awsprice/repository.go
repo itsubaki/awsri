@@ -38,6 +38,7 @@ func (repo *Repository) FetchWithClient(region []string, client *http.Client) er
 			for k := range price {
 				v := price[k]
 				repo.Internal = append(repo.Internal, &Record{
+					Version:                 v.Version,
 					InstanceType:            v.InstanceType,
 					LeaseContractLength:     v.LeaseContractLength,
 					NormalizationSizeFactor: v.NormalizationSizeFactor,
@@ -67,6 +68,7 @@ func (repo *Repository) FetchWithClient(region []string, client *http.Client) er
 			for k := range price {
 				v := price[k]
 				repo.Internal = append(repo.Internal, &Record{
+					Version:             v.Version,
 					CacheEngine:         v.CacheEngine,
 					InstanceType:        v.InstanceType,
 					LeaseContractLength: v.LeaseContractLength,
@@ -91,6 +93,7 @@ func (repo *Repository) FetchWithClient(region []string, client *http.Client) er
 			for k := range price {
 				v := price[k]
 				repo.Internal = append(repo.Internal, &Record{
+					Version:                 v.Version,
 					DatabaseEngine:          v.DatabaseEngine,
 					InstanceType:            v.InstanceType,
 					LeaseContractLength:     v.LeaseContractLength,

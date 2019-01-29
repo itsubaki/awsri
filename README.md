@@ -55,7 +55,9 @@ date := []*costexp.Date{
   },
 }
 
-repo, _ := costexp.NewRepository("example", date)
+repo := costexp.NewRepository()
+repo.Fetch(date)
+
 for _, r := range repo.SelectAll() {
   fmt.Println(r)
 }
@@ -70,7 +72,9 @@ for _, r := range repo.SelectAll() {
 }
 
 # find aws pricing of current usage
-repo, _ := awsprice.NewRepository([]string{"ap-northeast-1"})
+repo := awsprice.NewRepository()
+repo.Fetch([]string{"ap-northeast-1"})
+
 rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
   OperatingSystem("Linux").
   Tenancy("Shared").
@@ -154,7 +158,9 @@ fmt.Println(result)
 # buy m4.large x400 instead of m4.4xlarge x50
 # and
 
-rsv, _ := reserved.NewRepository("example", []string{"ap-northeast-1"})
+rsv := reserved.NewRepository()
+rsv.Fetch([]string{"ap-northeast-1"})
+
 min := result.MinimumRecord
 rs := rsv.FindByInstanceType(min.InstanceType).
   Region(min.Region).
@@ -181,13 +187,16 @@ fmt.Println(rs[0])
   "start":"2020-12-01T12:00:00Z"
 }
 
-# buy m4.large x300 instead of m4.large x400
+# already bought 100 instances
+# finally, buy m4.large x300
 ```
 
 ## Memo
 
 ```
-repo, _ := awsprice.NewRepository([]string{"ap-northeast-1"})
+repo := awsprice.NewRepository()
+repo.Fetch([]string{"ap-northeast-1"})
+
 rs := repo.FindByInstanceType("m4.large").
   OperatingSystem("Linux").
   Tenancy("Shared").

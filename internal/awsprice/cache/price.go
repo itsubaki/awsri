@@ -12,8 +12,10 @@ import (
 var BaseURL = "https://pricing.us-east-1.amazonaws.com"
 
 type InputPrice struct {
-	Version string               `json:"formatVersion"`
-	Regions map[string]RegionUrl `json:"regions"`
+	FormatVersion   string               `json:"formatVersion"`
+	Disclaimer      string               `json:"disclaimer"`
+	PublicationDate string               `json:"publicationDate"`
+	Regions         map[string]RegionUrl `json:"regions"`
 }
 
 type RegionUrl struct {
@@ -22,10 +24,13 @@ type RegionUrl struct {
 }
 
 type PriceList struct {
-	FormatVersion string                                `json:"formatVersion"`
-	Version       string                                `json:"version"`
-	Term          map[string]map[string]map[string]Term `json:"terms"`
-	Products      map[string]Product                    `json:"products"`
+	FormatVersion   string                                `json:"formatVersion"`
+	Disclaimer      string                                `json:"disclaimer"`
+	OfferCode       string                                `json:"offerCode"`
+	Version         string                                `json:"version"`
+	PublicationDate string                                `json:"publicationDate"`
+	Products        map[string]Product                    `json:"products"`
+	Term            map[string]map[string]map[string]Term `json:"terms"`
 }
 
 type Term struct {
@@ -63,6 +68,7 @@ type Product struct {
 }
 
 type OutputPrice struct {
+	Version             string  // common
 	SKU                 string  // common
 	OfferTermCode       string  // common
 	Region              string  // common
@@ -146,6 +152,7 @@ func usage(region string, list PriceList) (map[string]OutputPrice, error) {
 				}
 
 				p[k] = OutputPrice{
+					Version:             list.Version,
 					SKU:                 v.SKU,
 					OfferTermCode:       v.OfferTermCode,
 					LeaseContractLength: v.TermAttributes.LeaseContractLength,
@@ -166,6 +173,7 @@ func usage(region string, list PriceList) (map[string]OutputPrice, error) {
 					for _, vv := range v.PriceDimensions { // 1
 						hrs, _ := strconv.ParseFloat(vv.PricePerUnit.USD, 64)
 						p[kk] = OutputPrice{
+							Version:             p[kk].Version,
 							SKU:                 p[kk].SKU,
 							OfferTermCode:       p[kk].OfferTermCode,
 							LeaseContractLength: p[kk].LeaseContractLength,
@@ -188,6 +196,7 @@ func usage(region string, list PriceList) (map[string]OutputPrice, error) {
 			}
 
 			out[k] = OutputPrice{
+				Version:             v.Version,
 				SKU:                 v.SKU,
 				OfferTermCode:       v.OfferTermCode,
 				Region:              region,
