@@ -12,24 +12,27 @@ import (
 )
 
 type Repository struct {
+	Date     []*Date
 	Internal RecordList `json:"internal"`
 }
 
-func NewRepository() *Repository {
-	return &Repository{}
+func NewRepository(date []*Date) *Repository {
+	return &Repository{
+		Date: date,
+	}
 }
 
-func (repo *Repository) Fetch(date []*Date) error {
-	return repo.FetchWithClient(date, http.DefaultClient)
+func (repo *Repository) Fetch() error {
+	return repo.FetchWithClient(http.DefaultClient)
 }
 
-func (repo *Repository) FetchWithClient(date []*Date, client *http.Client) error {
+func (repo *Repository) FetchWithClient(client *http.Client) error {
 	cli := costexp.New()
 	cli.Client.Config.WithHTTPClient(client)
-	for i := range date {
+	for i := range repo.Date {
 		q, err := cli.GetUsageQuantity(&costexp.Date{
-			Start: date[i].Start,
-			End:   date[i].End,
+			Start: repo.Date[i].Start,
+			End:   repo.Date[i].End,
 		})
 		if err != nil {
 			return fmt.Errorf("get usage quantity: %v", err)

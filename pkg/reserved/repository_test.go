@@ -21,8 +21,8 @@ func TestSerialize(t *testing.T) {
 		return
 	}
 
-	repo := NewRepository()
-	if err := repo.Fetch(region); err != nil {
+	repo := NewRepository(region)
+	if err := repo.Fetch(); err != nil {
 		t.Errorf("new repository: %v", err)
 	}
 

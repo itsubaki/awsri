@@ -19,52 +19,46 @@ type Repository struct {
 	Internal RecordList `json:"internal"`
 }
 
-func NewRepository() *Repository {
-	return &Repository{}
-}
-
-func (repo *Repository) Read(region []string, buf [][]byte) error {
-	for i := range region {
-		{
-			price, err := ec2.ReadPrice(region[i], buf[i])
-			if err != nil {
-				return fmt.Errorf("read ec2 price: %v", err)
-			}
-			repo.mappingec2(price)
-		}
-
-		{
-			price, err := cache.ReadPrice(region[i], buf[i])
-			if err != nil {
-				return fmt.Errorf("read cache price: %v", err)
-			}
-			repo.mappingcache(price)
-		}
-
-		{
-			price, err := rds.ReadPrice(region[i], buf[i])
-			if err != nil {
-				return fmt.Errorf("read cache price: %v", err)
-			}
-			repo.mappingrds(price)
-		}
+func NewRepository(region []string) *Repository {
+	return &Repository{
+		Region: region,
 	}
-
-	return nil
 }
 
-func (repo *Repository) Fetch(region []string) error {
-	return repo.FetchWithClient(region, http.DefaultClient)
+func (repo *Repository) Fetch() error {
+	return repo.FetchWithClient(http.DefaultClient)
 }
 
-func (repo *Repository) FetchWithClient(region []string, client *http.Client) error {
-	for _, r := range region {
+func (repo *Repository) FetchWithClient(client *http.Client) error {
+	for _, r := range repo.Region {
 		{
 			price, err := ec2.GetPriceWithClient(r, client)
 			if err != nil {
 				return fmt.Errorf("get ec2 price: %v", err)
 			}
-			repo.mappingec2(price)
+
+			for k := range price {
+				v := price[k]
+				repo.Internal = append(repo.Internal, &Record{
+					Version:                 v.Version,
+					InstanceType:            v.InstanceType,
+					LeaseContractLength:     v.LeaseContractLength,
+					NormalizationSizeFactor: v.NormalizationSizeFactor,
+					OfferTermCode:           v.OfferTermCode,
+					OfferingClass:           v.OfferingClass,
+					OnDemand:                v.OnDemand,
+					OperatingSystem:         v.OperatingSystem,
+					Operation:               v.Operation,
+					PreInstalled:            v.PreInstalled,
+					PurchaseOption:          v.PurchaseOption,
+					Region:                  v.Region,
+					ReservedHrs:             v.ReservedHrs,
+					ReservedQuantity:        v.ReservedQuantity,
+					SKU:                     v.SKU,
+					Tenancy:                 v.Tenancy,
+					UsageType:               v.UsageType,
+				})
+			}
 		}
 
 		{
@@ -72,7 +66,24 @@ func (repo *Repository) FetchWithClient(region []string, client *http.Client) er
 			if err != nil {
 				return fmt.Errorf("get cache price: %v", err)
 			}
-			repo.mappingcache(price)
+
+			for k := range price {
+				v := price[k]
+				repo.Internal = append(repo.Internal, &Record{
+					Version:             v.Version,
+					CacheEngine:         v.CacheEngine,
+					InstanceType:        v.InstanceType,
+					LeaseContractLength: v.LeaseContractLength,
+					OfferTermCode:       v.OfferTermCode,
+					OnDemand:            v.OnDemand,
+					PurchaseOption:      v.PurchaseOption,
+					Region:              v.Region,
+					ReservedHrs:         v.ReservedHrs,
+					ReservedQuantity:    v.ReservedQuantity,
+					SKU:                 v.SKU,
+					UsageType:           v.UsageType,
+				})
+			}
 		}
 
 		{
@@ -80,77 +91,29 @@ func (repo *Repository) FetchWithClient(region []string, client *http.Client) er
 			if err != nil {
 				return fmt.Errorf("cache price: %v", err)
 			}
-			repo.mappingrds(price)
+
+			for k := range price {
+				v := price[k]
+				repo.Internal = append(repo.Internal, &Record{
+					Version:                 v.Version,
+					DatabaseEngine:          v.DatabaseEngine,
+					InstanceType:            v.InstanceType,
+					LeaseContractLength:     v.LeaseContractLength,
+					NormalizationSizeFactor: v.NormalizationSizeFactor,
+					OfferTermCode:           v.OfferTermCode,
+					OnDemand:                v.OnDemand,
+					PurchaseOption:          v.PurchaseOption,
+					Region:                  v.Region,
+					ReservedHrs:             v.ReservedHrs,
+					ReservedQuantity:        v.ReservedQuantity,
+					SKU:                     v.SKU,
+					UsageType:               v.UsageType,
+				})
+			}
 		}
 	}
 
 	return nil
-}
-
-func (repo *Repository) mappingec2(price map[string]ec2.OutputPrice) {
-	for k := range price {
-		v := price[k]
-		repo.Internal = append(repo.Internal, &Record{
-			Version:                 v.Version,
-			InstanceType:            v.InstanceType,
-			LeaseContractLength:     v.LeaseContractLength,
-			NormalizationSizeFactor: v.NormalizationSizeFactor,
-			OfferTermCode:           v.OfferTermCode,
-			OfferingClass:           v.OfferingClass,
-			OnDemand:                v.OnDemand,
-			OperatingSystem:         v.OperatingSystem,
-			Operation:               v.Operation,
-			PreInstalled:            v.PreInstalled,
-			PurchaseOption:          v.PurchaseOption,
-			Region:                  v.Region,
-			ReservedHrs:             v.ReservedHrs,
-			ReservedQuantity:        v.ReservedQuantity,
-			SKU:                     v.SKU,
-			Tenancy:                 v.Tenancy,
-			UsageType:               v.UsageType,
-		})
-	}
-}
-
-func (repo *Repository) mappingcache(price map[string]cache.OutputPrice) {
-	for k := range price {
-		v := price[k]
-		repo.Internal = append(repo.Internal, &Record{
-			Version:             v.Version,
-			CacheEngine:         v.CacheEngine,
-			InstanceType:        v.InstanceType,
-			LeaseContractLength: v.LeaseContractLength,
-			OfferTermCode:       v.OfferTermCode,
-			OnDemand:            v.OnDemand,
-			PurchaseOption:      v.PurchaseOption,
-			Region:              v.Region,
-			ReservedHrs:         v.ReservedHrs,
-			ReservedQuantity:    v.ReservedQuantity,
-			SKU:                 v.SKU,
-			UsageType:           v.UsageType,
-		})
-	}
-}
-
-func (repo *Repository) mappingrds(price map[string]rds.OutputPrice) {
-	for k := range price {
-		v := price[k]
-		repo.Internal = append(repo.Internal, &Record{
-			Version:                 v.Version,
-			DatabaseEngine:          v.DatabaseEngine,
-			InstanceType:            v.InstanceType,
-			LeaseContractLength:     v.LeaseContractLength,
-			NormalizationSizeFactor: v.NormalizationSizeFactor,
-			OfferTermCode:           v.OfferTermCode,
-			OnDemand:                v.OnDemand,
-			PurchaseOption:          v.PurchaseOption,
-			Region:                  v.Region,
-			ReservedHrs:             v.ReservedHrs,
-			ReservedQuantity:        v.ReservedQuantity,
-			SKU:                     v.SKU,
-			UsageType:               v.UsageType,
-		})
-	}
 }
 
 func Read(path string) (*Repository, error) {

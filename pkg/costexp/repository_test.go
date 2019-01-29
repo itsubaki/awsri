@@ -29,8 +29,8 @@ func TestSerialize(t *testing.T) {
 			continue
 		}
 
-		repo := NewRepository()
-		if err := repo.Fetch([]*Date{date[i]}); err != nil {
+		repo := NewRepository([]*Date{date[i]})
+		if err := repo.Fetch(); err != nil {
 			t.Errorf("new repository: %v", err)
 		}
 

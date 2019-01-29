@@ -19,16 +19,18 @@ type Repository struct {
 	Internal RecordList `json:"internal"`
 }
 
-func NewRepository() *Repository {
-	return &Repository{}
+func NewRepository(region []string) *Repository {
+	return &Repository{
+		Region: region,
+	}
 }
 
-func (repo *Repository) Fetch(region []string) error {
-	return repo.FetchWithClient(region, http.DefaultClient)
+func (repo *Repository) Fetch() error {
+	return repo.FetchWithClient(http.DefaultClient)
 }
 
-func (repo *Repository) FetchWithClient(region []string, client *http.Client) error {
-	for _, r := range region {
+func (repo *Repository) FetchWithClient(client *http.Client) error {
+	for _, r := range repo.Region {
 		ses, err := session.NewSession(
 			&aws.Config{
 				Region:     aws.String(r),
