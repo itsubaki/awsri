@@ -93,9 +93,10 @@ func (repo *Repository) FetchWithClient(region []string, client *http.Client) er
 					})
 				}
 
-				if maker == nil {
+				if output.Marker == nil {
 					break
 				}
+				maker = output.Marker
 			}
 		}
 
@@ -130,9 +131,10 @@ func (repo *Repository) FetchWithClient(region []string, client *http.Client) er
 					})
 				}
 
-				if maker == nil {
+				if output.Marker == nil {
 					break
 				}
+				maker = output.Marker
 			}
 		}
 	}
