@@ -130,7 +130,7 @@ fmt.Println(result)
   "reserved_quantity":285000,
   "subtraction":167016.00000000006,
   "discount_rate":0.2506725545719808,
-  "minimum_record":{
+  "smallest_record":{
     "sku":"7MYWT7Y96UT3NJ2D",
     "offer_term_code":"6QCMYABX3D",
     "region":"ap-northeast-1",
@@ -148,27 +148,28 @@ fmt.Println(result)
     "offering_class":"standard",
     "normalization_size_factor":"4"
   },
-  "minimum_reserved_instance_num":400
+  "smallest_reserved_instance_num":400
 }
 
 # buy m4.large x400 instead of m4.4xlarge x50
 # and
 
-min := result.MinimumRecord
+s := result.SmallestRecord
 
 rsv := reserved.New([]string{"ap-northeast-1"})
-rs := rsv.FindByInstanceType(min.InstanceType).
-  Region(min.Region).
+rs := rsv.FindByInstanceType(s.InstanceType).
+  Region(s.Region).
   Duration(func(length string) int64 {
     duration := 31536000
     if length == "3yr" {
       duration = 94608000
     }
     return int64(duration)
-  }(min.LeaseContractLength)).
-  OfferingClass(min.OfferingClass).
-  OfferingType(min.PurchaseOption).
-  ContainsProductDescription(min.OperatingSystem)
+  }(s.LeaseContractLength)).
+  OfferingClass(s.OfferingClass).
+  OfferingType(s.PurchaseOption).
+  ContainsProductDescription(s.OperatingSystem)
+
 fmt.Println(rs[0])
 
 {

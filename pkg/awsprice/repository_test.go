@@ -190,7 +190,7 @@ func TestRecommendM4large(t *testing.T) {
 	r0 := r.Recommend(forecast)
 	r1, _ := repo.Recommend(r, forecast)
 
-	if r0.Record.UsageType != r1.MinimumRecord.UsageType {
+	if r0.Record.UsageType != r1.SmallestRecord.UsageType {
 		t.Errorf("invalid usage type in recommend")
 	}
 }
