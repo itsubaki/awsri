@@ -46,103 +46,121 @@ func (repo *Repository) FetchWithClient(client *http.Client) error {
 			return fmt.Errorf("new session (region=%s): %v", r, err)
 		}
 
-		{
-			output, err := ec2.New(ses).DescribeReservedInstances(&ec2.DescribeReservedInstancesInput{
-				Filters: []*ec2.Filter{
-					{Name: aws.String("state"), Values: []*string{aws.String("active")}},
-				},
+		output, err := ec2.New(ses).DescribeReservedInstances(&ec2.DescribeReservedInstancesInput{
+			Filters: []*ec2.Filter{
+				{Name: aws.String("state"), Values: []*string{aws.String("active")}},
+			},
+		})
+		if err != nil {
+			return fmt.Errorf("describe reserved instances (region=%s): %v", r, err)
+		}
+
+		for _, i := range output.ReservedInstances {
+			repo.Internal = append(repo.Internal, &Record{
+				Region:             r,
+				Duration:           *i.Duration,
+				OfferingType:       *i.OfferingType,
+				OfferingClass:      *i.OfferingClass,
+				ProductDescription: *i.ProductDescription,
+				InstanceType:       *i.InstanceType,
+				InstanceCount:      *i.InstanceCount,
+				Start:              *i.Start,
 			})
-			if err != nil {
-				return fmt.Errorf("describe reserved instances (region=%s): %v", r, err)
+		}
+	}
+
+	for _, r := range repo.Region {
+		ses, err := session.NewSession(
+			&aws.Config{
+				Region:     aws.String(r),
+				HTTPClient: client,
+			},
+		)
+		if err != nil {
+			return fmt.Errorf("new session (region=%s): %v", r, err)
+		}
+
+		client := elasticache.New(ses)
+		var maker *string
+		for {
+			input := &elasticache.DescribeReservedCacheNodesInput{}
+			if maker != nil {
+				input.Marker = maker
 			}
 
-			for _, i := range output.ReservedInstances {
+			output, err := client.DescribeReservedCacheNodes(input)
+			if err != nil {
+				return fmt.Errorf("describe reserved cache node (region=%s): %v", r, err)
+			}
+
+			for _, i := range output.ReservedCacheNodes {
+				if *i.State != "active" {
+					continue
+				}
+
 				repo.Internal = append(repo.Internal, &Record{
 					Region:             r,
 					Duration:           *i.Duration,
 					OfferingType:       *i.OfferingType,
-					OfferingClass:      *i.OfferingClass,
 					ProductDescription: *i.ProductDescription,
-					InstanceType:       *i.InstanceType,
-					InstanceCount:      *i.InstanceCount,
-					Start:              *i.Start,
+					CacheNodeType:      *i.CacheNodeType,
+					CacheNodeCount:     *i.CacheNodeCount,
+					Start:              *i.StartTime,
 				})
 			}
+
+			if output.Marker == nil {
+				break
+			}
+			maker = output.Marker
+		}
+	}
+
+	for _, r := range repo.Region {
+		ses, err := session.NewSession(
+			&aws.Config{
+				Region:     aws.String(r),
+				HTTPClient: client,
+			},
+		)
+		if err != nil {
+			return fmt.Errorf("new session (region=%s): %v", r, err)
 		}
 
-		{
-			client := elasticache.New(ses)
-			var maker *string
-			for {
-				input := &elasticache.DescribeReservedCacheNodesInput{}
-				if maker != nil {
-					input.Marker = maker
-				}
-
-				output, err := client.DescribeReservedCacheNodes(input)
-				if err != nil {
-					return fmt.Errorf("describe reserved cache node (region=%s): %v", r, err)
-				}
-
-				for _, i := range output.ReservedCacheNodes {
-					if *i.State != "active" {
-						continue
-					}
-
-					repo.Internal = append(repo.Internal, &Record{
-						Region:             r,
-						Duration:           *i.Duration,
-						OfferingType:       *i.OfferingType,
-						ProductDescription: *i.ProductDescription,
-						CacheNodeType:      *i.CacheNodeType,
-						CacheNodeCount:     *i.CacheNodeCount,
-						Start:              *i.StartTime,
-					})
-				}
-
-				if output.Marker == nil {
-					break
-				}
-				maker = output.Marker
+		client := rds.New(ses)
+		var maker *string
+		for {
+			input := &rds.DescribeReservedDBInstancesInput{}
+			if maker != nil {
+				input.Marker = maker
 			}
-		}
 
-		{
-			client := rds.New(ses)
-			var maker *string
-			for {
-				input := &rds.DescribeReservedDBInstancesInput{}
-				if maker != nil {
-					input.Marker = maker
-				}
-
-				output, err := client.DescribeReservedDBInstances(input)
-				if err != nil {
-					return fmt.Errorf("describe reserved db instance (region=%s): %v", r, err)
-				}
-
-				for _, i := range output.ReservedDBInstances {
-					if *i.State != "active" {
-						continue
-					}
-
-					repo.Internal = append(repo.Internal, &Record{
-						Region:             r,
-						Duration:           *i.Duration,
-						OfferingType:       *i.OfferingType,
-						ProductDescription: *i.ProductDescription,
-						DBInstanceClass:    *i.DBInstanceClass,
-						DBInstanceCount:    *i.DBInstanceCount,
-						Start:              *i.StartTime,
-						MultiAZ:            *i.MultiAZ,
-					})
-				}
-
-				if output.Marker == nil {
-					break
-				}
-				maker = output.Marker
+			output, err := client.DescribeReservedDBInstances(input)
+			if err != nil {
+				return fmt.Errorf("describe reserved db instance (region=%s): %v", r, err)
 			}
+
+			for _, i := range output.ReservedDBInstances {
+				if *i.State != "active" {
+					continue
+				}
+
+				repo.Internal = append(repo.Internal, &Record{
+					Region:             r,
+					Duration:           *i.Duration,
+					OfferingType:       *i.OfferingType,
+					ProductDescription: *i.ProductDescription,
+					DBInstanceClass:    *i.DBInstanceClass,
+					DBInstanceCount:    *i.DBInstanceCount,
+					Start:              *i.StartTime,
+					MultiAZ:            *i.MultiAZ,
+				})
+			}
+
+			if output.Marker == nil {
+				break
+			}
+			maker = output.Marker
 		}
 	}
 

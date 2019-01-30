@@ -36,85 +36,83 @@ func (repo *Repository) Fetch() error {
 
 func (repo *Repository) FetchWithClient(client *http.Client) error {
 	for _, r := range repo.Region {
-		{
-			price, err := ec2.GetPriceWithClient(r, client)
-			if err != nil {
-				return fmt.Errorf("get ec2 price: %v", err)
-			}
-
-			for k := range price {
-				v := price[k]
-				repo.Internal = append(repo.Internal, &Record{
-					Version:                 v.Version,
-					InstanceType:            v.InstanceType,
-					LeaseContractLength:     v.LeaseContractLength,
-					NormalizationSizeFactor: v.NormalizationSizeFactor,
-					OfferTermCode:           v.OfferTermCode,
-					OfferingClass:           v.OfferingClass,
-					OnDemand:                v.OnDemand,
-					OperatingSystem:         v.OperatingSystem,
-					Operation:               v.Operation,
-					PreInstalled:            v.PreInstalled,
-					PurchaseOption:          v.PurchaseOption,
-					Region:                  v.Region,
-					ReservedHrs:             v.ReservedHrs,
-					ReservedQuantity:        v.ReservedQuantity,
-					SKU:                     v.SKU,
-					Tenancy:                 v.Tenancy,
-					UsageType:               v.UsageType,
-				})
-			}
+		price, err := ec2.GetPriceWithClient(r, client)
+		if err != nil {
+			return fmt.Errorf("get ec2 price: %v", err)
 		}
 
-		{
-			price, err := cache.GetPriceWithClient(r, client)
-			if err != nil {
-				return fmt.Errorf("get cache price: %v", err)
-			}
+		for k := range price {
+			v := price[k]
+			repo.Internal = append(repo.Internal, &Record{
+				Version:                 v.Version,
+				InstanceType:            v.InstanceType,
+				LeaseContractLength:     v.LeaseContractLength,
+				NormalizationSizeFactor: v.NormalizationSizeFactor,
+				OfferTermCode:           v.OfferTermCode,
+				OfferingClass:           v.OfferingClass,
+				OnDemand:                v.OnDemand,
+				OperatingSystem:         v.OperatingSystem,
+				Operation:               v.Operation,
+				PreInstalled:            v.PreInstalled,
+				PurchaseOption:          v.PurchaseOption,
+				Region:                  v.Region,
+				ReservedHrs:             v.ReservedHrs,
+				ReservedQuantity:        v.ReservedQuantity,
+				SKU:                     v.SKU,
+				Tenancy:                 v.Tenancy,
+				UsageType:               v.UsageType,
+			})
+		}
+	}
 
-			for k := range price {
-				v := price[k]
-				repo.Internal = append(repo.Internal, &Record{
-					Version:             v.Version,
-					CacheEngine:         v.CacheEngine,
-					InstanceType:        v.InstanceType,
-					LeaseContractLength: v.LeaseContractLength,
-					OfferTermCode:       v.OfferTermCode,
-					OnDemand:            v.OnDemand,
-					PurchaseOption:      v.PurchaseOption,
-					Region:              v.Region,
-					ReservedHrs:         v.ReservedHrs,
-					ReservedQuantity:    v.ReservedQuantity,
-					SKU:                 v.SKU,
-					UsageType:           v.UsageType,
-				})
-			}
+	for _, r := range repo.Region {
+		price, err := cache.GetPriceWithClient(r, client)
+		if err != nil {
+			return fmt.Errorf("get cache price: %v", err)
 		}
 
-		{
-			price, err := rds.GetPriceWithClient(r, client)
-			if err != nil {
-				return fmt.Errorf("cache price: %v", err)
-			}
+		for k := range price {
+			v := price[k]
+			repo.Internal = append(repo.Internal, &Record{
+				Version:             v.Version,
+				CacheEngine:         v.CacheEngine,
+				InstanceType:        v.InstanceType,
+				LeaseContractLength: v.LeaseContractLength,
+				OfferTermCode:       v.OfferTermCode,
+				OnDemand:            v.OnDemand,
+				PurchaseOption:      v.PurchaseOption,
+				Region:              v.Region,
+				ReservedHrs:         v.ReservedHrs,
+				ReservedQuantity:    v.ReservedQuantity,
+				SKU:                 v.SKU,
+				UsageType:           v.UsageType,
+			})
+		}
+	}
 
-			for k := range price {
-				v := price[k]
-				repo.Internal = append(repo.Internal, &Record{
-					Version:                 v.Version,
-					DatabaseEngine:          v.DatabaseEngine,
-					InstanceType:            v.InstanceType,
-					LeaseContractLength:     v.LeaseContractLength,
-					NormalizationSizeFactor: v.NormalizationSizeFactor,
-					OfferTermCode:           v.OfferTermCode,
-					OnDemand:                v.OnDemand,
-					PurchaseOption:          v.PurchaseOption,
-					Region:                  v.Region,
-					ReservedHrs:             v.ReservedHrs,
-					ReservedQuantity:        v.ReservedQuantity,
-					SKU:                     v.SKU,
-					UsageType:               v.UsageType,
-				})
-			}
+	for _, r := range repo.Region {
+		price, err := rds.GetPriceWithClient(r, client)
+		if err != nil {
+			return fmt.Errorf("cache price: %v", err)
+		}
+
+		for k := range price {
+			v := price[k]
+			repo.Internal = append(repo.Internal, &Record{
+				Version:                 v.Version,
+				DatabaseEngine:          v.DatabaseEngine,
+				InstanceType:            v.InstanceType,
+				LeaseContractLength:     v.LeaseContractLength,
+				NormalizationSizeFactor: v.NormalizationSizeFactor,
+				OfferTermCode:           v.OfferTermCode,
+				OnDemand:                v.OnDemand,
+				PurchaseOption:          v.PurchaseOption,
+				Region:                  v.Region,
+				ReservedHrs:             v.ReservedHrs,
+				ReservedQuantity:        v.ReservedQuantity,
+				SKU:                     v.SKU,
+				UsageType:               v.UsageType,
+			})
 		}
 	}
 

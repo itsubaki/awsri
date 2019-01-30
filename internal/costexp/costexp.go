@@ -61,88 +61,88 @@ func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
 		return out, fmt.Errorf("get usage type: %v", err)
 	}
 
+	// ec2
 	for i := range linkedAccount {
-		// ec2
-		{
-			ec2UsageType := []string{}
-			for i := range usageType {
-				if !strings.Contains(usageType[i], "BoxUsage") {
-					continue
-				}
-				ec2UsageType = append(ec2UsageType, usageType[i])
+		ec2UsageType := []string{}
+		for i := range usageType {
+			if !strings.Contains(usageType[i], "BoxUsage") {
+				continue
 			}
-
-			ec2, err := c.getUsageQuantity(&getUsageQuantityInput{
-				AccountID:   linkedAccount[i].AccountID,
-				Description: linkedAccount[i].Description,
-				Dimension:   "PLATFORM",
-				UsageType:   ec2UsageType,
-				Period: &costexplorer.DateInterval{
-					Start: &date.Start,
-					End:   &date.End,
-				},
-			})
-
-			if err != nil {
-				return out, fmt.Errorf("get ec2 usage quantity: %v", err)
-			}
-			out = append(out, ec2...)
+			ec2UsageType = append(ec2UsageType, usageType[i])
 		}
 
-		// cache
-		{
-			cacheUsageType := []string{}
-			for i := range usageType {
-				if !strings.Contains(usageType[i], "NodeUsage") {
-					continue
-				}
-				cacheUsageType = append(cacheUsageType, usageType[i])
-			}
+		ec2, err := c.getUsageQuantity(&getUsageQuantityInput{
+			AccountID:   linkedAccount[i].AccountID,
+			Description: linkedAccount[i].Description,
+			Dimension:   "PLATFORM",
+			UsageType:   ec2UsageType,
+			Period: &costexplorer.DateInterval{
+				Start: &date.Start,
+				End:   &date.End,
+			},
+		})
 
-			cache, err := c.getUsageQuantity(&getUsageQuantityInput{
-				AccountID:   linkedAccount[i].AccountID,
-				Description: linkedAccount[i].Description,
-				Dimension:   "CACHE_ENGINE",
-				UsageType:   cacheUsageType,
-				Period: &costexplorer.DateInterval{
-					Start: &date.Start,
-					End:   &date.End,
-				},
-			})
-
-			if err != nil {
-				return out, fmt.Errorf("get cache usage quantity: %v", err)
-			}
-			out = append(out, cache...)
+		if err != nil {
+			return out, fmt.Errorf("get ec2 usage quantity: %v", err)
 		}
 
-		// db
-		{
-			dbUsageType := []string{}
-			for i := range usageType {
-				if !strings.Contains(usageType[i], "InstanceUsage") && !strings.Contains(usageType[i], "Multi-AZUsage") {
+		out = append(out, ec2...)
+	}
 
-					continue
-				}
-				dbUsageType = append(dbUsageType, usageType[i])
+	// cache
+	for i := range linkedAccount {
+		cacheUsageType := []string{}
+		for i := range usageType {
+			if !strings.Contains(usageType[i], "NodeUsage") {
+				continue
 			}
-
-			db, err := c.getUsageQuantity(&getUsageQuantityInput{
-				AccountID:   linkedAccount[i].AccountID,
-				Description: linkedAccount[i].Description,
-				Dimension:   "DATABASE_ENGINE",
-				UsageType:   dbUsageType,
-				Period: &costexplorer.DateInterval{
-					Start: &date.Start,
-					End:   &date.End,
-				},
-			})
-
-			if err != nil {
-				return out, fmt.Errorf("get database usage quantity: %v", err)
-			}
-			out = append(out, db...)
+			cacheUsageType = append(cacheUsageType, usageType[i])
 		}
+
+		cache, err := c.getUsageQuantity(&getUsageQuantityInput{
+			AccountID:   linkedAccount[i].AccountID,
+			Description: linkedAccount[i].Description,
+			Dimension:   "CACHE_ENGINE",
+			UsageType:   cacheUsageType,
+			Period: &costexplorer.DateInterval{
+				Start: &date.Start,
+				End:   &date.End,
+			},
+		})
+
+		if err != nil {
+			return out, fmt.Errorf("get cache usage quantity: %v", err)
+		}
+
+		out = append(out, cache...)
+	}
+
+	// db
+	for i := range linkedAccount {
+		dbUsageType := []string{}
+		for i := range usageType {
+			if !strings.Contains(usageType[i], "InstanceUsage") && !strings.Contains(usageType[i], "Multi-AZUsage") {
+				continue
+			}
+			dbUsageType = append(dbUsageType, usageType[i])
+		}
+
+		db, err := c.getUsageQuantity(&getUsageQuantityInput{
+			AccountID:   linkedAccount[i].AccountID,
+			Description: linkedAccount[i].Description,
+			Dimension:   "DATABASE_ENGINE",
+			UsageType:   dbUsageType,
+			Period: &costexplorer.DateInterval{
+				Start: &date.Start,
+				End:   &date.End,
+			},
+		})
+
+		if err != nil {
+			return out, fmt.Errorf("get database usage quantity: %v", err)
+		}
+
+		out = append(out, db...)
 	}
 
 	return out, nil
