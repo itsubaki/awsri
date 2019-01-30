@@ -309,8 +309,8 @@ func (r *Repository) Recommend(record *Record, forecast []Forecast, strategy ...
 	scale := rf64 / mf64
 
 	out := record.Recommend(forecast, strategy...)
-	out.SmallestRecord = min
-	out.SmallestReservedInstanceNum = float64(out.ReservedInstanceNum) * scale
+	out.MinimumRecord = min
+	out.MinimumReservedInstanceNum = float64(out.ReservedInstanceNum) * scale
 
 	return out, nil
 }

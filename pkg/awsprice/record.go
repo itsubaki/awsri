@@ -226,18 +226,18 @@ func (r *Record) BreakevenPointInMonth() int {
 }
 
 type Recommended struct {
-	Record                      *Record `json:"record"`
-	BreakevenPointInMonth       int     `json:"breakevenpoint_in_month"`
-	Strategy                    string  `json:"strategy"`
-	OnDemandInstanceNumAvg      float64 `json:"ondemand_instance_num_avg"`
-	ReservedInstanceNum         int64   `json:"reserved_instance_num"`
-	FullOnDemandCost            float64 `json:"full_ondemand_cost"`
-	ReservedAppliedCost         Cost    `json:"reserved_applied_cost"`
-	ReservedQuantity            float64 `json:"reserved_quantity"`
-	Subtraction                 float64 `json:"subtraction"`
-	DiscountRate                float64 `json:"discount_rate"`
-	SmallestRecord              *Record `json:"smallest_record,omitempty"`
-	SmallestReservedInstanceNum float64 `json:"smallest_reserved_instance_num,omitempty"`
+	Record                     *Record `json:"record"`
+	BreakevenPointInMonth      int     `json:"breakevenpoint_in_month"`
+	Strategy                   string  `json:"strategy"`
+	OnDemandInstanceNumAvg     float64 `json:"ondemand_instance_num_avg"`
+	ReservedInstanceNum        int64   `json:"reserved_instance_num"`
+	FullOnDemandCost           float64 `json:"full_ondemand_cost"`
+	ReservedAppliedCost        Cost    `json:"reserved_applied_cost"`
+	ReservedQuantity           float64 `json:"reserved_quantity"`
+	Subtraction                float64 `json:"subtraction"`
+	DiscountRate               float64 `json:"discount_rate"`
+	MinimumRecord              *Record `json:"minimum_record,omitempty"`
+	MinimumReservedInstanceNum float64 `json:"minimum_reserved_instance_num,omitempty"`
 }
 
 func (r *Recommended) String() string {
