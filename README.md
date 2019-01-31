@@ -2,7 +2,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/itsubaki/hermes?style=flat-square)](https://goreportcard.com/report/github.com/itsubaki/hermes)
 
- - aws reserved instance purchase recommendation library/cli
+ - aws reserved instance purchase recommendation library
 
 ## Motivation
 
@@ -69,46 +69,8 @@ $ cat test/forecast.json | hermes | jq .
           "date": "2019-01",
           "instance_num": 100
         },
-        {
-          "date": "2018-02",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-03",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-04",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-05",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-06",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-07",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-08",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-09",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-10",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-11",
-          "instance_num": 100
-        },
+        ...
+
         {
           "date": "2019-12",
           "instance_num": 100
@@ -126,46 +88,8 @@ $ cat test/forecast.json | hermes | jq .
           "date": "2019-01",
           "instance_num": 100
         },
-        {
-          "date": "2019-02",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-03",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-04",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-05",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-06",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-07",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-08",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-09",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-10",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-11",
-          "instance_num": 100
-        },
+        ...
+
         {
           "date": "2019-12",
           "instance_num": 100
@@ -183,46 +107,9 @@ $ cat test/forecast.json | hermes | jq .
           "date": "2019-01",
           "instance_num": 100
         },
-        {
-          "date": "2019-02",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-03",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-04",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-05",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-06",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-07",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-08",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-09",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-10",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-11",
-          "instance_num": 100
-        },
+        ...
+
+
         {
           "date": "2019-12",
           "instance_num": 100
@@ -240,46 +127,8 @@ $ cat test/forecast.json | hermes | jq .
           "date": "2019-01",
           "instance_num": 100
         },
-        {
-          "date": "2019-02",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-03",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-04",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-05",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-06",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-07",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-08",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-09",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-10",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-11",
-          "instance_num": 100
-        },
+        ...
+
         {
           "date": "2019-12",
           "instance_num": 100
@@ -295,46 +144,9 @@ $ cat test/forecast.json | hermes | jq .
           "date": "2019-01",
           "instance_num": 100
         },
-        {
-          "date": "2019-02",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-03",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-04",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-05",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-06",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-07",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-08",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-09",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-10",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-11",
-          "instance_num": 100
-        },
+        ...
+
+
         {
           "date": "2019-12",
           "instance_num": 100
@@ -350,46 +162,8 @@ $ cat test/forecast.json | hermes | jq .
           "date": "2019-01",
           "instance_num": 100
         },
-        {
-          "date": "2018-02",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-03",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-04",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-05",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-06",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-07",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-08",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-09",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-10",
-          "instance_num": 100
-        },
-        {
-          "date": "2019-11",
-          "instance_num": 100
-        },
+        ...
+
         {
           "date": "2019-12",
           "instance_num": 100
