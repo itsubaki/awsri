@@ -204,7 +204,7 @@ func (r *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
 		}
 
 		if len(tmp) < 1 {
-			return nil, fmt.Errorf("undefined instance type. defined=%v", defined)
+			return nil, fmt.Errorf("undefined instance type=%s family=%s. defined=%v", instanceType, familiy, defined)
 		}
 
 		usageType := fmt.Sprintf("%s%s",
@@ -299,7 +299,10 @@ func (r *Repository) Recommend(record *Record, forecast []Forecast, strategy ...
 
 	min, err := r.FindMinimumInstanceType(record)
 	if err != nil {
-		return nil, fmt.Errorf("find minimum instance type: %v", err)
+		out.MinimumRecord = &Record{
+			SKU: fmt.Sprintf("find minimum instance type: %v", err),
+		}
+		return out, nil
 	}
 
 	rf64, err := strconv.ParseFloat(record.NormalizationSizeFactor, 64)
