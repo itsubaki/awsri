@@ -109,7 +109,6 @@ $ cat test/forecast.json | hermes | jq .
         },
         ...
 
-
         {
           "date": "2019-12",
           "instance_num": 100
@@ -145,7 +144,6 @@ $ cat test/forecast.json | hermes | jq .
           "instance_num": 100
         },
         ...
-
 
         {
           "date": "2019-12",
