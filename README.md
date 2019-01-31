@@ -2,7 +2,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/itsubaki/hermes?style=flat-square)](https://goreportcard.com/report/github.com/itsubaki/hermes)
 
- - aws reserved instance purchase recommendation library
+ - aws reserved instance purchase recommendation library/cli
 
 ## Motivation
 
@@ -44,7 +44,492 @@ aws_secret_access_key = ****************************************
 }
 ```
 
+## Install
+
+```
+$ go get github.com/itsubaki/hermes
+$ cd ${GOPATH}/src/github.com/itsubaki/hermes
+$ make install
+```
+
 ## Example
+
+```
+$ cat test/forecast.json | hermes | jq .
+{
+  "forecast": [
+    {
+      "account_id": "012345678901",
+      "alias": "example",
+      "region": "ap-northeast-1",
+      "usage_type": "APN1-BoxUsage:c4.2xlarge",
+      "platform": "Linux/UNIX",
+      "instance_num": [
+        {
+          "date": "2019-01",
+          "instance_num": 100
+        },
+        {
+          "date": "2018-02",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-03",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-04",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-05",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-06",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-07",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-08",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-09",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-10",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-11",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-12",
+          "instance_num": 100
+        }
+      ]
+    },
+    {
+      "account_id": "012345678901",
+      "alias": "example",
+      "region": "ap-northeast-1",
+      "usage_type": "APN1-InstanceUsage:db.r3.xlarge",
+      "database_engine": "Aurora MySQL",
+      "instance_num": [
+        {
+          "date": "2019-01",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-02",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-03",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-04",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-05",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-06",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-07",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-08",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-09",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-10",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-11",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-12",
+          "instance_num": 100
+        }
+      ]
+    },
+    {
+      "account_id": "012345678901",
+      "alias": "example",
+      "region": "ap-northeast-1",
+      "usage_type": "APN1-NodeUsage:cache.r3.4xlarge",
+      "cache_engine": "Redis",
+      "instance_num": [
+        {
+          "date": "2019-01",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-02",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-03",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-04",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-05",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-06",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-07",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-08",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-09",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-10",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-11",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-12",
+          "instance_num": 100
+        }
+      ]
+    }
+  ],
+  "merged": [
+    {
+      "region": "ap-northeast-1",
+      "usage_type": "APN1-InstanceUsage:db.r3.xlarge",
+      "database_engine": "Aurora MySQL",
+      "instance_num": [
+        {
+          "date": "2019-01",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-02",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-03",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-04",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-05",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-06",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-07",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-08",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-09",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-10",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-11",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-12",
+          "instance_num": 100
+        }
+      ]
+    },
+    {
+      "region": "ap-northeast-1",
+      "usage_type": "APN1-NodeUsage:cache.r3.4xlarge",
+      "cache_engine": "Redis",
+      "instance_num": [
+        {
+          "date": "2019-01",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-02",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-03",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-04",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-05",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-06",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-07",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-08",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-09",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-10",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-11",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-12",
+          "instance_num": 100
+        }
+      ]
+    },
+    {
+      "region": "ap-northeast-1",
+      "usage_type": "APN1-BoxUsage:c4.2xlarge",
+      "platform": "Linux/UNIX",
+      "instance_num": [
+        {
+          "date": "2019-01",
+          "instance_num": 100
+        },
+        {
+          "date": "2018-02",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-03",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-04",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-05",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-06",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-07",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-08",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-09",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-10",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-11",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-12",
+          "instance_num": 100
+        }
+      ]
+    }
+  ],
+  "recommended": [
+    {
+      "record": {
+        "version": "20190124191230",
+        "sku": "Q85F79PK8VHHZT6X",
+        "offer_term_code": "6QCMYABX3D",
+        "region": "ap-northeast-1",
+        "instance_type": "c4.2xlarge",
+        "usage_type": "APN1-BoxUsage:c4.2xlarge",
+        "lease_contract_length": "1yr",
+        "purchase_option": "All Upfront",
+        "ondemand": 0.504,
+        "reserved_quantity": 2962,
+        "reserved_hrs": 0,
+        "tenancy": "Shared",
+        "pre_installed": "NA",
+        "operating_system": "Linux",
+        "operation": "RunInstances",
+        "offering_class": "standard",
+        "normalization_size_factor": "16"
+      },
+      "breakevenpoint_in_month": 9,
+      "strategy": "breakevenpoint",
+      "ondemand_instance_num_avg": 0,
+      "reserved_instance_num": 100,
+      "full_ondemand_cost": 441504,
+      "reserved_applied_cost": {
+        "ondemand": 0,
+        "reserved": 296200,
+        "total": 296200
+      },
+      "reserved_quantity": 296200,
+      "subtraction": 145304,
+      "discount_rate": 0.3291114010292092,
+      "minimum_record": {
+        "version": "20190124191230",
+        "sku": "7KXQBZSKETPTG6QZ",
+        "offer_term_code": "6QCMYABX3D",
+        "region": "ap-northeast-1",
+        "instance_type": "c4.large",
+        "usage_type": "APN1-BoxUsage:c4.large",
+        "lease_contract_length": "1yr",
+        "purchase_option": "All Upfront",
+        "ondemand": 0.126,
+        "reserved_quantity": 738,
+        "reserved_hrs": 0,
+        "tenancy": "Shared",
+        "pre_installed": "NA",
+        "operating_system": "Linux",
+        "operation": "RunInstances",
+        "offering_class": "standard",
+        "normalization_size_factor": "4"
+      },
+      "minimum_reserved_instance_num": 400
+    },
+    {
+      "record": {
+        "version": "20190126013833",
+        "sku": "PQP78BGE4C2HXDQF",
+        "offer_term_code": "6QCMYABX3D",
+        "region": "ap-northeast-1",
+        "instance_type": "db.r3.xlarge",
+        "usage_type": "APN1-InstanceUsage:db.r3.xlarge",
+        "lease_contract_length": "1yr",
+        "purchase_option": "All Upfront",
+        "ondemand": 0.7,
+        "reserved_quantity": 3408,
+        "reserved_hrs": 0,
+        "normalization_size_factor": "8",
+        "database_engine": "Aurora MySQL"
+      },
+      "breakevenpoint_in_month": 7,
+      "strategy": "minimum",
+      "ondemand_instance_num_avg": 0,
+      "reserved_instance_num": 100,
+      "full_ondemand_cost": 613200,
+      "reserved_applied_cost": {
+        "ondemand": 0,
+        "reserved": 340800,
+        "total": 340800
+      },
+      "reserved_quantity": 340800,
+      "subtraction": 272400,
+      "discount_rate": 0.4442270058708415,
+      "minimum_record": {
+        "version": "20190126013833",
+        "sku": "8Z6GS5F6NKX37Q5E",
+        "offer_term_code": "6QCMYABX3D",
+        "region": "ap-northeast-1",
+        "instance_type": "db.r3.large",
+        "usage_type": "APN1-InstanceUsage:db.r3.large",
+        "lease_contract_length": "1yr",
+        "purchase_option": "All Upfront",
+        "ondemand": 0.35,
+        "reserved_quantity": 1704,
+        "reserved_hrs": 0,
+        "normalization_size_factor": "4",
+        "database_engine": "Aurora MySQL"
+      },
+      "minimum_reserved_instance_num": 200
+    },
+    {
+      "record": {
+        "version": "20190118231951",
+        "sku": "D699FEH9K5TGKUT2",
+        "offer_term_code": "YTVHEVGPBZ",
+        "region": "ap-northeast-1",
+        "instance_type": "cache.r3.4xlarge",
+        "usage_type": "APN1-NodeUsage:cache.r3.4xlarge",
+        "lease_contract_length": "1yr",
+        "purchase_option": "Heavy Utilization",
+        "ondemand": 2.184,
+        "reserved_quantity": 6216,
+        "reserved_hrs": 0.712,
+        "cache_engine": "Redis"
+      },
+      "breakevenpoint_in_month": 6,
+      "strategy": "minimum",
+      "ondemand_instance_num_avg": 0,
+      "reserved_instance_num": 100,
+      "full_ondemand_cost": 1913184,
+      "reserved_applied_cost": {
+        "ondemand": 0,
+        "reserved": 1245312,
+        "total": 1245312
+      },
+      "reserved_quantity": 621600,
+      "subtraction": 667872,
+      "discount_rate": 0.3490892668974861
+    }
+  ]
+}
+```
 
 ```
 # get current usage

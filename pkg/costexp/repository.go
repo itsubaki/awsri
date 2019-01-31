@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"strings"
 
 	"github.com/itsubaki/hermes/internal/costexp"
 )
@@ -44,10 +45,17 @@ func (repo *Repository) FetchWithClient(client *http.Client) error {
 		}
 
 		for _, qq := range q {
+			uregion := strings.Split(qq.UsageType, "-")[0]
+			region, ok := RegionMap[uregion]
+			if !ok {
+				return fmt.Errorf("region not found (usagetype=%s)", qq.UsageType)
+			}
+
 			repo.Internal = append(repo.Internal, &Record{
 				AccountID:      qq.AccountID,
 				Description:    qq.Description,
 				Date:           qq.Date,
+				Region:         region,
 				UsageType:      qq.UsageType,
 				Platform:       qq.Platform,
 				CacheEngine:    qq.CacheEngine,

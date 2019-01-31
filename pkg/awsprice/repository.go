@@ -291,6 +291,12 @@ func (r *Repository) FindByUsageType(tipe string) RecordList {
 }
 
 func (r *Repository) Recommend(record *Record, forecast []Forecast, strategy ...string) (*Recommended, error) {
+	out := record.Recommend(forecast, strategy...)
+
+	if strings.Contains(record.InstanceType, "cache") {
+		return out, nil
+	}
+
 	min, err := r.FindMinimumInstanceType(record)
 	if err != nil {
 		return nil, fmt.Errorf("find minimum instance type: %v", err)
@@ -306,11 +312,8 @@ func (r *Repository) Recommend(record *Record, forecast []Forecast, strategy ...
 		return nil, fmt.Errorf("parse float normalization size factor in minimum: %v", err)
 	}
 
-	scale := rf64 / mf64
-
-	out := record.Recommend(forecast, strategy...)
 	out.MinimumRecord = min
-	out.MinimumReservedInstanceNum = float64(out.ReservedInstanceNum) * scale
+	out.MinimumReservedInstanceNum = float64(out.ReservedInstanceNum) * rf64 / mf64
 
 	return out, nil
 }

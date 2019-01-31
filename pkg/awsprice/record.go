@@ -319,7 +319,7 @@ func (r *Record) GetInstanceNum(forecast []Forecast, strategy ...string) (string
 			sum = sum + forecast[i].InstanceNum
 		}
 
-		return "", sum / float64(len(forecast)), 0
+		return "nothing", sum / float64(len(forecast)), 0
 	}
 
 	tmp := append([]Forecast{}, forecast...)

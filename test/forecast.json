@@ -1,0 +1,175 @@
+{
+  "forecast": [
+    {
+      "account_id": "123456789012",
+      "alias": "example",
+      "region": "ap-northeast-1",
+      "usage_type": "APN1-BoxUsage:c4.2xlarge",
+      "platform": "Linux/UNIX",
+      "instance_num": [
+        {
+          "date": "2019-01",
+          "instance_num": 100
+        },
+        {
+          "date": "2018-02",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-03",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-04",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-05",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-06",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-07",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-08",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-09",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-10",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-11",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-12",
+          "instance_num": 100
+        }
+      ]
+    },
+    {
+      "account_id": "123456789012",
+      "alias": "example",
+      "region": "ap-northeast-1",
+      "usage_type": "APN1-InstanceUsage:db.r3.xlarge",
+      "database_engine": "Aurora MySQL",
+      "instance_num": [
+        {
+          "date": "2019-01",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-02",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-03",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-04",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-05",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-06",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-07",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-08",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-09",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-10",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-11",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-12",
+          "instance_num": 100
+        }
+      ]
+    },
+    {
+      "account_id": "123456789012",
+      "alias": "example",
+      "region": "ap-northeast-1",
+      "usage_type": "APN1-NodeUsage:cache.r3.4xlarge",
+      "cache_engine": "Redis",
+      "instance_num": [
+        {
+          "date": "2019-01",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-02",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-03",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-04",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-05",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-06",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-07",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-08",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-09",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-10",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-11",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-12",
+          "instance_num": 100
+        }
+      ]
+    }
+  ]
+}

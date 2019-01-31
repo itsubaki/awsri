@@ -35,6 +35,7 @@ func (list RecordList) Pretty() string {
 type Record struct {
 	AccountID      string  `json:"account_id"`
 	Description    string  `json:"description"`
+	Region         string  `json:"region"`
 	UsageType      string  `json:"usage_type"`
 	Platform       string  `json:"platform,omitempty"`        // ec2
 	DatabaseEngine string  `json:"database_engine,omitempty"` // rds

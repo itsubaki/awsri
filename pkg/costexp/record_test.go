@@ -23,4 +23,8 @@ func TestUnique(t *testing.T) {
 	for _, r := range repo.SelectAll().Unique("DatabaseEngine") {
 		fmt.Println(r)
 	}
+
+	for _, r := range repo.SelectAll().Unique("Region") {
+		fmt.Println(r)
+	}
 }
