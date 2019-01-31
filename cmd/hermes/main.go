@@ -137,7 +137,9 @@ func Recommended(merged []*Merged) ([]*awsprice.Recommended, error) {
 			return nil, fmt.Errorf("recommend ec2: %v", err)
 		}
 
-		out = append(out, recommend)
+		if recommend.ReservedInstanceNum > 0 {
+			out = append(out, recommend)
+		}
 	}
 
 	for _, in := range merged {
@@ -173,7 +175,9 @@ func Recommended(merged []*Merged) ([]*awsprice.Recommended, error) {
 			return nil, fmt.Errorf("recommend cache: %v", err)
 		}
 
-		out = append(out, recommend)
+		if recommend.ReservedInstanceNum > 0 {
+			out = append(out, recommend)
+		}
 	}
 
 	for _, in := range merged {
@@ -209,7 +213,9 @@ func Recommended(merged []*Merged) ([]*awsprice.Recommended, error) {
 			return nil, fmt.Errorf("recommend rds: %v", err)
 		}
 
-		out = append(out, recommend)
+		if recommend.ReservedInstanceNum > 0 {
+			out = append(out, recommend)
+		}
 	}
 
 	sort.SliceStable(out, func(i, j int) bool {
