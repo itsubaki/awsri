@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/itsubaki/hermes/pkg/awsprice"
-	"github.com/urfave/cli"
 )
 
 var date, hash, goversion string
@@ -60,25 +59,6 @@ func (input Input) JSON() string {
 }
 
 func main() {
-	version := fmt.Sprintf("%s %s %s", date, hash, goversion)
-	hermes := New(version)
-	if err := hermes.Run(os.Args); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-}
-
-func New(version string) *cli.App {
-	app := cli.NewApp()
-
-	app.Name = "hermes"
-	app.Version = version
-	app.Action = Action
-
-	return app
-}
-
-func Action(c *cli.Context) {
 	stdin, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
 		fmt.Println(fmt.Errorf("stdin: %v", err))

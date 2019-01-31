@@ -24,7 +24,7 @@ func TestSerialize(t *testing.T) {
 	}
 
 	for i := range date {
-		path := fmt.Sprintf("/var/tmp/hermes/costexp/example_%s.out", date[i].Start[:7])
+		path := fmt.Sprintf("/var/tmp/hermes/costexp/%s.out", date[i].Start[:7])
 		if _, err := os.Stat(path); !os.IsNotExist(err) {
 			continue
 		}

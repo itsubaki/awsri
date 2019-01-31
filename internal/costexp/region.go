@@ -2,7 +2,7 @@ package costexp
 
 // https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/dev/aws-usage-report-understand.html
 // https://docs.aws.amazon.com/ja_jp/general/latest/gr/rande.html
-var RegionMap = map[string]string{
+var Region = map[string]string{
 	"APN1": "ap-northeast-1",
 	"APN2": "ap-northeast-2",
 	"APS1": "ap-southeast-1",

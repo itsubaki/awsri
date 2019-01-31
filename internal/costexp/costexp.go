@@ -20,6 +20,7 @@ type UsageQuantityList []*UsageQuantity
 type UsageQuantity struct {
 	AccountID      string  `json:"account_id"`
 	Description    string  `json:"description"`
+	Region         string  `json:"region"`
 	UsageType      string  `json:"usage_type"`
 	Platform       string  `json:"platform,omitempty"`
 	DatabaseEngine string  `json:"database_engine,omitempty"`
@@ -232,6 +233,12 @@ func (c *CostExp) getUsageQuantity(in *getUsageQuantityInput) (UsageQuantityList
 			if in.Dimension == "DATABASE_ENGINE" {
 				q.DatabaseEngine = *g.Keys[1]
 			}
+
+			region, ok := Region[strings.Split(q.UsageType, "-")[0]]
+			if !ok {
+				return nil, fmt.Errorf("region not found (usagetype=%s)", q.UsageType)
+			}
+			q.Region = region
 
 			out = append(out, q)
 		}
