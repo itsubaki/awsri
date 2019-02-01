@@ -11,7 +11,7 @@ import (
 	"github.com/itsubaki/hermes/pkg/awsprice"
 )
 
-var date, hash, goversion string
+var tmpdir = "/var/tmp/hermes"
 
 type Input struct {
 	Forecast []*Forecast `json:"forecast"`
@@ -114,7 +114,7 @@ func Recommended(merged []*Merged) ([]*awsprice.Recommended, error) {
 			return nil, fmt.Errorf("get operating system. platform=%s: %v", in.Platform, err)
 		}
 
-		path := fmt.Sprintf("/var/tmp/hermes/awsprice/%s.out", in.Region)
+		path := fmt.Sprintf("%s/awsprice/%s.out", tmpdir, in.Region)
 		repo, err := awsprice.Read(path)
 		if err != nil {
 			return nil, fmt.Errorf("read awsprice (region=%s): %v", in.Region, err)
@@ -155,7 +155,7 @@ func Recommended(merged []*Merged) ([]*awsprice.Recommended, error) {
 			})
 		}
 
-		path := fmt.Sprintf("/var/tmp/hermes/awsprice/%s.out", in.Region)
+		path := fmt.Sprintf("%s/awsprice/%s.out", tmpdir, in.Region)
 		repo, err := awsprice.Read(path)
 		if err != nil {
 			return nil, fmt.Errorf("read awsprice (region=%s): %v", in.Region, err)
@@ -193,7 +193,7 @@ func Recommended(merged []*Merged) ([]*awsprice.Recommended, error) {
 			})
 		}
 
-		path := fmt.Sprintf("/var/tmp/hermes/awsprice/%s.out", in.Region)
+		path := fmt.Sprintf("%s/awsprice/%s.out", tmpdir, in.Region)
 		repo, err := awsprice.Read(path)
 		if err != nil {
 			return nil, fmt.Errorf("read awsprice (region=%s): %v", in.Region, err)
@@ -311,7 +311,7 @@ func Cache(forecast []*Forecast) {
 	}
 
 	for _, r := range region {
-		cache := fmt.Sprintf("/var/tmp/hermes/awsprice/%s.out", r)
+		cache := fmt.Sprintf("%s/awsprice/%s.out", tmpdir, r)
 		if _, err := os.Stat(cache); os.IsNotExist(err) {
 			repo := awsprice.NewRepository([]string{r})
 			if err := repo.Fetch(); err != nil {
