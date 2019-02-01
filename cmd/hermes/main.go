@@ -66,8 +66,8 @@ func main() {
 	}
 
 	var input Input
-	if err := json.Unmarshal(stdin, &input); err != nil {
-		fmt.Println(fmt.Errorf("unmarshal: %v", err))
+	if uerr := json.Unmarshal(stdin, &input); uerr != nil {
+		fmt.Println(fmt.Errorf("unmarshal: %v", uerr))
 		return
 	}
 
@@ -109,11 +109,7 @@ func Recommended(merged []*Merged) ([]*awsprice.Recommended, error) {
 			})
 		}
 
-		os, err := GetOperatingSystem(in.Platform)
-		if err != nil {
-			return nil, fmt.Errorf("get operating system. platform=%s: %v", in.Platform, err)
-		}
-
+		os := awsprice.OperationgSystem[in.Platform]
 		path := fmt.Sprintf("%s/awsprice/%s.out", tmpdir, in.Region)
 		repo, err := awsprice.Read(path)
 		if err != nil {
@@ -223,18 +219,6 @@ func Recommended(merged []*Merged) ([]*awsprice.Recommended, error) {
 	})
 
 	return out, nil
-}
-
-func GetOperatingSystem(platform string) (string, error) {
-	if platform == "Linux/UNIX" {
-		return "Linux", nil
-	}
-
-	if platform == "Windows (Amazon VPC)" {
-		return "Windows", nil
-	}
-
-	return "", fmt.Errorf("operating system not found")
 }
 
 func Merge(forecast []*Forecast) []*Merged {
