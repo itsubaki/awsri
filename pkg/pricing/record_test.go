@@ -2,7 +2,7 @@ package pricing
 
 import "testing"
 
-func TestUnique(t *testing.T) {
+func TestUniqueOperatingSystem(t *testing.T) {
 	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
 	repo, err := Read(path)
 	if err != nil {
@@ -14,15 +14,37 @@ func TestUnique(t *testing.T) {
 			t.Errorf("invalid OperatingSystem=%s", r)
 		}
 	}
+}
+
+func TestUniqueCacheEngine(t *testing.T) {
+	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
+	repo, err := Read(path)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
 
 	for _, r := range repo.SelectAll().Unique("CacheEngine") {
 		if r != "Redis" && r != "Memcached" {
 			t.Errorf("invalid CacheEngine=%s", r)
 		}
 	}
+}
+
+func TestUniqueDatabaseEngine(t *testing.T) {
+	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
+	repo, err := Read(path)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
 
 	for _, r := range repo.SelectAll().Unique("DatabaseEngine") {
-		if r != "SQL Server" && r != "PostgreSQL" && r != "Oracle" && r != "MySQL" && r != "MariaDB" && r != "Aurora PostgreSQL" && r != "Aurora MySQL" {
+		if r != "SQL Server" &&
+			r != "PostgreSQL" &&
+			r != "Oracle" &&
+			r != "MySQL" &&
+			r != "MariaDB" &&
+			r != "Aurora PostgreSQL" &&
+			r != "Aurora MySQL" {
 			t.Errorf("invalid DatabaseEngine=%s", r)
 		}
 	}
