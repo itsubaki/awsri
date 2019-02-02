@@ -76,12 +76,12 @@ func Read(path string) (*Repository, error) {
 	return repo, nil
 }
 
-func (r *Repository) Write(path string) error {
+func (repo *Repository) Write(path string) error {
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return nil
 	}
 
-	bytes, err := r.Serialize()
+	bytes, err := repo.Serialize()
 	if err != nil {
 		return fmt.Errorf("serialize: %v", err)
 	}
@@ -93,8 +93,8 @@ func (r *Repository) Write(path string) error {
 	return nil
 }
 
-func (r *Repository) Serialize() ([]byte, error) {
-	bytes, err := json.Marshal(r)
+func (repo *Repository) Serialize() ([]byte, error) {
+	bytes, err := json.Marshal(repo)
 	if err != nil {
 		return []byte{}, fmt.Errorf("marshal: %v", err)
 	}
@@ -102,22 +102,22 @@ func (r *Repository) Serialize() ([]byte, error) {
 	return bytes, nil
 }
 
-func (r *Repository) Deserialize(bytes []byte) error {
-	if err := json.Unmarshal(bytes, r); err != nil {
+func (repo *Repository) Deserialize(bytes []byte) error {
+	if err := json.Unmarshal(bytes, repo); err != nil {
 		return fmt.Errorf("unmarshal: %v", err)
 	}
 
 	return nil
 }
 
-func (r *Repository) SelectAll() RecordList {
-	return r.Internal
+func (repo *Repository) SelectAll() RecordList {
+	return repo.Internal
 }
 
-func (r *Repository) AccountID() []string {
+func (repo *Repository) AccountID() []string {
 	selected := make(map[string]bool)
-	for i := range r.Internal {
-		selected[r.Internal[i].AccountID] = true
+	for i := range repo.Internal {
+		selected[repo.Internal[i].AccountID] = true
 	}
 
 	out := []string{}

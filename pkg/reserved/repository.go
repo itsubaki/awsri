@@ -181,12 +181,12 @@ func Read(path string) (*Repository, error) {
 	return repo, nil
 }
 
-func (r *Repository) Write(path string) error {
+func (repo *Repository) Write(path string) error {
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return nil
 	}
 
-	bytes, err := r.Serialize()
+	bytes, err := repo.Serialize()
 	if err != nil {
 		return fmt.Errorf("serialize: %v", err)
 	}
@@ -198,8 +198,8 @@ func (r *Repository) Write(path string) error {
 	return nil
 }
 
-func (r *Repository) Serialize() ([]byte, error) {
-	bytes, err := json.Marshal(r)
+func (repo *Repository) Serialize() ([]byte, error) {
+	bytes, err := json.Marshal(repo)
 	if err != nil {
 		return []byte{}, fmt.Errorf("marshal: %v", err)
 	}
@@ -215,15 +215,15 @@ func (r *Repository) Deserialize(bytes []byte) error {
 	return nil
 }
 
-func (r *Repository) SelectAll() RecordList {
-	return r.Internal
+func (repo *Repository) SelectAll() RecordList {
+	return repo.Internal
 }
 
-func (r *Repository) FindByInstanceType(tipe string) RecordList {
+func (repo *Repository) FindByInstanceType(tipe string) RecordList {
 	out := RecordList{}
-	for i := range r.Internal {
-		if r.Internal[i].InstanceType == tipe {
-			out = append(out, r.Internal[i])
+	for i := range repo.Internal {
+		if repo.Internal[i].InstanceType == tipe {
+			out = append(out, repo.Internal[i])
 		}
 	}
 

@@ -291,7 +291,7 @@ func Cache(forecast []*Forecast) {
 	}
 
 	region := []string{}
-	for k, _ := range rflat {
+	for k := range rflat {
 		region = append(region, k)
 	}
 

@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var BaseURL = "https://pricing.us-east-1.amazonaws.com"
+var baseURL = "https://pricing.us-east-1.amazonaws.com"
 
 type InputPrice struct {
 	FormatVersion   string               `json:"formatVersion"`
@@ -98,10 +98,10 @@ func GetPrice(region string) (map[string]OutputPrice, error) {
 func GetPriceWithClient(region string, client *http.Client) (map[string]OutputPrice, error) {
 	var input InputPrice
 	{
-		url := fmt.Sprintf("%s/offers/v1.0/aws/AmazonElastiCache/current/region_index.json", BaseURL)
+		url := fmt.Sprintf("%s/offers/v1.0/aws/AmazonElastiCache/current/region_index.json", baseURL)
 		resp, err := client.Get(url)
 		if err != nil {
-			return nil, fmt.Errorf("get %s: %v", BaseURL, err)
+			return nil, fmt.Errorf("get %s: %v", baseURL, err)
 		}
 
 		buf, err := ioutil.ReadAll(resp.Body)
@@ -116,10 +116,10 @@ func GetPriceWithClient(region string, client *http.Client) (map[string]OutputPr
 
 	var list PriceList
 	{
-		url := fmt.Sprintf("%s%s", BaseURL, input.Regions[region].CurrentVersionUrl)
+		url := fmt.Sprintf("%s%s", baseURL, input.Regions[region].CurrentVersionUrl)
 		resp, err := client.Get(url)
 		if err != nil {
-			return nil, fmt.Errorf("get %s: %v", BaseURL, err)
+			return nil, fmt.Errorf("get %s: %v", baseURL, err)
 		}
 
 		buf, err := ioutil.ReadAll(resp.Body)

@@ -346,8 +346,12 @@ func (r *Record) GetInstanceNum(forecast []Forecast, strategy ...string) (string
 	return actual, ondemand, reserved
 }
 
-// ondemandNum, reservedNum is Per Year  (LeaseContractLength=1yr)
-// ondemandNum, reservedNum is Per 3Year (LeaseContractLength=3yr)
+/*
+GetCost returns full ondemand cost and reserved instance applied cost.
+
+ondemandNum, reservedNum is Per Year  (LeaseContractLength=1yr)
+ondemandNum, reservedNum is Per 3Year (LeaseContractLength=3yr)
+*/
 func (r *Record) GetCost(ondemandNum float64, reservedNum int64) *ReservedAppliedCost {
 	full := r.GetAnnualCost().OnDemand * (ondemandNum + float64(reservedNum))
 	ond := r.GetAnnualCost().OnDemand * ondemandNum

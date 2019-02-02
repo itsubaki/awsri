@@ -133,12 +133,12 @@ func Read(path string) (*Repository, error) {
 	return repo, nil
 }
 
-func (r *Repository) Write(path string) error {
+func (repo *Repository) Write(path string) error {
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return nil
 	}
 
-	bytes, err := r.Serialize()
+	bytes, err := repo.Serialize()
 	if err != nil {
 		return fmt.Errorf("serialize: %v", err)
 	}
@@ -150,8 +150,8 @@ func (r *Repository) Write(path string) error {
 	return nil
 }
 
-func (r *Repository) Serialize() ([]byte, error) {
-	bytes, err := json.Marshal(r)
+func (repo *Repository) Serialize() ([]byte, error) {
+	bytes, err := json.Marshal(repo)
 	if err != nil {
 		return []byte{}, fmt.Errorf("marshal: %v", err)
 	}
@@ -159,19 +159,19 @@ func (r *Repository) Serialize() ([]byte, error) {
 	return bytes, nil
 }
 
-func (r *Repository) Deserialize(bytes []byte) error {
-	if err := json.Unmarshal(bytes, r); err != nil {
+func (repo *Repository) Deserialize(bytes []byte) error {
+	if err := json.Unmarshal(bytes, repo); err != nil {
 		return fmt.Errorf("unmarshal: %v", err)
 	}
 
 	return nil
 }
 
-func (r *Repository) SelectAll() RecordList {
-	return r.Internal
+func (repo *Repository) SelectAll() RecordList {
+	return repo.Internal
 }
 
-func (r *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
+func (repo *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
 	if strings.Contains(record.InstanceType, "cache") {
 		return nil, fmt.Errorf("invalid input. cache hasn't normalization size factor")
 	}
@@ -192,10 +192,10 @@ func (r *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
 		tmp := RecordList{}
 		for i := range defined {
 			suspect := fmt.Sprintf("%s.%s", familiy, defined[i])
-			for j := range r.Internal {
-				if r.Internal[j].InstanceType == suspect &&
-					strings.LastIndex(r.Internal[j].UsageType, ".") > 0 {
-					tmp = append(tmp, r.Internal[j])
+			for j := range repo.Internal {
+				if repo.Internal[j].InstanceType == suspect &&
+					strings.LastIndex(repo.Internal[j].UsageType, ".") > 0 {
+					tmp = append(tmp, repo.Internal[j])
 				}
 			}
 			if len(tmp) > 0 {
@@ -231,11 +231,11 @@ func (r *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
 		tmp := RecordList{}
 		for i := range defined {
 			suspect := fmt.Sprintf("%s.%s", familiy, defined[i])
-			for j := range r.Internal {
-				if r.Internal[j].InstanceType == suspect &&
-					r.Internal[j].DatabaseEngine == record.DatabaseEngine &&
-					strings.LastIndex(r.Internal[j].UsageType, ".") > 0 {
-					tmp = append(tmp, r.Internal[j])
+			for j := range repo.Internal {
+				if repo.Internal[j].InstanceType == suspect &&
+					repo.Internal[j].DatabaseEngine == record.DatabaseEngine &&
+					strings.LastIndex(repo.Internal[j].UsageType, ".") > 0 {
+					tmp = append(tmp, repo.Internal[j])
 				}
 			}
 			if len(tmp) > 0 {
@@ -268,36 +268,36 @@ func (r *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
 	return nil, fmt.Errorf("invalid record=%v", record)
 }
 
-func (r *Repository) FindByInstanceType(tipe string) RecordList {
+func (repo *Repository) FindByInstanceType(tipe string) RecordList {
 	out := RecordList{}
-	for i := range r.Internal {
-		if r.Internal[i].InstanceType == tipe {
-			out = append(out, r.Internal[i])
+	for i := range repo.Internal {
+		if repo.Internal[i].InstanceType == tipe {
+			out = append(out, repo.Internal[i])
 		}
 	}
 
 	return out
 }
 
-func (r *Repository) FindByUsageType(tipe string) RecordList {
+func (repo *Repository) FindByUsageType(tipe string) RecordList {
 	out := RecordList{}
-	for i := range r.Internal {
-		if r.Internal[i].UsageType == tipe {
-			out = append(out, r.Internal[i])
+	for i := range repo.Internal {
+		if repo.Internal[i].UsageType == tipe {
+			out = append(out, repo.Internal[i])
 		}
 	}
 
 	return out
 }
 
-func (r *Repository) Recommend(record *Record, forecast []Forecast, strategy ...string) (*Recommended, error) {
+func (repo *Repository) Recommend(record *Record, forecast []Forecast, strategy ...string) (*Recommended, error) {
 	out := record.Recommend(forecast, strategy...)
 
 	if strings.Contains(record.InstanceType, "cache") {
 		return out, nil
 	}
 
-	min, err := r.FindMinimumInstanceType(record)
+	min, err := repo.FindMinimumInstanceType(record)
 	if err != nil {
 		out.MinimumRecord = &Record{
 			SKU: fmt.Sprintf("find minimum instance type: %v", err),

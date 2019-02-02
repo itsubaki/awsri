@@ -136,6 +136,8 @@ func (list RecordList) OfferingClass(class string) RecordList {
 }
 
 /*
+ProductDescription is reserved instance product platform description.
+
 https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-reserved-instances-offerings.html
 https://docs.aws.amazon.com/cli/latest/reference/rds/describe-reserved-db-instances.html
 https://docs.aws.amazon.com/cli/latest/reference/elasticache/describe-reserved-cache-nodes.html

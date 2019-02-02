@@ -1,6 +1,8 @@
 package pricing
 
-// costexp/platform -> awsprice/operatingsystem
+/*
+OperatingSystem returns AWS Pricing OperatingSystem from CostExplorer Platform.
+*/
 var OperationgSystem = map[string]string{
 	"Amazon Linux":                "Linux",   // PreInstalled: NA
 	"Linux/UNIX":                  "Linux",   // PreInstalled: NA
