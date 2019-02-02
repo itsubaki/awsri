@@ -55,7 +55,7 @@ $ make install
 ## Example
 
 ```
-$ cat test/forecast.json | hermes | jq .
+$ cat test/forecast.json | hermes recommend | jq .
 {
   "forecast": [
     {

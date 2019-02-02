@@ -1,32 +1,7 @@
 package main
 
-import (
-	"fmt"
-	"testing"
-)
+import "testing"
 
-func TestGenerateInput(t *testing.T) {
-	input := &Input{
-		Forecast: []*Forecast{
-			{
-				AccountID: "012345678901",
-				Alias:     "example",
-				Region:    "ap-northeast-1",
-				UsageType: "APN1-BoxUsage:c4.2xlarge",
-				Platform:  "Linux/Unix",
-				InstanceNum: []InstanceNum{
-					{
-						Date:        "2019-01",
-						InstanceNum: 100,
-					},
-					{
-						Date:        "2018-02",
-						InstanceNum: 100,
-					},
-				},
-			},
-		},
-	}
+func TestMain(t *testing.T) {
 
-	fmt.Println(input.JSON())
 }
