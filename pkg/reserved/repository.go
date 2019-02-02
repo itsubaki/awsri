@@ -207,8 +207,8 @@ func (repo *Repository) Serialize() ([]byte, error) {
 	return bytes, nil
 }
 
-func (r *Repository) Deserialize(bytes []byte) error {
-	if err := json.Unmarshal(bytes, r); err != nil {
+func (repo *Repository) Deserialize(bytes []byte) error {
+	if err := json.Unmarshal(bytes, repo); err != nil {
 		return fmt.Errorf("unmarshal: %v", err)
 	}
 
