@@ -1,4 +1,4 @@
-package awsprice
+package pricing
 
 import (
 	"bytes"

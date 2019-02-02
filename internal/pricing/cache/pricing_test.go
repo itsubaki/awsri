@@ -16,7 +16,7 @@ func TestGetPrice(t *testing.T) {
 
 func TestReadPrice(t *testing.T) {
 	path := fmt.Sprintf("%s/%s", os.Getenv("GOPATH"),
-		"src/github.com/itsubaki/hermes/internal/awsprice/_json/cache/ap-northeast-1.json",
+		"src/github.com/itsubaki/hermes/internal/pricing/_json/cache/ap-northeast-1.json",
 	)
 	buf, err := ioutil.ReadFile(path)
 	if err != nil {

@@ -1,4 +1,4 @@
-package awsprice
+package pricing
 
 func GetDays(i int) int {
 	return Days[i%12]

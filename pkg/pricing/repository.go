@@ -1,4 +1,4 @@
-package awsprice
+package pricing
 
 import (
 	"encoding/json"
@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/itsubaki/hermes/internal/awsprice/cache"
-	"github.com/itsubaki/hermes/internal/awsprice/ec2"
-	"github.com/itsubaki/hermes/internal/awsprice/rds"
+	"github.com/itsubaki/hermes/internal/pricing/cache"
+	"github.com/itsubaki/hermes/internal/pricing/ec2"
+	"github.com/itsubaki/hermes/internal/pricing/rds"
 )
 
 type Repository struct {

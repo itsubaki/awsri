@@ -327,7 +327,7 @@ for _, r := range repo.SelectAll() {
 }
 
 # find aws pricing of current usage
-repo := awsprice.New([]string{"ap-northeast-1"})
+repo := pricing.New([]string{"ap-northeast-1"})
 rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
   OperatingSystem("Linux").
   Tenancy("Shared").
@@ -336,7 +336,7 @@ rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
   OfferingClass("standard")
 
 # predict future usage (the method is various)
-forecast := []awsprice.Forecast{
+forecast := []pricing.Forecast{
   {Date: "2021-01", InstanceNum: 120.4},
   {Date: "2021-02", InstanceNum: 110.3},
   {Date: "2021-03", InstanceNum: 100.1},
@@ -447,7 +447,7 @@ fmt.Println(rs[0])
 ## Memo
 
 ```
-repo := awsprice.New([]string{"ap-northeast-1"})
+repo := pricing.New([]string{"ap-northeast-1"})
 rs := repo.FindByInstanceType("m4.large").
   OperatingSystem("Linux").
   Tenancy("Shared").
@@ -516,7 +516,7 @@ for _, r := range rs {
 ```
 
 ```
-# awsprice/OperatingSystem
+# pricing/OperatingSystem
 SUSE
 Linux
 RHEL

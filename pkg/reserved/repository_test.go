@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/itsubaki/hermes/pkg/awsprice"
+	"github.com/itsubaki/hermes/pkg/pricing"
 )
 
 func TestSerialize(t *testing.T) {
@@ -43,8 +43,8 @@ func TestDeserialize(t *testing.T) {
 }
 
 func TestRecommendM44xlarge(t *testing.T) {
-	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
-	repo, err := awsprice.Read(path)
+	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
+	repo, err := pricing.Read(path)
 	if err != nil {
 		t.Errorf("%v", err)
 	}
@@ -57,7 +57,7 @@ func TestRecommendM44xlarge(t *testing.T) {
 		PurchaseOption("All Upfront").
 		OfferingClass("standard")
 
-	forecast := []awsprice.Forecast{
+	forecast := []pricing.Forecast{
 		{Date: "2018-01", InstanceNum: 120.4},
 		{Date: "2018-02", InstanceNum: 110.3},
 		{Date: "2018-03", InstanceNum: 100.1},

@@ -1,4 +1,4 @@
-package awsprice
+package pricing
 
 // costexp/platform -> awsprice/operatingsystem
 var OperationgSystem = map[string]string{

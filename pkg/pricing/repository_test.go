@@ -1,4 +1,4 @@
-package awsprice
+package pricing
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ func TestSerialize(t *testing.T) {
 	}
 
 	for i := range region {
-		path := fmt.Sprintf("/var/tmp/hermes/awsprice/%s.out", region[i])
+		path := fmt.Sprintf("/var/tmp/hermes/pricing/%s.out", region[i])
 		if _, err := os.Stat(path); !os.IsNotExist(err) {
 			continue
 		}
@@ -32,7 +32,7 @@ func TestSerialize(t *testing.T) {
 }
 
 func TestFindMinimumDatabaseT2Medium(t *testing.T) {
-	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
+	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
 	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("%v", err)
@@ -54,7 +54,7 @@ func TestFindMinimumDatabaseT2Medium(t *testing.T) {
 }
 
 func TestFindMinimumDatabase(t *testing.T) {
-	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
+	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
 	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("%v", err)
@@ -76,7 +76,7 @@ func TestFindMinimumDatabase(t *testing.T) {
 }
 
 func TestFindMinimumCompute(t *testing.T) {
-	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
+	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
 	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("%v", err)
@@ -112,7 +112,7 @@ func TestFindMinimumCompute(t *testing.T) {
 }
 
 func TestFindByInstanceType(t *testing.T) {
-	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
+	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
 	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("%v", err)
@@ -147,7 +147,7 @@ func TestFindByInstanceType(t *testing.T) {
 }
 
 func TestRecommendM4large(t *testing.T) {
-	path := "/var/tmp/hermes/awsprice/ap-northeast-1.out"
+	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
 	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("%v", err)

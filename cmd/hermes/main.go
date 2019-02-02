@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/itsubaki/hermes/pkg/awsprice"
+	"github.com/itsubaki/hermes/pkg/pricing"
 )
 
 var tmpdir = "/var/tmp/hermes"
@@ -35,9 +35,9 @@ type InstanceNum struct {
 }
 
 type Output struct {
-	Forecast    []*Forecast             `json:"forecast"`
-	Merged      []*Merged               `json:"merged"`
-	Recommended []*awsprice.Recommended `json:"recommended"`
+	Forecast    []*Forecast            `json:"forecast"`
+	Merged      []*Merged              `json:"merged"`
+	Recommended []*pricing.Recommended `json:"recommended"`
 }
 
 type Merged struct {
@@ -94,26 +94,26 @@ func main() {
 	fmt.Println(string(bytes))
 }
 
-func Recommended(merged []*Merged) ([]*awsprice.Recommended, error) {
-	out := []*awsprice.Recommended{}
+func Recommended(merged []*Merged) ([]*pricing.Recommended, error) {
+	out := []*pricing.Recommended{}
 	for _, in := range merged {
 		if len(in.Platform) < 1 {
 			continue
 		}
 
-		forecast := []awsprice.Forecast{}
+		forecast := []pricing.Forecast{}
 		for _, n := range in.InstanceNum {
-			forecast = append(forecast, awsprice.Forecast{
+			forecast = append(forecast, pricing.Forecast{
 				Date:        n.Date,
 				InstanceNum: n.InstanceNum,
 			})
 		}
 
-		os := awsprice.OperationgSystem[in.Platform]
-		path := fmt.Sprintf("%s/awsprice/%s.out", tmpdir, in.Region)
-		repo, err := awsprice.Read(path)
+		os := pricing.OperationgSystem[in.Platform]
+		path := fmt.Sprintf("%s/pricing/%s.out", tmpdir, in.Region)
+		repo, err := pricing.Read(path)
 		if err != nil {
-			return nil, fmt.Errorf("read awsprice (region=%s): %v", in.Region, err)
+			return nil, fmt.Errorf("read pricing (region=%s): %v", in.Region, err)
 		}
 
 		hit := repo.FindByUsageType(in.UsageType).
@@ -143,18 +143,18 @@ func Recommended(merged []*Merged) ([]*awsprice.Recommended, error) {
 			continue
 		}
 
-		forecast := []awsprice.Forecast{}
+		forecast := []pricing.Forecast{}
 		for _, n := range in.InstanceNum {
-			forecast = append(forecast, awsprice.Forecast{
+			forecast = append(forecast, pricing.Forecast{
 				Date:        n.Date,
 				InstanceNum: n.InstanceNum,
 			})
 		}
 
-		path := fmt.Sprintf("%s/awsprice/%s.out", tmpdir, in.Region)
-		repo, err := awsprice.Read(path)
+		path := fmt.Sprintf("%s/pricing/%s.out", tmpdir, in.Region)
+		repo, err := pricing.Read(path)
 		if err != nil {
-			return nil, fmt.Errorf("read awsprice (region=%s): %v", in.Region, err)
+			return nil, fmt.Errorf("read pricing (region=%s): %v", in.Region, err)
 		}
 
 		hit := repo.FindByUsageType(in.UsageType).
@@ -181,18 +181,18 @@ func Recommended(merged []*Merged) ([]*awsprice.Recommended, error) {
 			continue
 		}
 
-		forecast := []awsprice.Forecast{}
+		forecast := []pricing.Forecast{}
 		for _, n := range in.InstanceNum {
-			forecast = append(forecast, awsprice.Forecast{
+			forecast = append(forecast, pricing.Forecast{
 				Date:        n.Date,
 				InstanceNum: n.InstanceNum,
 			})
 		}
 
-		path := fmt.Sprintf("%s/awsprice/%s.out", tmpdir, in.Region)
-		repo, err := awsprice.Read(path)
+		path := fmt.Sprintf("%s/pricing/%s.out", tmpdir, in.Region)
+		repo, err := pricing.Read(path)
 		if err != nil {
-			return nil, fmt.Errorf("read awsprice (region=%s): %v", in.Region, err)
+			return nil, fmt.Errorf("read pricing (region=%s): %v", in.Region, err)
 		}
 
 		hit := repo.FindByUsageType(in.UsageType).
@@ -295,16 +295,16 @@ func Cache(forecast []*Forecast) {
 	}
 
 	for _, r := range region {
-		cache := fmt.Sprintf("%s/awsprice/%s.out", tmpdir, r)
+		cache := fmt.Sprintf("%s/pricing/%s.out", tmpdir, r)
 		if _, err := os.Stat(cache); os.IsNotExist(err) {
-			repo := awsprice.NewRepository([]string{r})
+			repo := pricing.NewRepository([]string{r})
 			if err := repo.Fetch(); err != nil {
-				fmt.Println(fmt.Errorf("fetch awsprice (region=%s): %v", r, err))
+				fmt.Println(fmt.Errorf("fetch pricing (region=%s): %v", r, err))
 				return
 			}
 
 			if err := repo.Write(cache); err != nil {
-				fmt.Println(fmt.Errorf("write awsprice (region=%s): %v", r, err))
+				fmt.Println(fmt.Errorf("write pricing (region=%s): %v", r, err))
 				return
 			}
 		}
