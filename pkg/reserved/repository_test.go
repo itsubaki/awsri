@@ -95,7 +95,7 @@ func TestRecommendM44xlarge(t *testing.T) {
 		}(min.LeaseContractLength)).
 		OfferingClass(min.OfferingClass).
 		OfferingType(min.PurchaseOption).
-		ContainsProductDescription(min.OperatingSystem)
+		ProductDescription(min.OperatingSystem)
 
 	if rs2[0].Count() != rs2[0].InstanceCount {
 		t.Errorf("invalid count")

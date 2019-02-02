@@ -2,7 +2,6 @@ package reserved
 
 import (
 	"encoding/json"
-	"strings"
 	"time"
 )
 
@@ -136,24 +135,23 @@ func (list RecordList) OfferingClass(class string) RecordList {
 	return ret
 }
 
+/*
+https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-reserved-instances-offerings.html
+https://docs.aws.amazon.com/cli/latest/reference/rds/describe-reserved-db-instances.html
+https://docs.aws.amazon.com/cli/latest/reference/elasticache/describe-reserved-cache-nodes.html
+
+The Reserved Instance product platform description. Instances that include (Amazon VPC) in the description are for use with Amazon VPC.
+Possible values:
+Linux/UNIX
+Linux/UNIX (Amazon VPC)
+Windows
+Windows (Amazon VPC)
+*/
 func (list RecordList) ProductDescription(desc string) RecordList {
 	ret := RecordList{}
 
 	for i := range list {
 		if list[i].ProductDescription != desc {
-			continue
-		}
-		ret = append(ret, list[i])
-	}
-
-	return ret
-}
-
-func (list RecordList) ContainsProductDescription(desc string) RecordList {
-	ret := RecordList{}
-
-	for i := range list {
-		if !strings.Contains(list[i].ProductDescription, desc) {
 			continue
 		}
 		ret = append(ret, list[i])
