@@ -514,33 +514,3 @@ for _, r := range rs {
   "discount_rate":0.28388375632720975
 }
 ```
-
-```
-# pricing/OperatingSystem
-SUSE
-Linux
-RHEL
-Windows
-Memcached
-Redis
-Aurora PostgreSQL
-Aurora MySQL
-SQL Server
-Oracle
-PostgreSQL
-MySQL
-MariaDB
-
-# costexp/Platform
-Windows with SQL Server Web
-Linux/UNIX
-Windows (Amazon VPC)
-Windows (BYOL)
-NoOperatingSystem
-Redis
-Memcached
-Aurora MySQL
-Aurora PostgreSQL
-PostgreSQL
-MySQL
-```
