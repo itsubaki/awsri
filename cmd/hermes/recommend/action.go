@@ -110,8 +110,8 @@ func Recommended(merged []*Merged) ([]*pricing.Recommended, error) {
 			})
 		}
 
-		os := pricing.OperationgSystem[in.Platform]
-		path := fmt.Sprintf("%s/pricing/%s.out", tmpdir, in.Region)
+		os := pricing.OperatingSystem[in.Platform]
+		path := fmt.Sprintf("%s/prici\ng/%s.out", tmpdir, in.Region)
 		repo, err := pricing.Read(path)
 		if err != nil {
 			return nil, fmt.Errorf("read pricing (region=%s): %v", in.Region, err)

@@ -3,7 +3,7 @@ package pricing
 /*
 OperatingSystem returns AWS Pricing OperatingSystem from CostExplorer Platform.
 */
-var OperationgSystem = map[string]string{
+var OperatingSystem = map[string]string{
 	"Amazon Linux":                "Linux",   // PreInstalled: NA
 	"Linux/UNIX":                  "Linux",   // PreInstalled: NA
 	"Linux with SQL Standard":     "Linux",   // PreInstalled: SQL Standard
