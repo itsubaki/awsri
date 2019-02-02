@@ -27,6 +27,12 @@ func New(version string) *cli.App {
 		Name:    "predict",
 		Aliases: []string{"p"},
 		Action:  predict.Action,
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:  "method, m",
+				Value: "linear",
+			},
+		},
 	}
 
 	app.Commands = []cli.Command{

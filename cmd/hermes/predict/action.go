@@ -4,15 +4,20 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/itsubaki/hermes/cmd/hermes/predict/linear"
 	"github.com/itsubaki/hermes/cmd/hermes/recommend"
 	"github.com/urfave/cli"
 )
 
+type Predict interface {
+	Do(c *cli.Context) *recommend.ForecstList
+}
+
 func Action(c *cli.Context) {
+	predict := &linear.Regression{}
 
-	output := recommend.ForecstList{}
-
-	bytes, err := json.Marshal(&output)
+	output := predict.Do(c)
+	bytes, err := json.Marshal(output)
 	if err != nil {
 		fmt.Println(fmt.Errorf("marshal: %v", err))
 		return
