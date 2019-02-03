@@ -55,7 +55,7 @@ $ make install
 ## Example
 
 ```
-$ cat test/forecast.json | hermes recommend | jq .
+$ cat test/forecast.json | hermes recommend | jq
 {
   "forecast": [
     {
@@ -299,7 +299,12 @@ $ cat test/forecast.json | hermes recommend | jq .
       "subtraction": 667872,
       "discount_rate": 0.3490892668974861
     }
-  ]
+  ],
+  "total": {
+    "reserved_quantity": 1258600,
+    "subtraction": 1085576,
+    "discount_rate": 0.37414255793251233
+  }
 }
 ```
 
