@@ -39,6 +39,7 @@ type Output struct {
 	Forecast    []*Forecast            `json:"forecast"`
 	Merged      []*Merged              `json:"merged"`
 	Recommended []*pricing.Recommended `json:"recommended"`
+	Total       *Total                 `json:"total"`
 }
 
 type Merged struct {
@@ -48,6 +49,12 @@ type Merged struct {
 	CacheEngine    string        `json:"cache_engine,omitempty"`
 	DatabaseEngine string        `json:"database_engine,omitempty"`
 	InstanceNum    []InstanceNum `json:"instance_num"`
+}
+
+type Total struct {
+	ReservedQuantity float64 `json:"reserved_quantity"`
+	Subtraction      float64 `json:"subtraction"`
+	DiscountRate     float64 `json:"discount_rate"`
 }
 
 func (input ForecstList) JSON() string {
@@ -80,10 +87,19 @@ func Action(c *cli.Context) {
 		return
 	}
 
+	total := &Total{}
+	for _, r := range recommended {
+		total.ReservedQuantity = total.ReservedQuantity + r.ReservedQuantity
+		total.DiscountRate = total.DiscountRate + r.DiscountRate
+		total.Subtraction = total.Subtraction + r.Subtraction
+	}
+	total.DiscountRate = total.DiscountRate / float64(len(recommended))
+
 	output := Output{
 		Forecast:    input.Forecast,
 		Merged:      merged,
 		Recommended: recommended,
+		Total:       total,
 	}
 
 	bytes, err := json.Marshal(&output)
@@ -111,7 +127,7 @@ func Recommended(merged []*Merged) ([]*pricing.Recommended, error) {
 		}
 
 		os := pricing.OperatingSystem[in.Platform]
-		path := fmt.Sprintf("%s/prici\ng/%s.out", tmpdir, in.Region)
+		path := fmt.Sprintf("%s/pricing/%s.out", tmpdir, in.Region)
 		repo, err := pricing.Read(path)
 		if err != nil {
 			return nil, fmt.Errorf("read pricing (region=%s): %v", in.Region, err)
