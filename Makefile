@@ -6,7 +6,7 @@ LDFLAGS := -X 'main.date=${DATE}' -X 'main.hash=${HASH}' -X 'main.goversion=${GO
 
 .PHONY: test
 test:
-	mkdir -p /var/tmp/hermes/{pricing,costexp,reserved}
+	mkdir -p /var/tmp/hermes/{pricing,costexp}
 	GOCACHE=off go test -cover $(shell go list ./... | grep -v /vendor/ | grep -v /build/) -v -run TestSerialize* -timeout 20m
 	go test -cover $(shell go list ./... | grep -v /vendor/ | grep -v /build/) -v
 
