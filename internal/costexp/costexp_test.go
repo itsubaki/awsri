@@ -14,8 +14,8 @@ func TestReservationCoverage(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
 	period := &costexplorer.DateInterval{
-		Start: aws.String("2018-10-01"),
-		End:   aws.String("2018-11-01"),
+		Start: aws.String("2019-01-01"),
+		End:   aws.String("2019-02-01"),
 	}
 
 	c := costexplorer.New(session.Must(session.NewSession()))

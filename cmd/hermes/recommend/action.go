@@ -311,8 +311,13 @@ func Cache(forecast []*Forecast) {
 		region = append(region, k)
 	}
 
+	path := fmt.Sprintf("%s/pricing", tmpdir)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.MkdirAll(tmpdir, os.ModePerm)
+	}
+
 	for _, r := range region {
-		cache := fmt.Sprintf("%s/pricing/%s.out", tmpdir, r)
+		cache := fmt.Sprintf("%s/%s.out", path, r)
 		if _, err := os.Stat(cache); os.IsNotExist(err) {
 			repo := pricing.NewRepository([]string{r})
 			if err := repo.Fetch(); err != nil {

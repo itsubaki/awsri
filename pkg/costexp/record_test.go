@@ -6,7 +6,7 @@ import (
 )
 
 func TestUnique(t *testing.T) {
-	path := fmt.Sprintf("/var/tmp/hermes/costexp/%s.out", "example_2018-09")
+	path := fmt.Sprintf("/var/tmp/hermes/costexp/%s.out", "2018-09")
 	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("read file: %v", err)

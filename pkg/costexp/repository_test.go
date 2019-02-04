@@ -9,7 +9,6 @@ import (
 func TestSerialize(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 	date := []*Date{
-		{Start: "2018-01-01", End: "2018-02-01"},
 		{Start: "2018-02-01", End: "2018-03-01"},
 		{Start: "2018-03-01", End: "2018-04-01"},
 		{Start: "2018-04-01", End: "2018-05-01"},
@@ -21,6 +20,7 @@ func TestSerialize(t *testing.T) {
 		{Start: "2018-10-01", End: "2018-11-01"},
 		{Start: "2018-11-01", End: "2018-12-01"},
 		{Start: "2018-12-01", End: "2019-01-01"},
+		{Start: "2019-01-01", End: "2019-02-01"},
 	}
 
 	for i := range date {
@@ -43,15 +43,13 @@ func TestSerialize(t *testing.T) {
 func TestMergedRepository(t *testing.T) {
 	dir := "/var/tmp/hermes/costexp"
 	path := []string{
-		fmt.Sprintf("%s/%s.out", dir, "example_2018-01"),
-		fmt.Sprintf("%s/%s.out", dir, "example_2018-02"),
-		fmt.Sprintf("%s/%s.out", dir, "example_2018-03"),
-		fmt.Sprintf("%s/%s.out", dir, "example_2018-04"),
-		fmt.Sprintf("%s/%s.out", dir, "example_2018-05"),
-		fmt.Sprintf("%s/%s.out", dir, "example_2018-06"),
-		fmt.Sprintf("%s/%s.out", dir, "example_2018-07"),
-		fmt.Sprintf("%s/%s.out", dir, "example_2018-08"),
-		fmt.Sprintf("%s/%s.out", dir, "example_2018-09"),
+		fmt.Sprintf("%s/%s.out", dir, "2018-03"),
+		fmt.Sprintf("%s/%s.out", dir, "2018-04"),
+		fmt.Sprintf("%s/%s.out", dir, "2018-05"),
+		fmt.Sprintf("%s/%s.out", dir, "2018-06"),
+		fmt.Sprintf("%s/%s.out", dir, "2018-07"),
+		fmt.Sprintf("%s/%s.out", dir, "2018-08"),
+		fmt.Sprintf("%s/%s.out", dir, "2018-09"),
 	}
 
 	repo := &Repository{}
@@ -76,7 +74,7 @@ func TestMergedRepository(t *testing.T) {
 }
 
 func TestRepository(t *testing.T) {
-	path := fmt.Sprintf("/var/tmp/hermes/costexp/%s.out", "example_2018-09")
+	path := fmt.Sprintf("/var/tmp/hermes/costexp/%s.out", "2018-09")
 	repo, err := Read(path)
 	if err != nil {
 		t.Errorf("read file: %v", err)
