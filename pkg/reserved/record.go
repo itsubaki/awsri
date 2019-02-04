@@ -164,12 +164,16 @@ Windows with SQL Server Enterprise (Amazon VPC)
 func (list RecordList) ProductDescription(desc string) RecordList {
 	ret := RecordList{}
 
-	// TODO RHEL -> Red Hat Enterprise Linux
 	for i := range list {
-		if !strings.Contains(list[i].ProductDescription, desc) {
-			continue
+		// desc == Linux
+		if strings.Contains(list[i].ProductDescription, desc) {
+			ret = append(ret, list[i])
 		}
-		ret = append(ret, list[i])
+
+		// desc == RHEL
+		if strings.Contains(list[i].ProductDescription, "Red Hat Enterprise Linux") && desc == "RHEL" {
+			ret = append(ret, list[i])
+		}
 	}
 
 	return ret
