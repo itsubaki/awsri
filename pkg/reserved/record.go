@@ -31,6 +31,7 @@ type Record struct {
 	DBInstanceCount    int64     `json:"db_instance_count,omitempty"`
 	MultiAZ            bool      `json:"multi_az,omitempty"`
 	Start              time.Time `json:"start"`
+	State              string    `json:"state"`
 }
 
 func (r *Record) String() string {

@@ -16,7 +16,7 @@ func TestSerialize(t *testing.T) {
 		"us-west-2",
 	}
 
-	path := "/var/tmp/hermes/reserved/example.out"
+	path := "/var/tmp/hermes/reserved.out"
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return
 	}
@@ -32,7 +32,7 @@ func TestSerialize(t *testing.T) {
 }
 
 func TestDeserialize(t *testing.T) {
-	repo, err := Read("/var/tmp/hermes/reserved/example.out")
+	repo, err := Read("/var/tmp/hermes/reserved.out")
 	if err != nil {
 		t.Errorf("read file: %v", err)
 	}
@@ -79,7 +79,7 @@ func TestRecommendM44xlarge(t *testing.T) {
 		t.Errorf("invalid offer term")
 	}
 
-	rsv, err := Read("/var/tmp/hermes/reserved/example.out")
+	rsv, err := Read("/var/tmp/hermes/reserved.out")
 	if err != nil {
 		t.Errorf("read file: %v", err)
 	}

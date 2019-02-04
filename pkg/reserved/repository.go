@@ -65,6 +65,7 @@ func (repo *Repository) FetchWithClient(client *http.Client) error {
 				InstanceType:       *i.InstanceType,
 				InstanceCount:      *i.InstanceCount,
 				Start:              *i.Start,
+				State:              *i.State,
 			})
 		}
 	}
@@ -94,10 +95,6 @@ func (repo *Repository) FetchWithClient(client *http.Client) error {
 			}
 
 			for _, i := range output.ReservedCacheNodes {
-				if *i.State != "active" {
-					continue
-				}
-
 				repo.Internal = append(repo.Internal, &Record{
 					Region:             r,
 					Duration:           *i.Duration,
@@ -106,6 +103,7 @@ func (repo *Repository) FetchWithClient(client *http.Client) error {
 					CacheNodeType:      *i.CacheNodeType,
 					CacheNodeCount:     *i.CacheNodeCount,
 					Start:              *i.StartTime,
+					State:              *i.State,
 				})
 			}
 
@@ -141,10 +139,6 @@ func (repo *Repository) FetchWithClient(client *http.Client) error {
 			}
 
 			for _, i := range output.ReservedDBInstances {
-				if *i.State != "active" {
-					continue
-				}
-
 				repo.Internal = append(repo.Internal, &Record{
 					Region:             r,
 					Duration:           *i.Duration,
@@ -154,6 +148,7 @@ func (repo *Repository) FetchWithClient(client *http.Client) error {
 					DBInstanceCount:    *i.DBInstanceCount,
 					Start:              *i.StartTime,
 					MultiAZ:            *i.MultiAZ,
+					State:              *i.State,
 				})
 			}
 
