@@ -54,8 +54,8 @@ func New(config *Config) (*GoogleSS, error) {
 	}
 
 	tok := &oauth2.Token{}
-	if err := json.NewDecoder(f).Decode(tok); err != nil {
-		return nil, fmt.Errorf("decode token: %v", err)
+	if derr := json.NewDecoder(f).Decode(tok); derr != nil {
+		return nil, fmt.Errorf("decode token: %v", derr)
 	}
 
 	ctx := context.Background()

@@ -34,7 +34,7 @@ func (repo *Repository) Fetch() error {
 	return repo.FetchWithClient(http.DefaultClient)
 }
 
-func (repo *Repository) FetchWithClient(client *http.Client) error {
+func (repo *Repository) fetchEC2WithClient(client *http.Client) error {
 	for _, r := range repo.Region {
 		price, err := ec2.GetPriceWithClient(r, client)
 		if err != nil {
@@ -65,6 +65,10 @@ func (repo *Repository) FetchWithClient(client *http.Client) error {
 		}
 	}
 
+	return nil
+}
+
+func (repo *Repository) fetchCacheWithClient(client *http.Client) error {
 	for _, r := range repo.Region {
 		price, err := cache.GetPriceWithClient(r, client)
 		if err != nil {
@@ -90,6 +94,10 @@ func (repo *Repository) FetchWithClient(client *http.Client) error {
 		}
 	}
 
+	return nil
+}
+
+func (repo *Repository) fetchRDSWithClient(client *http.Client) error {
 	for _, r := range repo.Region {
 		price, err := rds.GetPriceWithClient(r, client)
 		if err != nil {
@@ -114,6 +122,22 @@ func (repo *Repository) FetchWithClient(client *http.Client) error {
 				UsageType:               v.UsageType,
 			})
 		}
+	}
+
+	return nil
+}
+
+func (repo *Repository) FetchWithClient(client *http.Client) error {
+	if err := repo.fetchEC2WithClient(client); err != nil {
+		return err
+	}
+
+	if err := repo.fetchCacheWithClient(client); err != nil {
+		return err
+	}
+
+	if err := repo.fetchRDSWithClient(client); err != nil {
+		return err
 	}
 
 	return nil
