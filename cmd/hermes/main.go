@@ -21,6 +21,13 @@ func New(version string) *cli.App {
 		Name:    "recommend",
 		Aliases: []string{"r"},
 		Action:  recommend.Action,
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:  "output, o",
+				Value: "stdout",
+				Usage: "stdout, googless",
+			},
+		},
 	}
 
 	predict := cli.Command{

@@ -8,8 +8,11 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/google/uuid"
+	"github.com/itsubaki/hermes/cmd/hermes/output/googless"
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/urfave/cli"
+	sheets "google.golang.org/api/sheets/v4"
 )
 
 var tmpdir = "/var/tmp/hermes"
@@ -57,13 +60,17 @@ type Total struct {
 	DiscountRate     float64 `json:"discount_rate"`
 }
 
-func (input ForecstList) JSON() string {
+func (input *ForecstList) JSON() string {
 	bytea, err := json.Marshal(input)
 	if err != nil {
 		panic(err)
 	}
 
 	return string(bytea)
+}
+
+func (output *Output) CSV() [][]interface{} {
+	return [][]interface{}{}
 }
 
 func Action(c *cli.Context) {
@@ -100,6 +107,35 @@ func Action(c *cli.Context) {
 		Merged:      merged,
 		Recommended: recommended,
 		Total:       total,
+	}
+
+	if c.String("output") == "googless" {
+		gss, err := googless.Default()
+		if err != nil {
+			fmt.Println(fmt.Errorf("new spreadsheets client: %v", err))
+			return
+		}
+
+		id := uuid.Must(uuid.NewRandom())
+		ss, err := gss.NewSpreadSheets(id.String())
+		if err != nil {
+			fmt.Println(fmt.Errorf("new spreadsheets: %v", err))
+			return
+		}
+		fmt.Println(ss)
+
+		value := &sheets.ValueRange{
+			Values: output.CSV(),
+		}
+
+		res, err := gss.Update(ss.SpreadsheetId, "シート1", value)
+		if err != nil {
+			fmt.Println(fmt.Errorf("update sheet1: %v", err))
+			return
+		}
+		fmt.Println(res)
+
+		return
 	}
 
 	bytes, err := json.Marshal(&output)
