@@ -70,7 +70,10 @@ func (input *ForecstList) JSON() string {
 }
 
 func (output *Output) CSV() [][]interface{} {
-	return [][]interface{}{}
+	return [][]interface{}{
+		[]interface{}{1, 2, 3, 4, 5},
+		[]interface{}{6, 7, 8, 9, 10},
+	}
 }
 
 func Action(c *cli.Context) {
@@ -122,7 +125,6 @@ func Action(c *cli.Context) {
 			fmt.Println(fmt.Errorf("new spreadsheets: %v", err))
 			return
 		}
-		fmt.Println(ss)
 
 		value := &sheets.ValueRange{
 			Values: output.CSV(),
@@ -133,8 +135,14 @@ func Action(c *cli.Context) {
 			fmt.Println(fmt.Errorf("update sheet1: %v", err))
 			return
 		}
-		fmt.Println(res)
 
+		fmt.Println(ss)
+		fmt.Println(res)
+		return
+	}
+
+	if c.String("format") == "csv" {
+		fmt.Println(output.CSV())
 		return
 	}
 

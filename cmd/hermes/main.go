@@ -27,6 +27,11 @@ func New(version string) *cli.App {
 				Value: "stdout",
 				Usage: "stdout, googless",
 			},
+			cli.StringFlag{
+				Name:  "format, f",
+				Value: "json",
+				Usage: "json, csv",
+			},
 		},
 	}
 
