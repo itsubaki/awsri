@@ -114,7 +114,7 @@ func Action(c *cli.Context) {
 		return
 	}
 
-	Cache(input.Forecast)
+	Load(input.Forecast)
 	merged := Merge(input.Forecast)
 	recommended, err := Recommended(merged)
 	if err != nil {
@@ -138,16 +138,16 @@ func Action(c *cli.Context) {
 	}
 
 	if c.String("output") == "googless" {
-		gss, err := googless.Default()
-		if err != nil {
-			fmt.Println(fmt.Errorf("new spreadsheets client: %v", err))
+		gss, derr := googless.Default()
+		if derr != nil {
+			fmt.Println(fmt.Errorf("new spreadsheets client: %v", derr))
 			return
 		}
 
 		id := uuid.Must(uuid.NewRandom())
-		ss, err := gss.NewSpreadSheets(id.String())
-		if err != nil {
-			fmt.Println(fmt.Errorf("new spreadsheets: %v", err))
+		ss, nerr := gss.NewSpreadSheets(id.String())
+		if nerr != nil {
+			fmt.Println(fmt.Errorf("new spreadsheets: %v", nerr))
 			return
 		}
 
@@ -155,9 +155,9 @@ func Action(c *cli.Context) {
 			Values: output.CSV(),
 		}
 
-		res, err := gss.Update(ss.SpreadsheetId, "シート1", value)
-		if err != nil {
-			fmt.Println(fmt.Errorf("update sheet1: %v", err))
+		res, uerr := gss.Update(ss.SpreadsheetId, "シート1", value)
+		if uerr != nil {
+			fmt.Println(fmt.Errorf("update sheet1: %v", uerr))
 			return
 		}
 
@@ -374,14 +374,14 @@ func Add(val []InstanceNum, input []InstanceNum) []InstanceNum {
 	return list
 }
 
-func Cache(forecast []*Forecast) {
-	rflat := make(map[string]bool)
+func Load(forecast []*Forecast) {
+	flat := make(map[string]bool)
 	for _, f := range forecast {
-		rflat[f.Region] = true
+		flat[f.Region] = true
 	}
 
 	region := []string{}
-	for k := range rflat {
+	for k := range flat {
 		region = append(region, k)
 	}
 
