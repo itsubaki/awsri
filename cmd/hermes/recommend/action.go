@@ -8,11 +8,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/google/uuid"
-	"github.com/itsubaki/hermes/cmd/hermes/output/googless"
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/urfave/cli"
-	sheets "google.golang.org/api/sheets/v4"
 )
 
 var tmpdir = "/var/tmp/hermes"
@@ -69,36 +66,115 @@ func (input *ForecstList) JSON() string {
 	return string(bytea)
 }
 
-func (output *Output) CSV() [][]interface{} {
+func (output *Output) Array() [][]interface{} {
+	array := [][]interface{}{}
+
 	forecast := []interface{}{
-		"forecast", "account_id", "alies", "region", "usage_type", "platform/engine",
+		"forecast", "account_id", "alies", "usage_type", "platform/engine",
 	}
 	for _, n := range output.Forecast[0].InstanceNum {
 		forecast = append(forecast, n.Date)
 	}
-	forecastValue := []interface{}{}
+	array = append(array, forecast)
+
+	for _, f := range output.Forecast {
+		val := []interface{}{"", ""}
+
+		val = append(val, f.AccountID)
+		val = append(val, f.Alias)
+		val = append(val, f.UsageType)
+		if len(f.Platform) > 0 {
+			val = append(val, f.Platform)
+		}
+		if len(f.DatabaseEngine) > 0 {
+			val = append(val, f.DatabaseEngine)
+		}
+		if len(f.CacheEngine) > 0 {
+			val = append(val, f.CacheEngine)
+		}
+		for _, n := range f.InstanceNum {
+			val = append(val, n.InstanceNum)
+		}
+
+		array = append(array, val)
+	}
+	array = append(array, []interface{}{""})
 
 	merged := []interface{}{
-		"merged", "", "", "region", "usage_type", "platform/engine",
+		"merged", "", "", "usage_type", "platform/engine",
 	}
 	for _, n := range output.Forecast[0].InstanceNum {
 		merged = append(merged, n.Date)
 	}
-	mergedValue := []interface{}{}
+	array = append(array, merged)
+
+	for _, m := range output.Merged {
+		val := []interface{}{"", "", ""}
+
+		val = append(val, m.UsageType)
+		if len(m.Platform) > 0 {
+			val = append(val, m.Platform)
+		}
+		if len(m.DatabaseEngine) > 0 {
+			val = append(val, m.DatabaseEngine)
+		}
+		if len(m.CacheEngine) > 0 {
+			val = append(val, m.CacheEngine)
+		}
+		for _, n := range m.InstanceNum {
+			val = append(val, n.InstanceNum)
+		}
+
+		array = append(array, val)
+	}
 
 	recommended := []interface{}{
-		"recommended", "", "", "region", "usage_type", "platform/engine", "ondemand_num_avg", "reserved_num", "full_ondemand_cost", "reserved_applied_cost.ondemand", "reserved_applied_cost.reserved", "reserved_applied_cost.total", "reserved_quantity", "subtraction", "discount_rate", "minimum_instance_num",
+		"recommended", "", "", "usage_type", "os/engine", "ondemand_num_avg", "reserved_num", "full_ondemand_cost", "reserved_applied_cost.ondemand", "reserved_applied_cost.reserved", "reserved_applied_cost.total", "reserved_quantity", "subtraction", "discount_rate", "minimum_instance_num",
 	}
-	recommendedValue := []interface{}{}
+	array = append(array, recommended)
 
-	return [][]interface{}{
-		forecast,
-		forecastValue,
-		merged,
-		mergedValue,
-		recommended,
-		recommendedValue,
+	for _, r := range output.Recommended {
+		val := []interface{}{"", "", ""}
+
+		if r.MinimumRecord != nil {
+			val = append(val, r.MinimumRecord.UsageType)
+			if len(r.MinimumRecord.OperatingSystem) > 0 {
+				val = append(val, r.MinimumRecord.OperatingSystem)
+			}
+			if len(r.MinimumRecord.DatabaseEngine) > 0 {
+				val = append(val, r.MinimumRecord.DatabaseEngine)
+			}
+			if len(r.MinimumRecord.CacheEngine) > 0 {
+				val = append(val, r.MinimumRecord.CacheEngine)
+			}
+		} else {
+			val = append(val, r.Record.UsageType)
+			if len(r.Record.OperatingSystem) > 0 {
+				val = append(val, r.Record.OperatingSystem)
+			}
+			if len(r.Record.CacheEngine) > 0 {
+				val = append(val, r.Record.CacheEngine)
+			}
+			if len(r.Record.DatabaseEngine) > 0 {
+				val = append(val, r.Record.DatabaseEngine)
+			}
+		}
+
+		val = append(val, r.OnDemandInstanceNumAvg)
+		val = append(val, r.ReservedInstanceNum)
+		val = append(val, r.FullOnDemandCost)
+		val = append(val, r.ReservedAppliedCost.OnDemand)
+		val = append(val, r.ReservedAppliedCost.Reserved)
+		val = append(val, r.ReservedAppliedCost.Total)
+		val = append(val, r.ReservedQuantity)
+		val = append(val, r.Subtraction)
+		val = append(val, r.DiscountRate)
+
+		val = append(val, r.MinimumReservedInstanceNum)
+
+		array = append(array, val)
 	}
+	return array
 }
 
 func Action(c *cli.Context) {
@@ -137,39 +213,20 @@ func Action(c *cli.Context) {
 		Total:       total,
 	}
 
-	if c.String("output") == "googless" {
-		gss, derr := googless.Default()
-		if derr != nil {
-			fmt.Println(fmt.Errorf("new spreadsheets client: %v", derr))
-			return
+	if c.String("format") == "csv" {
+		for _, r := range output.Array() {
+			for _, c := range r {
+				fmt.Printf("%v, ", c)
+			}
+			fmt.Println()
 		}
-
-		id := uuid.Must(uuid.NewRandom())
-		ss, nerr := gss.NewSpreadSheets(id.String())
-		if nerr != nil {
-			fmt.Println(fmt.Errorf("new spreadsheets: %v", nerr))
-			return
-		}
-
-		value := &sheets.ValueRange{
-			Values: output.CSV(),
-		}
-
-		res, uerr := gss.Update(ss.SpreadsheetId, "シート1", value)
-		if uerr != nil {
-			fmt.Println(fmt.Errorf("update sheet1: %v", uerr))
-			return
-		}
-
-		fmt.Println(ss)
-		fmt.Println(res)
 		return
 	}
 
-	if c.String("format") == "csv" {
-		for _, r := range output.CSV() {
+	if c.String("format") == "tsv" {
+		for _, r := range output.Array() {
 			for _, c := range r {
-				fmt.Printf("%v, ", c)
+				fmt.Printf("%v\t", c)
 			}
 			fmt.Println()
 		}

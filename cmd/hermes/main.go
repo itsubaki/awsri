@@ -25,7 +25,7 @@ func New(version string) *cli.App {
 			cli.StringFlag{
 				Name:  "output, o",
 				Value: "stdout",
-				Usage: "stdout, googless",
+				Usage: "stdout",
 			},
 			cli.StringFlag{
 				Name:  "format, f",
