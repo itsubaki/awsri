@@ -70,9 +70,34 @@ func (input *ForecstList) JSON() string {
 }
 
 func (output *Output) CSV() [][]interface{} {
+	forecast := []interface{}{
+		"forecast", "account_id", "alies", "region", "usage_type", "platform/engine",
+	}
+	for _, n := range output.Forecast[0].InstanceNum {
+		forecast = append(forecast, n.Date)
+	}
+	forecastValue := []interface{}{}
+
+	merged := []interface{}{
+		"merged", "", "", "region", "usage_type", "platform/engine",
+	}
+	for _, n := range output.Forecast[0].InstanceNum {
+		merged = append(merged, n.Date)
+	}
+	mergedValue := []interface{}{}
+
+	recommended := []interface{}{
+		"recommended", "", "", "region", "usage_type", "platform/engine", "ondemand_num_avg", "reserved_num", "full_ondemand_cost", "reserved_applied_cost.ondemand", "reserved_applied_cost.reserved", "reserved_applied_cost.total", "reserved_quantity", "subtraction", "discount_rate", "minimum_instance_num",
+	}
+	recommendedValue := []interface{}{}
+
 	return [][]interface{}{
-		[]interface{}{1, 2, 3, 4, 5},
-		[]interface{}{6, 7, 8, 9, 10},
+		forecast,
+		forecastValue,
+		merged,
+		mergedValue,
+		recommended,
+		recommendedValue,
 	}
 }
 
@@ -142,7 +167,12 @@ func Action(c *cli.Context) {
 	}
 
 	if c.String("format") == "csv" {
-		fmt.Println(output.CSV())
+		for _, r := range output.CSV() {
+			for _, c := range r {
+				fmt.Printf("%v, ", c)
+			}
+			fmt.Println()
+		}
 		return
 	}
 
