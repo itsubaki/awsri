@@ -8,7 +8,7 @@ import (
 type Regression struct {
 }
 
-func (lr *Regression) Do(c *cli.Context) *recommend.ForecstList {
-	output := &recommend.ForecstList{}
+func (lr *Regression) Do(c *cli.Context) recommend.ForecastList {
+	output := recommend.ForecastList{}
 	return output
 }

@@ -10,7 +10,7 @@ import (
 )
 
 type Predict interface {
-	Do(c *cli.Context) *recommend.ForecstList
+	Do(c *cli.Context) recommend.ForecastList
 }
 
 func Action(c *cli.Context) {

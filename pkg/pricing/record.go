@@ -3,6 +3,7 @@ package pricing
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"math"
 	"reflect"
 	"sort"
@@ -223,6 +224,63 @@ func (r *Record) BreakevenPointInMonth() int {
 	}
 
 	return breakevenPoint
+}
+
+type RecommendedList []*Recommended
+
+func (list RecommendedList) Merge() RecommendedList {
+	flat := make(map[string]*Recommended)
+	for i := range list {
+		in := list[i]
+
+		if in.MinimumRecord == nil {
+			key := fmt.Sprintf("%s_%s_%s_%s_%s",
+				in.Record.Region,
+				in.Record.UsageType,
+				in.Record.OperatingSystem,
+				in.Record.CacheEngine,
+				in.Record.DatabaseEngine,
+			)
+
+			flat[key] = &Recommended{
+				Record:                     in.Record,
+				MinimumRecord:              in.Record,
+				MinimumReservedInstanceNum: float64(in.ReservedInstanceNum),
+			}
+			continue
+		}
+
+		key := fmt.Sprintf("%s_%s_%s_%s_%s",
+			in.MinimumRecord.Region,
+			in.MinimumRecord.UsageType,
+			in.MinimumRecord.OperatingSystem,
+			in.MinimumRecord.CacheEngine,
+			in.MinimumRecord.DatabaseEngine,
+		)
+
+		v, ok := flat[key]
+		if ok {
+			flat[key] = &Recommended{
+				Record:                     v.Record,
+				MinimumRecord:              v.MinimumRecord,
+				MinimumReservedInstanceNum: v.MinimumReservedInstanceNum + in.MinimumReservedInstanceNum,
+			}
+			continue
+		}
+
+		flat[key] = in
+	}
+
+	out := RecommendedList{}
+	for _, v := range flat {
+		out = append(out, v)
+	}
+
+	sort.SliceStable(out, func(i, j int) bool {
+		return out[i].Record.UsageType < out[j].Record.UsageType
+	})
+
+	return out
 }
 
 type Recommended struct {

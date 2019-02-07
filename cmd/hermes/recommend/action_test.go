@@ -6,7 +6,7 @@ import (
 )
 
 func TestGenerateInput(t *testing.T) {
-	input := &ForecstList{
+	input := &ForecastList{
 		Forecast: []*Forecast{
 			{
 				AccountID: "012345678901",
