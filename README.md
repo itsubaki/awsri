@@ -49,10 +49,151 @@ aws_secret_access_key = ****************************************
 ```
 $ go get github.com/itsubaki/hermes
 $ cd ${GOPATH}/src/github.com/itsubaki/hermes
-$ make install
+$ make
 ```
 
 ## Example
+
+```
+# get current usage
+date := []*costexp.Date{
+  {
+    Start: "2020-11-01",
+    End:   "2020-12-01",
+  },
+}
+
+repo := costexp.New(date)
+for _, r := range repo.SelectAll() {
+  fmt.Println(r)
+}
+
+{
+  "account_id":"123456789012",
+  "date":"2020-11",
+  "usage_type":"APN1-BoxUsage:m4.4xlarge",
+  "platform":"Linux/UNIX",
+  "instance_hour":2264.238066,
+  "instance_num":3.1447750916666664
+}
+
+# find aws pricing of current usage
+repo := pricing.New([]string{"ap-northeast-1"})
+rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
+  OperatingSystem("Linux").
+  Tenancy("Shared").
+  LeaseContractLength("1yr").
+  PurchaseOption("All Upfront").
+  OfferingClass("standard")
+
+# predict future usage (the method is various)
+forecast := []pricing.Forecast{
+  {Date: "2021-01", InstanceNum: 120.4},
+  {Date: "2021-02", InstanceNum: 110.3},
+  {Date: "2021-03", InstanceNum: 100.1},
+  {Date: "2021-04", InstanceNum: 90.9},
+  {Date: "2021-05", InstanceNum: 80.9},
+  {Date: "2021-06", InstanceNum: 70.6},
+  {Date: "2021-07", InstanceNum: 60.3},
+  {Date: "2021-08", InstanceNum: 50.9},
+  {Date: "2021-09", InstanceNum: 40.7},
+  {Date: "2021-10", InstanceNum: 30.6},
+  {Date: "2021-11", InstanceNum: 20.2},
+  {Date: "2021-12", InstanceNum: 10.8},
+}
+
+# get recommended reserved instance
+result, _ := repo.Recommend(rs[0], forecast)
+fmt.Println(result)
+
+{
+  "record":{
+    "sku":"XU2NYYPCRTK4T7CN",
+    "offer_term_code":"6QCMYABX3D",
+    "region":"ap-northeast-1",
+    "instance_type":"m4.4xlarge",
+    "usage_type":"APN1-BoxUsage:m4.4xlarge",
+    "lease_contract_length":"1yr",
+    "purchase_option":"All Upfront",
+    "ondemand":1.032,
+    "reserved_quantity":5700,
+    "reserved_hrs":0,
+    "tenancy":"Shared",
+    "pre_installed":"NA",
+    "operating_system":"Linux",
+    "operation":"RunInstances",
+    "offering_class":"standard",
+    "normalization_size_factor":"32"
+  },
+  "breakevenpoint_in_month":8,
+  "strategy":"breakevenpoint",
+  "ondemand_instance_num_avg":23.7,
+  "reserved_instance_num":50,
+  "full_ondemand_cost":666271.584,
+  "reserved_applied_cost":{
+    "ondemand":214255.58399999997,
+    "reserved":285000,
+    "total":499255.584
+  },
+  "reserved_quantity":285000,
+  "subtraction":167016.00000000006,
+  "discount_rate":0.2506725545719808,
+  "minimum_record":{
+    "sku":"7MYWT7Y96UT3NJ2D",
+    "offer_term_code":"6QCMYABX3D",
+    "region":"ap-northeast-1",
+    "instance_type":"m4.large",
+    "usage_type":"APN1-BoxUsage:m4.large",
+    "lease_contract_length":"1yr",
+    "purchase_option":"All Upfront",
+    "ondemand":0.129,
+    "reserved_quantity":713,
+    "reserved_hrs":0,
+    "tenancy":"Shared",
+    "pre_installed":"NA",
+    "operating_system":"Linux",
+    "operation":"RunInstances",
+    "offering_class":"standard",
+    "normalization_size_factor":"4"
+  },
+  "minimum_reserved_instance_num":400
+}
+
+# buy m4.large x400 instead of m4.4xlarge x50
+# and
+
+min := result.MinimumRecord
+
+rsv := reserved.New([]string{"ap-northeast-1"})
+rs := rsv.FindByInstanceType(min.InstanceType).
+  Region(min.Region).
+  Duration(func(length string) int64 {
+    duration := 31536000
+    if length == "3yr" {
+      duration = 94608000
+    }
+    return int64(duration)
+  }(min.LeaseContractLength)).
+  OfferingClass(min.OfferingClass).
+  OfferingType(min.PurchaseOption).
+  ContainsProductDescription(min.OperatingSystem)
+
+fmt.Println(rs[0])
+
+{
+  "region":"ap-northeast-1",
+  "instance_type":"m4.large",
+  "duration":31536000,
+  "offering_type":"All Upfront",
+  "offering_class":"standard",
+  "product_description":"Linux/UNIX (Amazon VPC)",
+  "instance_count":100,
+  "start":"2020-12-01T12:00:00Z"
+}
+
+# already bought 100 instances
+# finally, buy m4.large x300
+```
 
 ```
 $ cat test/forecast.json | hermes recommend | jq
@@ -299,154 +440,8 @@ $ cat test/forecast.json | hermes recommend | jq
       "subtraction": 667872,
       "discount_rate": 0.3490892668974861
     }
-  ],
-  "total": {
-    "reserved_quantity": 1258600,
-    "subtraction": 1085576,
-    "discount_rate": 0.37414255793251233
-  }
+  ]
 }
-```
-
-```
-# get current usage
-date := []*costexp.Date{
-  {
-    Start: "2020-11-01",
-    End:   "2020-12-01",
-  },
-}
-
-repo := costexp.New(date)
-for _, r := range repo.SelectAll() {
-  fmt.Println(r)
-}
-
-{
-  "account_id":"123456789012",
-  "date":"2020-11",
-  "usage_type":"APN1-BoxUsage:m4.4xlarge",
-  "platform":"Linux/UNIX",
-  "instance_hour":2264.238066,
-  "instance_num":3.1447750916666664
-}
-
-# find aws pricing of current usage
-repo := pricing.New([]string{"ap-northeast-1"})
-rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
-  OperatingSystem("Linux").
-  Tenancy("Shared").
-  LeaseContractLength("1yr").
-  PurchaseOption("All Upfront").
-  OfferingClass("standard")
-
-# predict future usage (the method is various)
-forecast := []pricing.Forecast{
-  {Date: "2021-01", InstanceNum: 120.4},
-  {Date: "2021-02", InstanceNum: 110.3},
-  {Date: "2021-03", InstanceNum: 100.1},
-  {Date: "2021-04", InstanceNum: 90.9},
-  {Date: "2021-05", InstanceNum: 80.9},
-  {Date: "2021-06", InstanceNum: 70.6},
-  {Date: "2021-07", InstanceNum: 60.3},
-  {Date: "2021-08", InstanceNum: 50.9},
-  {Date: "2021-09", InstanceNum: 40.7},
-  {Date: "2021-10", InstanceNum: 30.6},
-  {Date: "2021-11", InstanceNum: 20.2},
-  {Date: "2021-12", InstanceNum: 10.8},
-}
-
-# get recommended reserved instance
-result, _ := repo.Recommend(rs[0], forecast)
-fmt.Println(result)
-
-{
-  "record":{
-    "sku":"XU2NYYPCRTK4T7CN",
-    "offer_term_code":"6QCMYABX3D",
-    "region":"ap-northeast-1",
-    "instance_type":"m4.4xlarge",
-    "usage_type":"APN1-BoxUsage:m4.4xlarge",
-    "lease_contract_length":"1yr",
-    "purchase_option":"All Upfront",
-    "ondemand":1.032,
-    "reserved_quantity":5700,
-    "reserved_hrs":0,
-    "tenancy":"Shared",
-    "pre_installed":"NA",
-    "operating_system":"Linux",
-    "operation":"RunInstances",
-    "offering_class":"standard",
-    "normalization_size_factor":"32"
-  },
-  "breakevenpoint_in_month":8,
-  "strategy":"breakevenpoint",
-  "ondemand_instance_num_avg":23.7,
-  "reserved_instance_num":50,
-  "full_ondemand_cost":666271.584,
-  "reserved_applied_cost":{
-    "ondemand":214255.58399999997,
-    "reserved":285000,
-    "total":499255.584
-  },
-  "reserved_quantity":285000,
-  "subtraction":167016.00000000006,
-  "discount_rate":0.2506725545719808,
-  "minimum_record":{
-    "sku":"7MYWT7Y96UT3NJ2D",
-    "offer_term_code":"6QCMYABX3D",
-    "region":"ap-northeast-1",
-    "instance_type":"m4.large",
-    "usage_type":"APN1-BoxUsage:m4.large",
-    "lease_contract_length":"1yr",
-    "purchase_option":"All Upfront",
-    "ondemand":0.129,
-    "reserved_quantity":713,
-    "reserved_hrs":0,
-    "tenancy":"Shared",
-    "pre_installed":"NA",
-    "operating_system":"Linux",
-    "operation":"RunInstances",
-    "offering_class":"standard",
-    "normalization_size_factor":"4"
-  },
-  "minimum_reserved_instance_num":400
-}
-
-# buy m4.large x400 instead of m4.4xlarge x50
-# and
-
-min := result.MinimumRecord
-
-rsv := reserved.New([]string{"ap-northeast-1"})
-rs := rsv.FindByInstanceType(min.InstanceType).
-  Region(min.Region).
-  Duration(func(length string) int64 {
-    duration := 31536000
-    if length == "3yr" {
-      duration = 94608000
-    }
-    return int64(duration)
-  }(min.LeaseContractLength)).
-  OfferingClass(min.OfferingClass).
-  OfferingType(min.PurchaseOption).
-  ContainsProductDescription(min.OperatingSystem)
-
-fmt.Println(rs[0])
-
-{
-  "region":"ap-northeast-1",
-  "instance_type":"m4.large",
-  "duration":31536000,
-  "offering_type":"All Upfront",
-  "offering_class":"standard",
-  "product_description":"Linux/UNIX (Amazon VPC)",
-  "instance_count":100,
-  "start":"2020-12-01T12:00:00Z"
-}
-
-# already bought 100 instances
-# finally, buy m4.large x300
 ```
 
 ## Memo
