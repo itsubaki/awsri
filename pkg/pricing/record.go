@@ -210,19 +210,19 @@ func (r *Record) BreakevenPointInMonth() int {
 		month = 12 * 3
 	}
 
-	breakEvenPoint := 0
+	breakevenPoint := 0
 	res := r.ReservedQuantity
 	ond := 0.0
 	for i := 1; i < month+1; i++ {
 		ond = ond + r.OnDemand*24*float64(GetDays(i))
 		res = res + r.ReservedHrs*24*float64(GetDays(i))
 		if ond > res {
-			breakEvenPoint = i
+			breakevenPoint = i
 			break
 		}
 	}
 
-	return breakEvenPoint
+	return breakevenPoint
 }
 
 type Recommended struct {

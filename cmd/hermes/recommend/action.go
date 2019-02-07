@@ -36,10 +36,11 @@ type InstanceNum struct {
 }
 
 type Output struct {
-	Forecast    []*Forecast            `json:"forecast"`
-	Merged      []*Merged              `json:"merged"`
-	Recommended []*pricing.Recommended `json:"recommended"`
-	Total       *Total                 `json:"total"`
+	Forecast          []*Forecast            `json:"forecast"`
+	MergedForecast    []*Merged              `json:"merged_forecast"`
+	Recommended       []*pricing.Recommended `json:"recommended"`
+	MergedRecommended []*pricing.Recommended `json:"merged_recommended"`
+	Total             *Total                 `json:"total"`
 }
 
 type Merged struct {
@@ -52,9 +53,9 @@ type Merged struct {
 }
 
 type Total struct {
-	ReservedQuantity float64 `json:"reserved_quantity"`
 	Subtraction      float64 `json:"subtraction"`
 	DiscountRate     float64 `json:"discount_rate"`
+	ReservedQuantity float64 `json:"reserved_quantity"`
 }
 
 func (input *ForecstList) JSON() string {
@@ -78,7 +79,7 @@ func (output *Output) Array() [][]interface{} {
 	array = append(array, forecast)
 
 	for _, f := range output.Forecast {
-		val := []interface{}{"", ""}
+		val := []interface{}{""}
 
 		val = append(val, f.AccountID)
 		val = append(val, f.Alias)
@@ -101,14 +102,14 @@ func (output *Output) Array() [][]interface{} {
 	array = append(array, []interface{}{""})
 
 	merged := []interface{}{
-		"merged", "", "", "usage_type", "platform/engine",
+		"merged_forecast", "", "", "usage_type", "platform/engine",
 	}
 	for _, n := range output.Forecast[0].InstanceNum {
 		merged = append(merged, n.Date)
 	}
 	array = append(array, merged)
 
-	for _, m := range output.Merged {
+	for _, m := range output.MergedForecast {
 		val := []interface{}{"", "", ""}
 
 		val = append(val, m.UsageType)
@@ -127,37 +128,25 @@ func (output *Output) Array() [][]interface{} {
 
 		array = append(array, val)
 	}
+	array = append(array, []interface{}{""})
 
 	recommended := []interface{}{
-		"recommended", "", "", "usage_type", "os/engine", "ondemand_num_avg", "reserved_num", "full_ondemand_cost", "reserved_applied_cost.ondemand", "reserved_applied_cost.reserved", "reserved_applied_cost.total", "reserved_quantity", "subtraction", "discount_rate", "minimum_instance_num",
+		"recommended", "", "", "usage_type", "os/engine", "ondemand_num_avg", "reserved_num", "full_ondemand_cost", "reserved_applied_cost.ondemand", "reserved_applied_cost.reserved", "reserved_applied_cost.total", "subtraction", "discount_rate", "reserved_quantity",
 	}
 	array = append(array, recommended)
 
 	for _, r := range output.Recommended {
 		val := []interface{}{"", "", ""}
 
-		if r.MinimumRecord != nil {
-			val = append(val, r.MinimumRecord.UsageType)
-			if len(r.MinimumRecord.OperatingSystem) > 0 {
-				val = append(val, r.MinimumRecord.OperatingSystem)
-			}
-			if len(r.MinimumRecord.DatabaseEngine) > 0 {
-				val = append(val, r.MinimumRecord.DatabaseEngine)
-			}
-			if len(r.MinimumRecord.CacheEngine) > 0 {
-				val = append(val, r.MinimumRecord.CacheEngine)
-			}
-		} else {
-			val = append(val, r.Record.UsageType)
-			if len(r.Record.OperatingSystem) > 0 {
-				val = append(val, r.Record.OperatingSystem)
-			}
-			if len(r.Record.CacheEngine) > 0 {
-				val = append(val, r.Record.CacheEngine)
-			}
-			if len(r.Record.DatabaseEngine) > 0 {
-				val = append(val, r.Record.DatabaseEngine)
-			}
+		val = append(val, r.Record.UsageType)
+		if len(r.Record.OperatingSystem) > 0 {
+			val = append(val, r.Record.OperatingSystem)
+		}
+		if len(r.Record.CacheEngine) > 0 {
+			val = append(val, r.Record.CacheEngine)
+		}
+		if len(r.Record.DatabaseEngine) > 0 {
+			val = append(val, r.Record.DatabaseEngine)
 		}
 
 		val = append(val, r.OnDemandInstanceNumAvg)
@@ -166,14 +155,44 @@ func (output *Output) Array() [][]interface{} {
 		val = append(val, r.ReservedAppliedCost.OnDemand)
 		val = append(val, r.ReservedAppliedCost.Reserved)
 		val = append(val, r.ReservedAppliedCost.Total)
-		val = append(val, r.ReservedQuantity)
 		val = append(val, r.Subtraction)
 		val = append(val, r.DiscountRate)
+		val = append(val, r.ReservedQuantity)
+
+		array = append(array, val)
+	}
+	array = append(array, []interface{}{""})
+
+	total := []interface{}{
+		"total", "", "", "", "", "", "", "", "", "", "", output.Total.Subtraction, output.Total.DiscountRate, output.Total.ReservedQuantity, "",
+	}
+	array = append(array, total)
+	array = append(array, []interface{}{""})
+
+	minimum := []interface{}{
+		"minimum_recommended", "", "", "usage_type", "os/engine", "instance_num",
+	}
+	array = append(array, minimum)
+
+	for _, r := range output.MergedRecommended {
+		val := []interface{}{"", "", ""}
+
+		val = append(val, r.MinimumRecord.UsageType)
+		if len(r.MinimumRecord.OperatingSystem) > 0 {
+			val = append(val, r.MinimumRecord.OperatingSystem)
+		}
+		if len(r.MinimumRecord.DatabaseEngine) > 0 {
+			val = append(val, r.MinimumRecord.DatabaseEngine)
+		}
+		if len(r.MinimumRecord.CacheEngine) > 0 {
+			val = append(val, r.MinimumRecord.CacheEngine)
+		}
 
 		val = append(val, r.MinimumReservedInstanceNum)
 
 		array = append(array, val)
 	}
+
 	return array
 }
 
@@ -191,8 +210,8 @@ func Action(c *cli.Context) {
 	}
 
 	Load(input.Forecast)
-	merged := Merge(input.Forecast)
-	recommended, err := Recommended(merged)
+	mergedf := MergeForecast(input.Forecast)
+	recommended, err := Recommended(mergedf)
 	if err != nil {
 		fmt.Println(fmt.Errorf("recommended: %v", err))
 		return
@@ -200,17 +219,18 @@ func Action(c *cli.Context) {
 
 	total := &Total{}
 	for _, r := range recommended {
-		total.ReservedQuantity = total.ReservedQuantity + r.ReservedQuantity
-		total.DiscountRate = total.DiscountRate + r.DiscountRate
 		total.Subtraction = total.Subtraction + r.Subtraction
+		total.DiscountRate = total.DiscountRate + r.DiscountRate
+		total.ReservedQuantity = total.ReservedQuantity + r.ReservedQuantity
 	}
 	total.DiscountRate = total.DiscountRate / float64(len(recommended))
 
 	output := Output{
-		Forecast:    input.Forecast,
-		Merged:      merged,
-		Recommended: recommended,
-		Total:       total,
+		Forecast:          input.Forecast,
+		MergedForecast:    mergedf,
+		Recommended:       recommended,
+		MergedRecommended: MergeRecommended(recommended),
+		Total:             total,
 	}
 
 	if c.String("format") == "csv" {
@@ -369,7 +389,62 @@ func Recommended(merged []*Merged) ([]*pricing.Recommended, error) {
 	return out, nil
 }
 
-func Merge(forecast []*Forecast) []*Merged {
+func MergeRecommended(recommended []*pricing.Recommended) []*pricing.Recommended {
+	flat := make(map[string]*pricing.Recommended)
+	for i := range recommended {
+		in := recommended[i]
+
+		if in.MinimumRecord == nil {
+			key := fmt.Sprintf("%s_%s_%s_%s_%s",
+				in.Record.Region,
+				in.Record.UsageType,
+				in.Record.OperatingSystem,
+				in.Record.CacheEngine,
+				in.Record.DatabaseEngine,
+			)
+
+			flat[key] = &pricing.Recommended{
+				Record:                     in.Record,
+				MinimumRecord:              in.Record,
+				MinimumReservedInstanceNum: float64(in.ReservedInstanceNum),
+			}
+			continue
+		}
+
+		key := fmt.Sprintf("%s_%s_%s_%s_%s",
+			in.MinimumRecord.Region,
+			in.MinimumRecord.UsageType,
+			in.MinimumRecord.OperatingSystem,
+			in.MinimumRecord.CacheEngine,
+			in.MinimumRecord.DatabaseEngine,
+		)
+
+		v, ok := flat[key]
+		if ok {
+			flat[key] = &pricing.Recommended{
+				Record:                     v.Record,
+				MinimumRecord:              v.MinimumRecord,
+				MinimumReservedInstanceNum: v.MinimumReservedInstanceNum + in.MinimumReservedInstanceNum,
+			}
+			continue
+		}
+
+		flat[key] = in
+	}
+
+	out := []*pricing.Recommended{}
+	for _, v := range flat {
+		out = append(out, v)
+	}
+
+	sort.SliceStable(out, func(i, j int) bool {
+		return out[i].Record.UsageType < out[j].Record.UsageType
+	})
+
+	return out
+}
+
+func MergeForecast(forecast []*Forecast) []*Merged {
 	flat := make(map[string][]InstanceNum)
 	for _, in := range forecast {
 		key := fmt.Sprintf("%s_%s_%s_%s_%s",
@@ -402,9 +477,6 @@ func Merge(forecast []*Forecast) []*Merged {
 		})
 	}
 
-	sort.SliceStable(out, func(i, j int) bool {
-		return out[i].Region < out[j].Region
-	})
 	sort.SliceStable(out, func(i, j int) bool {
 		return out[i].UsageType < out[j].UsageType
 	})
