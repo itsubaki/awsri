@@ -75,9 +75,6 @@ func (list ForecastList) Merge() MergedForecastList {
 	sort.SliceStable(out, func(i, j int) bool {
 		return out[i].UsageType < out[j].UsageType
 	})
-	sort.SliceStable(out, func(i, j int) bool {
-		return out[i].Platform < out[j].Platform
-	})
 
 	return out
 }
@@ -115,6 +112,42 @@ func (list ForecastList) Load() {
 	}
 }
 
+func (list ForecastList) Array() [][]interface{} {
+	array := [][]interface{}{}
+
+	forecast := []interface{}{
+		"forecast", "account_id", "alies", "usage_type", "platform/engine",
+	}
+	for _, n := range list.Forecast[0].InstanceNum {
+		forecast = append(forecast, n.Date)
+	}
+	array = append(array, forecast)
+
+	for _, f := range list.Forecast {
+		val := []interface{}{""}
+
+		val = append(val, f.AccountID)
+		val = append(val, f.Alias)
+		val = append(val, f.UsageType)
+		if len(f.Platform) > 0 {
+			val = append(val, f.Platform)
+		}
+		if len(f.DatabaseEngine) > 0 {
+			val = append(val, f.DatabaseEngine)
+		}
+		if len(f.CacheEngine) > 0 {
+			val = append(val, f.CacheEngine)
+		}
+		for _, n := range f.InstanceNum {
+			val = append(val, n.InstanceNum)
+		}
+
+		array = append(array, val)
+	}
+
+	return array
+}
+
 type InstanceNum struct {
 	Date        string  `json:"date"`
 	InstanceNum float64 `json:"instance_num"`
@@ -139,12 +172,12 @@ func (list InstanceNumList) Add(input InstanceNumList) InstanceNumList {
 }
 
 type MergedForecast struct {
-	Region         string        `json:"region"`
-	UsageType      string        `json:"usage_type"`
-	Platform       string        `json:"platform,omitempty"`
-	CacheEngine    string        `json:"cache_engine,omitempty"`
-	DatabaseEngine string        `json:"database_engine,omitempty"`
-	InstanceNum    []InstanceNum `json:"instance_num"`
+	Region         string          `json:"region"`
+	UsageType      string          `json:"usage_type"`
+	Platform       string          `json:"platform,omitempty"`
+	CacheEngine    string          `json:"cache_engine,omitempty"`
+	DatabaseEngine string          `json:"database_engine,omitempty"`
+	InstanceNum    InstanceNumList `json:"instance_num"`
 }
 
 type MergedForecastList []*MergedForecast
@@ -276,56 +309,15 @@ func (list MergedForecastList) Recommended() (pricing.RecommendedList, error) {
 	return out, nil
 }
 
-type Output struct {
-	Forecast       ForecastList            `json:"forecast"`
-	MergedForecast MergedForecastList      `json:"merged_forecast"`
-	Recommended    pricing.RecommendedList `json:"recommended"`
-	Result         pricing.RecommendedList `json:"result"`
-}
-
-func (output *Output) Array() [][]interface{} {
+func (list MergedForecastList) Array() [][]interface{} {
 	array := [][]interface{}{}
 
-	forecast := []interface{}{
-		"forecast", "account_id", "alies", "usage_type", "platform/engine",
-	}
-	for _, n := range output.Forecast.Forecast[0].InstanceNum {
-		forecast = append(forecast, n.Date)
-	}
-	array = append(array, forecast)
-
-	for _, f := range output.Forecast.Forecast {
-		val := []interface{}{""}
-
-		val = append(val, f.AccountID)
-		val = append(val, f.Alias)
-		val = append(val, f.UsageType)
-		if len(f.Platform) > 0 {
-			val = append(val, f.Platform)
-		}
-		if len(f.DatabaseEngine) > 0 {
-			val = append(val, f.DatabaseEngine)
-		}
-		if len(f.CacheEngine) > 0 {
-			val = append(val, f.CacheEngine)
-		}
-		for _, n := range f.InstanceNum {
-			val = append(val, n.InstanceNum)
-		}
-
-		array = append(array, val)
-	}
-	array = append(array, []interface{}{""})
-
 	merged := []interface{}{
-		"merged_forecast", "", "", "usage_type", "platform/engine",
-	}
-	for _, n := range output.Forecast.Forecast[0].InstanceNum {
-		merged = append(merged, n.Date)
+		"merged", "", "", "usage_type", "platform/engine",
 	}
 	array = append(array, merged)
 
-	for _, m := range output.MergedForecast {
+	for _, m := range list {
 		val := []interface{}{"", "", ""}
 
 		val = append(val, m.UsageType)
@@ -344,6 +336,24 @@ func (output *Output) Array() [][]interface{} {
 
 		array = append(array, val)
 	}
+
+	return array
+}
+
+type Output struct {
+	Forecast       ForecastList            `json:"forecast"`
+	MergedForecast MergedForecastList      `json:"merged_forecast"`
+	Recommended    pricing.RecommendedList `json:"recommended"`
+	Result         pricing.RecommendedList `json:"result"`
+}
+
+func (output *Output) Array() [][]interface{} {
+	array := [][]interface{}{}
+
+	array = append(array, output.Forecast.Array()...)
+	array = append(array, []interface{}{""})
+
+	array = append(array, output.MergedForecast.Array()...)
 	array = append(array, []interface{}{""})
 
 	recommended := []interface{}{
