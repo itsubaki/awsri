@@ -164,8 +164,8 @@ fmt.Println(result)
 
 min := result.MinimumRecord
 
-rsv := reserved.New([]string{"ap-northeast-1"})
-rs := rsv.FindByInstanceType(min.InstanceType).
+repo := reservation.New([]string{"ap-northeast-1"})
+rs := repo.FindByInstanceType(min.InstanceType).
   Region(min.Region).
   Duration(func(length string) int64 {
     duration := 31536000

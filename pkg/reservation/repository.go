@@ -1,4 +1,4 @@
-package reserved
+package reservation
 
 import (
 	"encoding/json"
@@ -122,7 +122,6 @@ func (repo *Repository) fetchCacheWithClient(client *http.Client) error {
 }
 
 func (repo *Repository) fetchRDSWithClient(client *http.Client) error {
-
 	for _, r := range repo.Region {
 		ses, err := session.NewSession(
 			&aws.Config{
