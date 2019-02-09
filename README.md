@@ -54,8 +54,8 @@ $ go get github.com/itsubaki/hermes
 
 ```
 $ cd ${GOPATH}/src/github.com/itsubaki/hermes
-$ cat test/forecast.json | hermes > test.out
-$ column -s, -t < test.out | less -#2 -N -S
+$ cat test/forecast.json | hermes --format csv > data.csv
+$ cat data.csv | column -t -s, | less -S
 
 account_id,   alies,   usage_type,                      platform/engine, 2019-01, 2018-02, 2019-03, 2019-04, 2019-05, 2019-06, 2019-07, 2019-08, 2019-09, 2019-10, 2019-11, 2019-12,
 123456789012, example, APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
