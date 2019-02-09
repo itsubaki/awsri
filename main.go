@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/itsubaki/hermes/cmd"
 	"github.com/urfave/cli"
 )
 
@@ -14,7 +15,7 @@ func New(version string) *cli.App {
 
 	app.Name = "hermes"
 	app.Version = version
-	app.Action = Action
+	app.Action = cmd.Action
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "output, o",

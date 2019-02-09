@@ -48,8 +48,6 @@ aws_secret_access_key = ****************************************
 
 ```
 $ go get github.com/itsubaki/hermes
-$ cd ${GOPATH}/src/github.com/itsubaki/hermes
-$ make
 ```
 
 ## Example
