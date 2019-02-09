@@ -55,30 +55,6 @@ $ make
 ## Example
 
 ```
-$ cat test/forecast.json | hermes > test.out
-$ column -s, -t < test.out | less -#2 -N -S
-1 account_id                        alies             usage_type                        platform/engine   2019-01              2018-02                 2019-03                 
-2 123456789012                      example           APN1-BoxUsage:c4.2xlarge          Linux/UNIX        100                  100                     100                     
-3 123456789012                      example           APN1-InstanceUsage:db.r3.xlarge   Aurora MySQL      100                  100                     100                     
-4 123456789012                      example           APN1-NodeUsage:cache.r3.4xlarge   Redis             100                  100                     100                     
-5  
-6 usage_type                        platform/engine   2019-01                           2018-02           2019-03              2019-04                 2019-05                 
-7 APN1-BoxUsage:c4.2xlarge          Linux/UNIX        100                               100               100                  100                     100                     
-8 APN1-InstanceUsage:db.r3.xlarge   Aurora MySQL      100                               100               100                  100                     100                     
-9 APN1-NodeUsage:cache.r3.4xlarge   Redis             100                               100               100                  100                     100                     
-10  
-11 usage_type                        os/engine         ondemand_num_avg                  reserved_num      full_ondemand_cost   reserved_applied_cost   reserved_applied_cost.on
-12 APN1-BoxUsage:c4.2xlarge          Linux             0                                 100               441504               296200                  0                       
-13 APN1-InstanceUsage:db.r3.xlarge   Aurora MySQL      0                                 100               613200               340800                  0                       
-14 APN1-NodeUsage:cache.r3.4xlarge   Redis             0                                 100               1.913184e+06         1.245312e+06            0                       
-15  
-16 usage_type                        os/engine         instance_num                      
-17 APN1-BoxUsage:c4.large            Linux             400                               
-18 APN1-InstanceUsage:db.r3.large    Aurora MySQL      200                               
-19 APN1-NodeUsage:cache.r3.4xlarge   Redis             100  
-```
-
-```
 # get current usage
 date := []*costexp.Date{
   {
@@ -217,6 +193,31 @@ fmt.Println(rs[0])
 
 # already bought 100 instances
 # finally, buy m4.large x300
+```
+
+```
+$ cat test/forecast.json | hermes > test.out
+$ column -s, -t < test.out | less -#2 -N -S
+
+account_id,   alies,   usage_type,                      platform/engine, 2019-01, 2018-02, 2019-03, 2019-04, 2019-05, 2019-06, 2019-07, 2019-08, 2019-09, 2019-10, 2019-11, 2019-12,
+123456789012, example, APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      100,     100,     100,     100,     100,     100,     100,     100, 100,     100,     100,     100,
+123456789012, example, APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL,    100,     100,     100,     100,     100,     100,     100,     100, 100,     100,     100,     100,
+123456789012, example, APN1-NodeUsage:cache.r3.4xlarge, Redis,           100,     100,     100,     100,     100,     100,     100,     100, 100,     100,     100,     100,
+,
+usage_type,                      platform/engine, 2019-01, 2018-02, 2019-03, 2019-04, 2019-05, 2019-06, 2019-07, 2019-08, 2019-09, 2019-10, 2019-11, 2019-12,
+APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
+APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL,    100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
+APN1-NodeUsage:cache.r3.4xlarge, Redis,           100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
+,
+usage_type,                      os/engine,    ondemand_num_avg, reserved_num, full_ondemand_cost, reserved_applied_cost, subtraction, discount_rate,      reserved_quantity,
+APN1-BoxUsage:c4.2xlarge,        Linux,        0,                100,          441504,             296200,                145304,      0.3291114010292092, 296200,
+APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL, 0,                100,          613200,             340800,                272400,      0.4442270058708415, 340800,
+APN1-NodeUsage:cache.r3.4xlarge, Redis,        0,                100,          1.913184e+06,       1.245312e+06,          667872,      0.3490892668974861, 621600,
+,
+usage_type,                      os/engine,    instance_num,
+APN1-BoxUsage:c4.large,          Linux,        400,
+APN1-InstanceUsage:db.r3.large,  Aurora MySQL, 200,
+APN1-NodeUsage:cache.r3.4xlarge, Redis,        100,
 ```
 
 ## Memo
