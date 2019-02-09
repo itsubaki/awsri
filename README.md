@@ -2,7 +2,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/itsubaki/hermes?style=flat-square)](https://goreportcard.com/report/github.com/itsubaki/hermes)
 
- - aws reserved instance purchase recommendation library
+ - AWS RI recommendation library
 
 ## Motivation
 
@@ -53,6 +53,7 @@ $ go get github.com/itsubaki/hermes
 ## Example
 
 ```
+$ cd ${GOPATH}/src/github.com/itsubaki/hermes
 $ cat test/forecast.json | hermes > test.out
 $ column -s, -t < test.out | less -#2 -N -S
 
