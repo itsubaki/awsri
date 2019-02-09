@@ -59,9 +59,9 @@ $ cat test/forecast.json | hermes > test.out
 $ column -s, -t < test.out | less -#2 -N -S
 
 account_id,   alies,   usage_type,                      platform/engine, 2019-01, 2018-02, 2019-03, 2019-04, 2019-05, 2019-06, 2019-07, 2019-08, 2019-09, 2019-10, 2019-11, 2019-12,
-123456789012, example, APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      100,     100,     100,     100,     100,     100,     100,     100, 100,     100,     100,     100,
-123456789012, example, APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL,    100,     100,     100,     100,     100,     100,     100,     100, 100,     100,     100,     100,
-123456789012, example, APN1-NodeUsage:cache.r3.4xlarge, Redis,           100,     100,     100,     100,     100,     100,     100,     100, 100,     100,     100,     100,
+123456789012, example, APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
+123456789012, example, APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL,    100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
+123456789012, example, APN1-NodeUsage:cache.r3.4xlarge, Redis,           100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
 
                        usage_type,                      platform/engine, 2019-01, 2018-02, 2019-03, 2019-04, 2019-05, 2019-06, 2019-07, 2019-08, 2019-09, 2019-10, 2019-11, 2019-12,
                        APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
