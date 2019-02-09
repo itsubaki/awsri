@@ -196,7 +196,7 @@ fmt.Println(rs[0])
 ```
 
 ```
-$ cat test/forecast.json | hermes recommend | jq
+$ cat test/forecast.json | hermes | jq
 {
   "forecast": [
     {

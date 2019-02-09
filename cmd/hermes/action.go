@@ -1,4 +1,4 @@
-package recommend
+package main
 
 import (
 	"encoding/json"
@@ -24,6 +24,22 @@ type Forecast struct {
 	DatabaseEngine string          `json:"database_engine,omitempty"`
 	InstanceNum    InstanceNumList `json:"instance_num"`
 	Extend         interface{}     `json:"extend,omitempty"`
+}
+
+func (f *Forecast) PlatformEngine() string {
+	if len(f.Platform) > 0 {
+		return f.Platform
+	}
+
+	if len(f.DatabaseEngine) > 0 {
+		return f.DatabaseEngine
+	}
+
+	if len(f.CacheEngine) > 0 {
+		return f.CacheEngine
+	}
+
+	return ""
 }
 
 type ForecastList struct {
@@ -115,29 +131,25 @@ func (list ForecastList) Load() {
 func (list ForecastList) Array() [][]interface{} {
 	array := [][]interface{}{}
 
-	forecast := []interface{}{
-		"forecast", "account_id", "alies", "usage_type", "platform/engine",
+	header := []interface{}{
+		"account_id",
+		"alies",
+		"usage_type",
+		"platform/engine",
 	}
 	for _, n := range list.Forecast[0].InstanceNum {
-		forecast = append(forecast, n.Date)
+		header = append(header, n.Date)
 	}
-	array = append(array, forecast)
+	array = append(array, header)
 
 	for _, f := range list.Forecast {
-		val := []interface{}{""}
+		val := []interface{}{
+			f.AccountID,
+			f.Alias,
+			f.UsageType,
+			f.PlatformEngine(),
+		}
 
-		val = append(val, f.AccountID)
-		val = append(val, f.Alias)
-		val = append(val, f.UsageType)
-		if len(f.Platform) > 0 {
-			val = append(val, f.Platform)
-		}
-		if len(f.DatabaseEngine) > 0 {
-			val = append(val, f.DatabaseEngine)
-		}
-		if len(f.CacheEngine) > 0 {
-			val = append(val, f.CacheEngine)
-		}
 		for _, n := range f.InstanceNum {
 			val = append(val, n.InstanceNum)
 		}
@@ -178,6 +190,22 @@ type MergedForecast struct {
 	CacheEngine    string          `json:"cache_engine,omitempty"`
 	DatabaseEngine string          `json:"database_engine,omitempty"`
 	InstanceNum    InstanceNumList `json:"instance_num"`
+}
+
+func (f *MergedForecast) PlatformEngine() string {
+	if len(f.Platform) > 0 {
+		return f.Platform
+	}
+
+	if len(f.DatabaseEngine) > 0 {
+		return f.DatabaseEngine
+	}
+
+	if len(f.CacheEngine) > 0 {
+		return f.CacheEngine
+	}
+
+	return ""
 }
 
 type MergedForecastList []*MergedForecast
@@ -309,27 +337,24 @@ func (list MergedForecastList) Recommended() (pricing.RecommendedList, error) {
 	return out, nil
 }
 
-func (list MergedForecastList) Array() [][]interface{} {
+func (list MergedForecastList) Array(date []string) [][]interface{} {
 	array := [][]interface{}{}
 
-	merged := []interface{}{
-		"merged", "", "", "usage_type", "platform/engine",
+	header := []interface{}{
+		"usage_type",
+		"platform/engine",
 	}
-	array = append(array, merged)
+	for _, d := range date {
+		header = append(header, d)
+	}
+	array = append(array, header)
 
 	for _, m := range list {
-		val := []interface{}{"", "", ""}
+		val := []interface{}{
+			m.UsageType,
+			m.PlatformEngine(),
+		}
 
-		val = append(val, m.UsageType)
-		if len(m.Platform) > 0 {
-			val = append(val, m.Platform)
-		}
-		if len(m.DatabaseEngine) > 0 {
-			val = append(val, m.DatabaseEngine)
-		}
-		if len(m.CacheEngine) > 0 {
-			val = append(val, m.CacheEngine)
-		}
 		for _, n := range m.InstanceNum {
 			val = append(val, n.InstanceNum)
 		}
@@ -340,11 +365,51 @@ func (list MergedForecastList) Array() [][]interface{} {
 	return array
 }
 
+type Result struct {
+	UsageType   string  `json:"usage_type"`
+	OSEngine    string  `json:"os_engine"`
+	InstanceNum float64 `json:"instance_num"`
+}
+
+type ResultList []*Result
+
+func (list ResultList) Array() [][]interface{} {
+	array := append([][]interface{}{}, []interface{}{
+		"usage_type",
+		"os/engine",
+		"instance_num",
+	})
+
+	for _, r := range list {
+		array = append(array, []interface{}{
+			r.UsageType,
+			r.OSEngine,
+			r.InstanceNum,
+		})
+	}
+
+	return array
+}
+
+func NewResultList(rlist pricing.RecommendedList) ResultList {
+	out := ResultList{}
+
+	for _, r := range rlist.Merge() {
+		out = append(out, &Result{
+			UsageType:   r.MinimumRecord.UsageType,
+			OSEngine:    r.MinimumRecord.OSEngine(),
+			InstanceNum: r.MinimumReservedInstanceNum,
+		})
+	}
+
+	return out
+}
+
 type Output struct {
 	Forecast       ForecastList            `json:"forecast"`
 	MergedForecast MergedForecastList      `json:"merged_forecast"`
 	Recommended    pricing.RecommendedList `json:"recommended"`
-	Result         pricing.RecommendedList `json:"result"`
+	Result         ResultList              `json:"result"`
 }
 
 func (output *Output) Array() [][]interface{} {
@@ -353,65 +418,18 @@ func (output *Output) Array() [][]interface{} {
 	array = append(array, output.Forecast.Array()...)
 	array = append(array, []interface{}{""})
 
-	array = append(array, output.MergedForecast.Array()...)
+	date := []string{}
+	for _, d := range output.Forecast.Forecast[0].InstanceNum {
+		date = append(date, d.Date)
+	}
+
+	array = append(array, output.MergedForecast.Array(date)...)
 	array = append(array, []interface{}{""})
 
-	recommended := []interface{}{
-		"recommended", "", "", "usage_type", "os/engine", "ondemand_num_avg", "reserved_num", "full_ondemand_cost", "reserved_applied_cost.ondemand", "reserved_applied_cost.reserved", "reserved_applied_cost.total", "subtraction", "discount_rate", "reserved_quantity",
-	}
-	array = append(array, recommended)
-
-	for _, r := range output.Recommended {
-		val := []interface{}{"", "", ""}
-
-		val = append(val, r.Record.UsageType)
-		if len(r.Record.OperatingSystem) > 0 {
-			val = append(val, r.Record.OperatingSystem)
-		}
-		if len(r.Record.CacheEngine) > 0 {
-			val = append(val, r.Record.CacheEngine)
-		}
-		if len(r.Record.DatabaseEngine) > 0 {
-			val = append(val, r.Record.DatabaseEngine)
-		}
-
-		val = append(val, r.OnDemandInstanceNumAvg)
-		val = append(val, r.ReservedInstanceNum)
-		val = append(val, r.FullOnDemandCost)
-		val = append(val, r.ReservedAppliedCost.OnDemand)
-		val = append(val, r.ReservedAppliedCost.Reserved)
-		val = append(val, r.ReservedAppliedCost.Total)
-		val = append(val, r.Subtraction)
-		val = append(val, r.DiscountRate)
-		val = append(val, r.ReservedQuantity)
-
-		array = append(array, val)
-	}
+	array = append(array, output.Recommended.Array()...)
 	array = append(array, []interface{}{""})
 
-	result := []interface{}{
-		"result", "", "", "usage_type", "os/engine", "instance_num",
-	}
-	array = append(array, result)
-
-	for _, r := range output.Result {
-		val := []interface{}{"", "", ""}
-
-		val = append(val, r.MinimumRecord.UsageType)
-		if len(r.MinimumRecord.OperatingSystem) > 0 {
-			val = append(val, r.MinimumRecord.OperatingSystem)
-		}
-		if len(r.MinimumRecord.DatabaseEngine) > 0 {
-			val = append(val, r.MinimumRecord.DatabaseEngine)
-		}
-		if len(r.MinimumRecord.CacheEngine) > 0 {
-			val = append(val, r.MinimumRecord.CacheEngine)
-		}
-
-		val = append(val, r.MinimumReservedInstanceNum)
-
-		array = append(array, val)
-	}
+	array = append(array, output.Result.Array()...)
 
 	return array
 }
@@ -441,7 +459,7 @@ func Action(c *cli.Context) {
 		Forecast:       input,
 		MergedForecast: mf,
 		Recommended:    recommended,
-		Result:         recommended.Merge(),
+		Result:         NewResultList(recommended),
 	}
 
 	if c.String("format") == "csv" {

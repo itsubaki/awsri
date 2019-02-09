@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/itsubaki/hermes/cmd/hermes/predict"
-	"github.com/itsubaki/hermes/cmd/hermes/recommend"
 	"github.com/urfave/cli"
 )
 
@@ -16,40 +14,18 @@ func New(version string) *cli.App {
 
 	app.Name = "hermes"
 	app.Version = version
-
-	recommend := cli.Command{
-		Name:    "recommend",
-		Aliases: []string{"r"},
-		Action:  recommend.Action,
-		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "output, o",
-				Value: "stdout",
-				Usage: "stdout",
-			},
-			cli.StringFlag{
-				Name:  "format, f",
-				Value: "json",
-				Usage: "json, csv",
-			},
+	app.Action = Action
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "output, o",
+			Value: "stdout",
+			Usage: "stdout",
 		},
-	}
-
-	predict := cli.Command{
-		Name:    "predict",
-		Aliases: []string{"p"},
-		Action:  predict.Action,
-		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "method, m",
-				Value: "linear",
-			},
+		cli.StringFlag{
+			Name:  "format, f",
+			Value: "json",
+			Usage: "json, csv",
 		},
-	}
-
-	app.Commands = []cli.Command{
-		recommend,
-		predict,
 	}
 
 	return app

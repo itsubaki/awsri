@@ -196,6 +196,22 @@ type Record struct {
 	CacheEngine             string  `json:"cache_engine,omitempty"`              // cache
 }
 
+func (r *Record) OSEngine() string {
+	if len(r.OperatingSystem) > 0 {
+		return r.OperatingSystem
+	}
+
+	if len(r.DatabaseEngine) > 0 {
+		return r.DatabaseEngine
+	}
+
+	if len(r.CacheEngine) > 0 {
+		return r.CacheEngine
+	}
+
+	return ""
+}
+
 func (r *Record) String() string {
 	bytea, err := json.Marshal(r)
 	if err != nil {
@@ -281,6 +297,40 @@ func (list RecommendedList) Merge() RecommendedList {
 	})
 
 	return out
+}
+
+func (list RecommendedList) Array() [][]interface{} {
+	array := append([][]interface{}{}, []interface{}{
+		"usage_type",
+		"os/engine",
+		"ondemand_num_avg",
+		"reserved_num",
+		"full_ondemand_cost",
+		"reserved_applied_cost",
+		"reserved_applied_cost.ondemand",
+		"reserved_applied_cost.reserved",
+		"subtraction",
+		"discount_rate",
+		"reserved_quantity",
+	})
+
+	for _, r := range list {
+		array = append(array, []interface{}{
+			r.Record.UsageType,
+			r.Record.OSEngine(),
+			r.OnDemandInstanceNumAvg,
+			r.ReservedInstanceNum,
+			r.FullOnDemandCost,
+			r.ReservedAppliedCost.Total,
+			r.ReservedAppliedCost.OnDemand,
+			r.ReservedAppliedCost.Reserved,
+			r.Subtraction,
+			r.DiscountRate,
+			r.ReservedQuantity,
+		})
+	}
+
+	return array
 }
 
 type Recommended struct {
