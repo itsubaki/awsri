@@ -127,6 +127,22 @@ func (list ForecastList) Load() {
 			}
 		}
 	}
+
+	{
+		path := fmt.Sprintf("%s/reservation.out", tmpdir)
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			repo := reservation.NewRepository(region)
+			if err := repo.Fetch(); err != nil {
+				fmt.Println(fmt.Errorf("fetch reservation: %v", err))
+				return
+			}
+
+			if err := repo.Write(path); err != nil {
+				fmt.Println(fmt.Errorf("write reservation: %v", err))
+				return
+			}
+		}
+	}
 }
 
 func (list ForecastList) Array() [][]interface{} {
@@ -398,10 +414,13 @@ func (list ResultList) Array() [][]interface{} {
 	return array
 }
 
-func NewResultList(rlist pricing.RecommendedList) ResultList {
+func NewResultList(rlist pricing.RecommendedList) (ResultList, error) {
 	out := ResultList{}
 
-	repo, _ := reservation.Read("/var/tmp/hermes/reservation.out")
+	repo, err := reservation.Read("/var/tmp/hermes/reservation.out")
+	if err != nil {
+		return nil, fmt.Errorf("read reservation: %v", err)
+	}
 
 	for _, r := range rlist.Merge() {
 		min := r.MinimumRecord
@@ -432,7 +451,7 @@ func NewResultList(rlist pricing.RecommendedList) ResultList {
 		})
 	}
 
-	return out
+	return out, nil
 }
 
 type Output struct {
@@ -484,12 +503,17 @@ func Action(c *cli.Context) {
 		fmt.Println(fmt.Errorf("recommended: %v", err))
 		return
 	}
+	result, err := NewResultList(recommended)
+	if err != nil {
+		fmt.Println(fmt.Errorf("new result list: %v", err))
+		return
+	}
 
 	output := &Output{
 		Forecast:       input,
 		MergedForecast: mf,
 		Recommended:    recommended,
-		Result:         NewResultList(recommended),
+		Result:         result,
 	}
 
 	if c.String("format") == "csv" {
