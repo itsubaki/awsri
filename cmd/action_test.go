@@ -14,7 +14,7 @@ func TestGenerateInput(t *testing.T) {
 				Region:    "ap-northeast-1",
 				UsageType: "APN1-BoxUsage:c4.2xlarge",
 				Platform:  "Linux/Unix",
-				InstanceNum: []InstanceNum{
+				InstanceNum: InstanceNumList{
 					{
 						Date:        "2019-01",
 						InstanceNum: 100,

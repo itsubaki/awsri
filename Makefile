@@ -5,11 +5,11 @@ GOVERSION := $(shell go version)
 LDFLAGS := -X 'main.date=${DATE}' -X 'main.hash=${HASH}' -X 'main.goversion=${GOVERSION}'
 
 .PHONY: test
-test: install
+test:
 	mkdir -p /var/tmp/hermes/{pricing,costexp}
 	GOCACHE=off go test -cover $(shell go list ./... | grep -v /vendor/ | grep -v /build/) -v -run TestSerialize* -timeout 20m
 	GOCACHE=off go test -cover $(shell go list ./... | grep -v /vendor/ | grep -v /build/) -v
 
 install:
 	-rm ${GOPATH}/bin/hermes
-	go install -ldflags "${LDFLAGS}" github.com/itsubaki/hermes/cmd/hermes
+	go install -ldflags "${LDFLAGS}" github.com/itsubaki/hermes

@@ -309,7 +309,7 @@ func (list RecommendedList) Array() [][]interface{} {
 		"reserved_applied_cost",
 		"reserved_applied_cost.ondemand",
 		"reserved_applied_cost.reserved",
-		"subtraction",
+		"difference",
 		"discount_rate",
 		"reserved_quantity",
 	})
@@ -324,7 +324,7 @@ func (list RecommendedList) Array() [][]interface{} {
 			r.ReservedAppliedCost.Total,
 			r.ReservedAppliedCost.OnDemand,
 			r.ReservedAppliedCost.Reserved,
-			r.Subtraction,
+			r.Difference,
 			r.DiscountRate,
 			r.ReservedQuantity,
 		})
@@ -342,7 +342,7 @@ type Recommended struct {
 	FullOnDemandCost           float64 `json:"full_ondemand_cost"`
 	ReservedAppliedCost        Cost    `json:"reserved_applied_cost"`
 	ReservedQuantity           float64 `json:"reserved_quantity"`
-	Subtraction                float64 `json:"subtraction"`
+	Difference                 float64 `json:"difference"`
 	DiscountRate               float64 `json:"discount_rate"`
 	MinimumRecord              *Record `json:"minimum_record,omitempty"`
 	MinimumReservedInstanceNum float64 `json:"minimum_reserved_instance_num,omitempty"`
@@ -382,7 +382,7 @@ type ReservedAppliedCost struct {
 	FullOnDemand        float64 `json:"full_ondemand"`
 	ReservedApplied     Cost    `json:"reserved_applied"`
 	ReservedQuantity    float64 `json:"reserved_quantity"`
-	Subtraction         float64 `json:"subtraction"`
+	Difference          float64 `json:"difference"`
 	DiscountRate        float64 `json:"discount_rate"`
 }
 
@@ -414,7 +414,7 @@ func (r *Record) Recommend(forecast []Forecast, strategy ...string) *Recommended
 		FullOnDemandCost:       cost.FullOnDemand,
 		ReservedAppliedCost:    cost.ReservedApplied,
 		ReservedQuantity:       cost.ReservedQuantity,
-		Subtraction:            cost.Subtraction,
+		Difference:             cost.Difference,
 		DiscountRate:           cost.DiscountRate,
 	}
 }
@@ -477,7 +477,7 @@ func (r *Record) GetCost(ondemandNum float64, reservedNum int64) *ReservedApplie
 		ReservedQuantity: r.ReservedQuantity * float64(reservedNum),
 	}
 
-	out.Subtraction = full - out.ReservedApplied.Total
+	out.Difference = full - out.ReservedApplied.Total
 	out.DiscountRate = 1.0 - (out.ReservedApplied.Total / full)
 
 	return out
@@ -496,7 +496,7 @@ func (r *Record) GetAnnualCost() *AnnualCost {
 
 	ret.OnDemand = r.OnDemand * float64(hrs)
 	ret.Reserved = r.ReservedQuantity + r.ReservedHrs*float64(hrs)
-	ret.Subtraction = ret.OnDemand - ret.Reserved
+	ret.Difference = ret.OnDemand - ret.Reserved
 	ret.DiscountRate = 1.0 - ret.Reserved/ret.OnDemand
 	ret.ReservedQuantity = r.ReservedQuantity
 
@@ -509,7 +509,7 @@ type AnnualCost struct {
 	OnDemand            float64 `json:"ondemand"`
 	Reserved            float64 `json:"reserved"`
 	ReservedQuantity    float64 `json:"reserved_quantity"`
-	Subtraction         float64 `json:"subtraction"`
+	Difference          float64 `json:"difference"`
 	DiscountRate        float64 `json:"discount_rate"`
 }
 

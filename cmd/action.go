@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
+	"github.com/itsubaki/hermes/pkg/reservation"
 	"github.com/urfave/cli"
 )
 
@@ -369,6 +370,8 @@ type Result struct {
 	UsageType   string  `json:"usage_type"`
 	OSEngine    string  `json:"os_engine"`
 	InstanceNum float64 `json:"instance_num"`
+	CurrentRI   float64 `json:"current_ri"`
+	Difference  float64 `json:"difference"`
 }
 
 type ResultList []*Result
@@ -378,6 +381,8 @@ func (list ResultList) Array() [][]interface{} {
 		"usage_type",
 		"os/engine",
 		"instance_num",
+		"current_ri",
+		"difference",
 	})
 
 	for _, r := range list {
@@ -385,6 +390,8 @@ func (list ResultList) Array() [][]interface{} {
 			r.UsageType,
 			r.OSEngine,
 			r.InstanceNum,
+			r.CurrentRI,
+			r.Difference,
 		})
 	}
 
@@ -394,11 +401,34 @@ func (list ResultList) Array() [][]interface{} {
 func NewResultList(rlist pricing.RecommendedList) ResultList {
 	out := ResultList{}
 
+	repo, _ := reservation.Read("/var/tmp/hermes/reservation.out")
+
 	for _, r := range rlist.Merge() {
+		min := r.MinimumRecord
+		rs := repo.FindByInstanceType(min.InstanceType).
+			Region(min.Region).
+			Duration(func(length string) int64 {
+				duration := 31536000
+				if length == "3yr" {
+					duration = 94608000
+				}
+				return int64(duration)
+			}(min.LeaseContractLength)).
+			OfferingClass(min.OfferingClass).
+			OfferingType(min.PurchaseOption).
+			ProductDescription(min.OperatingSystem)
+
+		var current float64
+		if len(rs) > 0 {
+			current = float64(rs[0].Count())
+		}
+
 		out = append(out, &Result{
-			UsageType:   r.MinimumRecord.UsageType,
-			OSEngine:    r.MinimumRecord.OSEngine(),
+			UsageType:   min.UsageType,
+			OSEngine:    min.OSEngine(),
 			InstanceNum: r.MinimumReservedInstanceNum,
+			CurrentRI:   current,
+			Difference:  r.MinimumReservedInstanceNum - current,
 		})
 	}
 

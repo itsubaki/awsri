@@ -71,16 +71,16 @@ account_id,   alies,    usage_type,                      platform/engine, 2019-0
                         APN1-NodeUsage:cache.r3.4xlarge, Redis,           100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
 
 # recommended reserved instance num
-                        usage_type,                      os/engine,    ondemand_num_avg, reserved_num, full_ondemand_cost, reserved_applied_cost, subtraction, discount_rate,      reserved_quantity,
+                        usage_type,                      os/engine,    ondemand_num_avg, reserved_num, full_ondemand_cost, reserved_applied_cost, difference,  discount_rate,      reserved_quantity,
                         APN1-BoxUsage:c4.2xlarge,        Linux,        44.1666666666666, 130,          768952.7999999999,  580057.6,              188895.1999, 0.2456525289978786, 385060,
                         APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL, 0,                100,          613200,             340800,                272400,      0.4442270058708415, 340800,
                         APN1-NodeUsage:cache.r3.4xlarge, Redis,        0,                100,          1.913184e+06,       1.245312e+06,          667872,      0.3490892668974861, 621600,
 
 # recommended reserved instance num for normalization size factor
-                        usage_type,                      os/engine,    instance_num,
-                        APN1-BoxUsage:c4.large,          Linux,        520,
-                        APN1-InstanceUsage:db.r3.large,  Aurora MySQL, 200,
-                        APN1-NodeUsage:cache.r3.4xlarge, Redis,        100,
+                        usage_type,                      os/engine,    instance_num, current_ri, difference,
+                        APN1-BoxUsage:c4.large,          Linux,        520,          200,        330,
+                        APN1-InstanceUsage:db.r3.large,  Aurora MySQL, 200,          100,        100,
+                        APN1-NodeUsage:cache.r3.4xlarge, Redis,        100,          100,        0,
 
 ```
 
@@ -168,7 +168,7 @@ fmt.Println(result)
     "total":499255.584
   },
   "reserved_quantity":285000,
-  "subtraction":167016.00000000006,
+  "difference":167016.00000000006,
   "discount_rate":0.2506725545719808,
   "minimum_record":{
     "sku":"7MYWT7Y96UT3NJ2D",
@@ -208,7 +208,7 @@ rs := repo.FindByInstanceType(min.InstanceType).
   }(min.LeaseContractLength)).
   OfferingClass(min.OfferingClass).
   OfferingType(min.PurchaseOption).
-  ContainsProductDescription(min.OperatingSystem)
+  ProductDescription(min.OperatingSystem)
 
 fmt.Println(rs[0])
 

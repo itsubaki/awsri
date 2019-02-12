@@ -137,8 +137,8 @@ func TestFindByInstanceType(t *testing.T) {
 	}
 
 	for _, r := range rs {
-		if r.GetAnnualCost().Subtraction < 0 {
-			t.Error("invalid subtraction")
+		if r.GetAnnualCost().Difference < 0 {
+			t.Error("invalid difference")
 		}
 		if r.GetAnnualCost().DiscountRate < 0 {
 			t.Error("invalid discount rate")
