@@ -1,6 +1,7 @@
 package reservation
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -42,7 +43,7 @@ func TestDeserialize(t *testing.T) {
 	}
 }
 
-func TestRecommendM44xlarge(t *testing.T) {
+func TestRecommendBoxUsageM44xlarge(t *testing.T) {
 	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
 	repo, err := pricing.Read(path)
 	if err != nil {
@@ -99,5 +100,16 @@ func TestRecommendM44xlarge(t *testing.T) {
 
 	if rs2[0].Count() != rs2[0].InstanceCount {
 		t.Errorf("invalid count")
+	}
+}
+
+func TestReservationCache(t *testing.T) {
+	repo, err := Read("/var/tmp/hermes/reservation.out")
+	if err != nil {
+		t.Errorf("read file: %v", err)
+	}
+
+	for _, r := range repo.SelectAll().Active() {
+		fmt.Println(r)
 	}
 }

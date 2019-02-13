@@ -72,6 +72,19 @@ func (list RecordList) Region(region string) RecordList {
 	return ret
 }
 
+func (list RecordList) DBInstanceClass(class string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].DBInstanceClass != class {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
 func (list RecordList) CacheNodeType(tipe string) RecordList {
 	ret := RecordList{}
 
@@ -111,6 +124,24 @@ func (list RecordList) Duration(duration int64) RecordList {
 	return ret
 }
 
+func (list RecordList) LeaseContractLength(length string) RecordList {
+	ret := RecordList{}
+
+	duration := 31536000
+	if length == "3yr" {
+		duration = 94608000
+	}
+
+	for i := range list {
+		if list[i].Duration != int64(duration) {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
 func (list RecordList) OfferingType(tipe string) RecordList {
 	ret := RecordList{}
 
@@ -129,6 +160,19 @@ func (list RecordList) OfferingClass(class string) RecordList {
 
 	for i := range list {
 		if list[i].OfferingClass != class {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
+func (list RecordList) Active() RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].State != "active" {
 			continue
 		}
 		ret = append(ret, list[i])
@@ -167,13 +211,19 @@ func (list RecordList) ProductDescription(desc string) RecordList {
 		// desc == Linux
 		if strings.Contains(list[i].ProductDescription, desc) {
 			ret = append(ret, list[i])
+			continue
 		}
 
 		// desc == RHEL
 		if strings.Contains(list[i].ProductDescription, "Red Hat Enterprise Linux") && desc == "RHEL" {
 			ret = append(ret, list[i])
+			continue
+		}
+
+		// redis, aurora-mysql
+		if list[i].ProductDescription == strings.ToLower(strings.Replace(desc, " ", "-", -1)) {
+			ret = append(ret, list[i])
 		}
 	}
-
 	return ret
 }

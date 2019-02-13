@@ -425,23 +425,46 @@ func NewResultList(rlist pricing.RecommendedList) (ResultList, error) {
 	}
 
 	for _, r := range rlist.Merge() {
-		min := r.MinimumRecord
-		rs := repo.FindByInstanceType(min.InstanceType).
-			Region(min.Region).
-			Duration(func(length string) int64 {
-				duration := 31536000
-				if length == "3yr" {
-					duration = 94608000
-				}
-				return int64(duration)
-			}(min.LeaseContractLength)).
-			OfferingClass(min.OfferingClass).
-			OfferingType(min.PurchaseOption).
-			ProductDescription(min.OSEngine())
-
 		var current float64
-		if len(rs) > 0 {
-			current = float64(rs[0].Count())
+
+		min := r.MinimumRecord
+		if len(min.OperatingSystem) > 0 {
+			rs := repo.FindByInstanceType(min.InstanceType).
+				Region(min.Region).
+				LeaseContractLength(min.LeaseContractLength).
+				OfferingClass(min.OfferingClass).
+				OfferingType(min.PurchaseOption).
+				ProductDescription(min.OSEngine())
+
+			if len(rs) > 0 {
+				current = float64(rs[0].Count())
+			}
+		}
+
+		if len(min.CacheEngine) > 0 {
+			rs := repo.SelectAll().
+				CacheNodeType(min.InstanceType).
+				Region(min.Region).
+				LeaseContractLength(min.LeaseContractLength).
+				OfferingType(min.PurchaseOption).
+				ProductDescription(min.OSEngine())
+
+			if len(rs) > 0 {
+				current = float64(rs[0].Count())
+			}
+		}
+
+		if len(min.DatabaseEngine) > 0 {
+			rs := repo.SelectAll().
+				DBInstanceClass(min.InstanceType).
+				Region(min.Region).
+				LeaseContractLength(min.LeaseContractLength).
+				OfferingType(min.PurchaseOption).
+				ProductDescription(min.OSEngine())
+
+			if len(rs) > 0 {
+				current = float64(rs[0].Count())
+			}
 		}
 
 		out = append(out, &Result{
