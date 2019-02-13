@@ -435,7 +435,7 @@ func NewResultList(rlist pricing.RecommendedList) (ResultList, error) {
 			}(min.LeaseContractLength)).
 			OfferingClass(min.OfferingClass).
 			OfferingType(min.PurchaseOption).
-			ProductDescription(min.OperatingSystem)
+			ProductDescription(min.OSEngine())
 
 		var current float64
 		if len(rs) > 0 {

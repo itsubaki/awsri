@@ -159,7 +159,6 @@ Windows with SQL Server Web
 Windows with SQL Server Web (Amazon VPC)
 Windows with SQL Server Enterprise
 Windows with SQL Server Enterprise (Amazon VPC)
-
 */
 func (list RecordList) ProductDescription(desc string) RecordList {
 	ret := RecordList{}
