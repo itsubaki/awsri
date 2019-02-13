@@ -15,6 +15,19 @@ import (
 
 var tmpdir = "/var/tmp/hermes"
 
+type Input struct {
+	Forecast ForecastList `json:"forecast"`
+}
+
+func (input *Input) JSON() string {
+	bytea, err := json.Marshal(input)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(bytea)
+}
+
 type Forecast struct {
 	AccountID      string          `json:"account_id"`
 	Alias          string          `json:"alias"`
@@ -43,22 +56,11 @@ func (f *Forecast) PlatformEngine() string {
 	return ""
 }
 
-type ForecastList struct {
-	Forecast []*Forecast `json:"forecast"`
-}
-
-func (list ForecastList) JSON() string {
-	bytea, err := json.Marshal(list)
-	if err != nil {
-		panic(err)
-	}
-
-	return string(bytea)
-}
+type ForecastList []*Forecast
 
 func (list ForecastList) Merge() MergedForecastList {
 	flat := make(map[string]InstanceNumList)
-	for _, in := range list.Forecast {
+	for _, in := range list {
 		key := fmt.Sprintf("%s_%s_%s_%s_%s",
 			in.Region,
 			in.UsageType,
@@ -98,7 +100,7 @@ func (list ForecastList) Merge() MergedForecastList {
 
 func (list ForecastList) Load() {
 	flat := make(map[string]bool)
-	for _, f := range list.Forecast {
+	for _, f := range list {
 		flat[f.Region] = true
 	}
 
@@ -154,12 +156,12 @@ func (list ForecastList) Array() [][]interface{} {
 		"usage_type",
 		"platform/engine",
 	}
-	for _, n := range list.Forecast[0].InstanceNum {
+	for _, n := range list[0].InstanceNum {
 		header = append(header, n.Date)
 	}
 	array = append(array, header)
 
-	for _, f := range list.Forecast {
+	for _, f := range list {
 		val := []interface{}{
 			f.AccountID,
 			f.Alias,
@@ -468,7 +470,7 @@ func (output *Output) Array() [][]interface{} {
 	array = append(array, []interface{}{""})
 
 	date := []string{}
-	for _, d := range output.Forecast.Forecast[0].InstanceNum {
+	for _, d := range output.Forecast[0].InstanceNum {
 		date = append(date, d.Date)
 	}
 
@@ -490,14 +492,14 @@ func Action(c *cli.Context) {
 		return
 	}
 
-	var input ForecastList
+	var input Input
 	if uerr := json.Unmarshal(stdin, &input); uerr != nil {
 		fmt.Println(fmt.Errorf("unmarshal: %v", uerr))
 		return
 	}
 
-	input.Load()
-	mf := input.Merge()
+	input.Forecast.Load()
+	mf := input.Forecast.Merge()
 	recommended, err := mf.Recommended()
 	if err != nil {
 		fmt.Println(fmt.Errorf("recommended: %v", err))
@@ -510,7 +512,7 @@ func Action(c *cli.Context) {
 	}
 
 	output := &Output{
-		Forecast:       input,
+		Forecast:       input.Forecast,
 		MergedForecast: mf,
 		Recommended:    recommended,
 		Result:         result,
