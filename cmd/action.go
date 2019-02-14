@@ -416,7 +416,7 @@ func (list ResultList) Array() [][]interface{} {
 	return array
 }
 
-func NewResultList(rlist pricing.RecommendedList) (ResultList, error) {
+func NewResultList(list pricing.RecommendedList) (ResultList, error) {
 	out := ResultList{}
 
 	repo, err := reservation.Read("/var/tmp/hermes/reservation.out")
@@ -424,7 +424,8 @@ func NewResultList(rlist pricing.RecommendedList) (ResultList, error) {
 		return nil, fmt.Errorf("read reservation: %v", err)
 	}
 
-	for _, r := range rlist.Merge() {
+	m := list.Merge()
+	for _, r := range m {
 		min := r.MinimumRecord
 		if len(min.OperatingSystem) < 1 {
 			continue
@@ -451,7 +452,7 @@ func NewResultList(rlist pricing.RecommendedList) (ResultList, error) {
 		})
 	}
 
-	for _, r := range rlist.Merge() {
+	for _, r := range m {
 		min := r.MinimumRecord
 		if len(min.CacheEngine) < 1 {
 			continue
@@ -478,7 +479,7 @@ func NewResultList(rlist pricing.RecommendedList) (ResultList, error) {
 		})
 	}
 
-	for _, r := range rlist.Merge() {
+	for _, r := range m {
 		min := r.MinimumRecord
 		if len(min.DatabaseEngine) < 1 {
 			continue

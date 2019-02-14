@@ -104,12 +104,61 @@ func TestRecommendBoxUsageM44xlarge(t *testing.T) {
 }
 
 func TestReservationCache(t *testing.T) {
-	repo, err := Read("/var/tmp/hermes/reservation.out")
+	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
+	repo, err := pricing.Read(path)
 	if err != nil {
-		t.Errorf("read file: %v", err)
+		t.Errorf("%v", err)
 	}
 
-	for _, r := range repo.SelectAll().Active() {
-		fmt.Println(r)
+	rs := repo.FindByUsageType("APN1-NodeUsage:cache.m4.large")
+	fmt.Println(rs[0])
+
+	{
+		repo, err := Read("/var/tmp/hermes/reservation.out")
+		if err != nil {
+			t.Errorf("read file: %v", err)
+		}
+
+		rss := repo.SelectAll().
+			CacheNodeType(rs[0].InstanceType).
+			Region(rs[0].Region).
+			LeaseContractLength("1yr").
+			OfferingType(rs[0].PurchaseOption).
+			ProductDescription(rs[0].OSEngine())
+
+		for _, r := range rss {
+			fmt.Println(r)
+		}
+	}
+}
+
+func TestReservationDatabase(t *testing.T) {
+	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
+	repo, err := pricing.Read(path)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	rs := repo.FindByUsageType("APN1-InstanceUsage:db.r4.large").
+		DatabaseEngine("Aurora MySQL").
+		PurchaseOption("All Upfront")
+	fmt.Println(rs[0])
+
+	{
+		repo, err := Read("/var/tmp/hermes/reservation.out")
+		if err != nil {
+			t.Errorf("read file: %v", err)
+		}
+
+		rss := repo.SelectAll().
+			DBInstanceClass(rs[0].InstanceType).
+			Region(rs[0].Region).
+			LeaseContractLength("1yr").
+			ProductDescription(rs[0].OSEngine()).
+			OfferingType(rs[0].PurchaseOption)
+
+		for _, r := range rss {
+			fmt.Println(r)
+		}
 	}
 }
