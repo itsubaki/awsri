@@ -168,6 +168,19 @@ func (list RecordList) OfferingClass(class string) RecordList {
 	return ret
 }
 
+func (list RecordList) MultiAZ(multiaz bool) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].MultiAZ != multiaz {
+			continue
+		}
+		ret = append(ret, list[i])
+	}
+
+	return ret
+}
+
 func (list RecordList) Active() RecordList {
 	ret := RecordList{}
 

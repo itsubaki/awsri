@@ -436,11 +436,16 @@ func NewResultList(list pricing.RecommendedList) (ResultList, error) {
 			LeaseContractLength(min.LeaseContractLength).
 			OfferingClass(min.OfferingClass).
 			OfferingType(min.PurchaseOption).
-			ProductDescription(min.OSEngine())
+			ProductDescription(min.OSEngine()).
+			Active()
 
 		var current float64
-		if len(rs) > 0 {
+		if len(rs) == 1 {
 			current = float64(rs[0].Count())
+		} else if len(rs) == 0 {
+			// not found.
+		} else {
+			return nil, fmt.Errorf("invalid ec2 reservation: %v", rs)
 		}
 
 		out = append(out, &Result{
@@ -463,11 +468,16 @@ func NewResultList(list pricing.RecommendedList) (ResultList, error) {
 			Region(min.Region).
 			LeaseContractLength(min.LeaseContractLength).
 			OfferingType(min.PurchaseOption).
-			ProductDescription(min.OSEngine())
+			ProductDescription(min.OSEngine()).
+			Active()
 
 		var current float64
-		if len(rs) > 0 {
+		if len(rs) == 1 {
 			current = float64(rs[0].Count())
+		} else if len(rs) == 0 {
+			// not found.
+		} else {
+			return nil, fmt.Errorf("invalid cache reservation: %v", rs)
 		}
 
 		out = append(out, &Result{
@@ -485,16 +495,27 @@ func NewResultList(list pricing.RecommendedList) (ResultList, error) {
 			continue
 		}
 
+		maz := false
+		if strings.Contains(min.UsageType, "Multi-AZ") {
+			maz = true
+		}
+
 		rs := repo.SelectAll().
 			DBInstanceClass(min.InstanceType).
 			Region(min.Region).
 			LeaseContractLength(min.LeaseContractLength).
 			OfferingType(min.PurchaseOption).
-			ProductDescription(min.OSEngine())
+			ProductDescription(min.OSEngine()).
+			MultiAZ(maz).
+			Active()
 
 		var current float64
-		if len(rs) > 0 {
+		if len(rs) == 1 {
 			current = float64(rs[0].Count())
+		} else if len(rs) == 0 {
+			// not found.
+		} else {
+			return nil, fmt.Errorf("invalid database reservation: %v", rs)
 		}
 
 		out = append(out, &Result{
