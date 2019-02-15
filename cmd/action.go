@@ -152,7 +152,7 @@ func (list ForecastList) Array() [][]interface{} {
 
 	header := []interface{}{
 		"account_id",
-		"alies",
+		"alias",
 		"usage_type",
 		"platform/engine",
 	}
@@ -361,7 +361,7 @@ func (list MergedForecastList) Array(date []string) [][]interface{} {
 
 	header := []interface{}{
 		"account_id",
-		"alies",
+		"alias",
 		"usage_type",
 		"platform/engine",
 	}
@@ -600,7 +600,7 @@ func Action(c *cli.Context) {
 	if c.String("format") == "csv" {
 		for _, r := range output.Array() {
 			for _, c := range r {
-				fmt.Printf("%v, ", c)
+				fmt.Printf("%v,", c)
 			}
 			fmt.Println()
 		}
