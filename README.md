@@ -58,7 +58,7 @@ $ cat test/forecast.json | hermes --format csv > data.csv
 $ cat data.csv | column -t -s, | less -S
 
 # forecast instance usage
-account_id,   alies,    usage_type,                      platform/engine, 2019-01, 2018-02, 2019-03, 2019-04, 2019-05, 2019-06, 2019-07, 2019-08, 2019-09, 2019-10, 2019-11, 2019-12,
+account_id,   alias,    usage_type,                      platform/engine, 2019-01, 2018-02, 2019-03, 2019-04, 2019-05, 2019-06, 2019-07, 2019-08, 2019-09, 2019-10, 2019-11, 2019-12,
 987654321098, projectA, APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      100,     50,      50,      50,      50,      50,      50,      100,    50,      50,       50,      80,
 123456789012, projectB, APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      200,     150,     80,      80,      150,     80,      80,      150,    80,      80,       80,      150,
 123456789012, projectB, APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL,    100,     100,     100,     100,     100,     100,     100,     100,    100,     100,      100,     100,
