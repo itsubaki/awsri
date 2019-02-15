@@ -54,7 +54,7 @@ func (f *Forecast) PlatformEngine() string {
 		return f.CacheEngine
 	}
 
-	return ""
+	panic("platform/engine not found")
 }
 
 type ForecastList []*Forecast
@@ -250,7 +250,7 @@ func (f *MergedForecast) PlatformEngine() string {
 		return f.CacheEngine
 	}
 
-	panic("platform/engine notfound")
+	panic("platform/engine not found")
 }
 
 type MergedForecastList []*MergedForecast
