@@ -360,6 +360,8 @@ func (list MergedForecastList) Array(date []string) [][]interface{} {
 	array := [][]interface{}{}
 
 	header := []interface{}{
+		"account_id",
+		"alies",
 		"usage_type",
 		"platform/engine",
 	}
@@ -370,6 +372,8 @@ func (list MergedForecastList) Array(date []string) [][]interface{} {
 
 	for _, m := range list {
 		val := []interface{}{
+			"n/a",
+			"n/a",
 			m.UsageType,
 			m.PlatformEngine(),
 		}
