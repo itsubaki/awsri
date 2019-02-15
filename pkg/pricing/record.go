@@ -420,8 +420,8 @@ func (r *Record) Recommend(forecast []Forecast, strategy ...string) *Recommended
 }
 
 func (r *Record) GetInstanceNum(forecast []Forecast, strategy ...string) (string, float64, int64) {
-	p := r.BreakevenPointInMonth()
-	if len(forecast) < p {
+	bep := r.BreakevenPointInMonth()
+	if len(forecast) < bep {
 		sum := 0.0
 		for i := range forecast {
 			sum = sum + forecast[i].InstanceNum
@@ -435,7 +435,7 @@ func (r *Record) GetInstanceNum(forecast []Forecast, strategy ...string) (string
 
 	// default strategy is breakevenpoint
 	actual := "breakevenpoint"
-	reserved := int64(math.Floor(tmp[p-1].InstanceNum))
+	reserved := int64(math.Floor(tmp[bep-1].InstanceNum))
 	if len(strategy) > 0 && strings.ToLower(strategy[0]) == "minimum" {
 		actual = "minimum"
 		reserved = int64(math.Floor(tmp[len(tmp)-1].InstanceNum))

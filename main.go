@@ -18,11 +18,6 @@ func New(version string) *cli.App {
 	app.Action = cmd.Action
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:  "output, o",
-			Value: "stdout",
-			Usage: "stdout",
-		},
-		cli.StringFlag{
 			Name:  "format, f",
 			Value: "json",
 			Usage: "json, csv",

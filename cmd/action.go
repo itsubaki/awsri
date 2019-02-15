@@ -224,7 +224,7 @@ func (f *MergedForecast) PlatformEngine() string {
 		return f.CacheEngine
 	}
 
-	return ""
+	panic("platform/engine notfound")
 }
 
 type MergedForecastList []*MergedForecast
@@ -573,13 +573,14 @@ func Action(c *cli.Context) {
 	}
 
 	input.Forecast.Load()
+
 	mf := input.Forecast.Merge()
-	recommended, err := mf.Recommended()
+	rec, err := mf.Recommended()
 	if err != nil {
 		fmt.Println(fmt.Errorf("recommended: %v", err))
 		return
 	}
-	result, err := NewResultList(recommended)
+	res, err := NewResultList(rec)
 	if err != nil {
 		fmt.Println(fmt.Errorf("new result list: %v", err))
 		return
@@ -588,8 +589,8 @@ func Action(c *cli.Context) {
 	output := &Output{
 		Forecast:       input.Forecast,
 		MergedForecast: mf,
-		Recommended:    recommended,
-		Result:         result,
+		Recommended:    rec,
+		Result:         res,
 	}
 
 	if c.String("format") == "csv" {
