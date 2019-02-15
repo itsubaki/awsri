@@ -18,6 +18,7 @@ func (list RecordList) String() string {
 }
 
 type Record struct {
+	ReservedID         string    `json:"reserved_id"`
 	Region             string    `json:"region"`
 	Duration           int64     `json:"duration"`
 	OfferingType       string    `json:"offering_type"`

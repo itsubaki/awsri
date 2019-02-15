@@ -58,6 +58,7 @@ func (repo *Repository) fetchEC2WithClient(client *http.Client) error {
 		for _, i := range output.ReservedInstances {
 			repo.Internal = append(repo.Internal, &Record{
 				Region:             r,
+				ReservedID:         *i.ReservedInstancesId,
 				Duration:           *i.Duration,
 				OfferingType:       *i.OfferingType,
 				OfferingClass:      *i.OfferingClass,
@@ -101,6 +102,7 @@ func (repo *Repository) fetchCacheWithClient(client *http.Client) error {
 			for _, i := range output.ReservedCacheNodes {
 				repo.Internal = append(repo.Internal, &Record{
 					Region:             r,
+					ReservedID:         *i.ReservedCacheNodeId,
 					Duration:           *i.Duration,
 					OfferingType:       *i.OfferingType,
 					ProductDescription: *i.ProductDescription,
@@ -149,6 +151,7 @@ func (repo *Repository) fetchRDSWithClient(client *http.Client) error {
 			for _, i := range output.ReservedDBInstances {
 				repo.Internal = append(repo.Internal, &Record{
 					Region:             r,
+					ReservedID:         *i.ReservedDBInstanceId,
 					Duration:           *i.Duration,
 					OfferingType:       *i.OfferingType,
 					ProductDescription: *i.ProductDescription,

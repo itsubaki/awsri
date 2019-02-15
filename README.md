@@ -53,7 +53,6 @@ $ go get github.com/itsubaki/hermes
 ## Example
 
 ```
-$ cd ${GOPATH}/src/github.com/itsubaki/hermes
 $ cat test/forecast.json | hermes --format csv > data.csv
 $ cat data.csv | column -t -s, | less -S
 

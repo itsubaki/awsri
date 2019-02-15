@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/itsubaki/hermes/pkg/costexp"
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/reservation"
 	"github.com/urfave/cli"
@@ -98,7 +99,7 @@ func (list ForecastList) Merge() MergedForecastList {
 	return out
 }
 
-func (list ForecastList) Load() {
+func (list ForecastList) Initialize() {
 	flat := make(map[string]bool)
 	for _, f := range list {
 		flat[f.Region] = true
@@ -111,7 +112,7 @@ func (list ForecastList) Load() {
 
 	path := fmt.Sprintf("%s/pricing", tmpdir)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		os.MkdirAll(tmpdir, os.ModePerm)
+		os.MkdirAll(path, os.ModePerm)
 	}
 
 	for _, r := range region {
@@ -142,6 +143,31 @@ func (list ForecastList) Load() {
 			if err := repo.Write(path); err != nil {
 				fmt.Println(fmt.Errorf("write reservation: %v", err))
 				return
+			}
+		}
+	}
+
+	{
+		path := fmt.Sprintf("%s/costexp", tmpdir)
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			os.MkdirAll(path, os.ModePerm)
+		}
+
+		// TODO
+		date := []*costexp.Date{}
+		for i := range date {
+			cache := fmt.Sprintf("%s/%s.out", path, date[i].Start[:7])
+			if _, err := os.Stat(cache); os.IsNotExist(err) {
+				repo := costexp.NewRepository([]*costexp.Date{date[i]})
+				if err := repo.Fetch(); err != nil {
+					fmt.Println(fmt.Errorf("fetch costexp (region=%s): %v", date[i], err))
+					return
+				}
+
+				if err := repo.Write(cache); err != nil {
+					fmt.Println(fmt.Errorf("write costexp (region=%s): %v", date[i], err))
+					return
+				}
 			}
 		}
 	}
@@ -576,7 +602,7 @@ func Action(c *cli.Context) {
 		return
 	}
 
-	input.Forecast.Load()
+	input.Forecast.Initialize()
 
 	mf := input.Forecast.Merge()
 	rec, err := mf.Recommended()
