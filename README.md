@@ -2,12 +2,12 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/itsubaki/hermes?style=flat-square)](https://goreportcard.com/report/github.com/itsubaki/hermes)
 
- - AWS RI recommendation library
+ - AWS Cost Optimization Library
 
 ## Motivation
 
  In order to reduce AWS cost,
- It is necessary to effectively buy Reserved Instance.
+ It is necessary to effectively buy Reserved Instances.
  But AWS pricing is complicated and difficult.
  This library shows the RI that you should buy now,
  based on the future instance usage and the current RI purchase.
