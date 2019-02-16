@@ -324,7 +324,7 @@ func (list MergedForecastList) Array(date []string) [][]interface{} {
 	for _, m := range list {
 		val := []interface{}{
 			"n/a",
-			"all",
+			"n/a",
 			m.UsageType,
 			m.PlatformEngine(),
 		}

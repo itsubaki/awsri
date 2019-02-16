@@ -88,9 +88,9 @@ account_id,   alias,    usage_type,                      platform/engine, 2019-0
 
 ```
 account_id,   alias,    usage_type,                      platform/engine, 2019-01, 2018-02, 2019-03, 2019-04, 2019-05, 2019-06, 2019-07, 2019-08, 2019-09, 2019-10, 2019-11, 2019-12,
-n/a,          all,      APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      300,     200,     130,     130,     200,     130,     130,     250,     130,     130,     130,     230,
-n/a,          all,      APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL,    100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
-n/a,          all,      APN1-NodeUsage:cache.r4.xlarge,  Redis,           100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
+n/a,          n/a,      APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      300,     200,     130,     130,     200,     130,     130,     250,     130,     130,     130,     230,
+n/a,          n/a,      APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL,    100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
+n/a,          n/a,      APN1-NodeUsage:cache.r4.xlarge,  Redis,           100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
 ```
 
 ```
