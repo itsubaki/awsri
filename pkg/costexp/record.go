@@ -2,6 +2,8 @@ package costexp
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"reflect"
 	"sort"
@@ -43,6 +45,17 @@ type Record struct {
 	Date           string  `json:"date"`
 	InstanceHour   float64 `json:"instance_hour"`
 	InstanceNum    float64 `json:"instance_num"`
+}
+
+func (u *Record) Hash() string {
+	bytea, err := json.Marshal(u)
+	if err != nil {
+		panic(err)
+	}
+
+	sha := sha256.Sum256(bytea)
+	hash := hex.EncodeToString(sha[:])
+	return hash
 }
 
 func (u *Record) String() string {

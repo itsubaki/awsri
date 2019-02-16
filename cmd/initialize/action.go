@@ -14,12 +14,23 @@ func Action(c *cli.Context) {
 	region := c.StringSlice("region")
 	dir := c.GlobalString("dir")
 
-	Reservation(region, dir)
-	Pricing(region, dir)
-	CostExp(dir)
+	if err := Pricing(region, dir); err != nil {
+		fmt.Printf("write pricing: %v", err)
+		os.Exit(1)
+	}
+
+	if err := CostExp(dir); err != nil {
+		fmt.Printf("write costexp: %v", err)
+		os.Exit(1)
+	}
+
+	if err := Reservation(region, dir); err != nil {
+		fmt.Printf("write reservation: %v", err)
+		os.Exit(1)
+	}
 }
 
-func Pricing(region []string, dir string) {
+func Pricing(region []string, dir string) error {
 	path := fmt.Sprintf("%s/pricing", dir)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		os.MkdirAll(path, os.ModePerm)
@@ -30,39 +41,39 @@ func Pricing(region []string, dir string) {
 		if _, err := os.Stat(cache); os.IsNotExist(err) {
 			repo := pricing.NewRepository([]string{r})
 			if err := repo.Fetch(); err != nil {
-				fmt.Println(fmt.Errorf("fetch pricing (region=%s): %v", r, err))
-				return
+				return fmt.Errorf("fetch pricing (region=%s): %v", r, err)
 			}
 
 			if err := repo.Write(cache); err != nil {
-				fmt.Println(fmt.Errorf("write pricing (region=%s): %v", r, err))
-				return
+				return fmt.Errorf("write pricing (region=%s): %v", r, err)
 			}
 
 			fmt.Printf("write: %v\n", cache)
 		}
 	}
+
+	return nil
 }
 
-func Reservation(region []string, dir string) {
+func Reservation(region []string, dir string) error {
 	path := fmt.Sprintf("%s/reservation.out", dir)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		repo := reservation.NewRepository(region)
 		if err := repo.Fetch(); err != nil {
-			fmt.Println(fmt.Errorf("fetch reservation: %v", err))
-			return
+			return fmt.Errorf("fetch reservation: %v", err)
 		}
 
 		if err := repo.Write(path); err != nil {
-			fmt.Println(fmt.Errorf("write reservation: %v", err))
-			return
+			return fmt.Errorf("write reservation: %v", err)
 		}
+
+		fmt.Printf("write: %v\n", path)
 	}
 
-	fmt.Printf("write: %v\n", path)
+	return nil
 }
 
-func CostExp(dir string) {
+func CostExp(dir string) error {
 	path := fmt.Sprintf("%s/costexp", dir)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		os.MkdirAll(path, os.ModePerm)
@@ -74,16 +85,16 @@ func CostExp(dir string) {
 		if _, err := os.Stat(cache); os.IsNotExist(err) {
 			repo := costexp.NewRepository([]*costexp.Date{date[i]})
 			if err := repo.Fetch(); err != nil {
-				fmt.Println(fmt.Errorf("fetch costexp (region=%s): %v", date[i], err))
-				return
+				return fmt.Errorf("fetch costexp (region=%s): %v", date[i], err)
 			}
 
 			if err := repo.Write(cache); err != nil {
-				fmt.Println(fmt.Errorf("write costexp (region=%s): %v", date[i], err))
-				return
+				return fmt.Errorf("write costexp (region=%s): %v", date[i], err)
 			}
 
 			fmt.Printf("write: %v\n", cache)
 		}
 	}
+
+	return nil
 }

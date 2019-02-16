@@ -38,6 +38,14 @@ type Forecast struct {
 	Extend         interface{}     `json:"extend,omitempty"`
 }
 
+func (f *Forecast) Date() []string {
+	date := []string{}
+	for _, d := range f.InstanceNum {
+		date = append(date, d.Date)
+	}
+	return date
+}
+
 func (f *Forecast) PlatformEngine() string {
 	if len(f.Platform) > 0 {
 		return f.Platform
@@ -178,7 +186,7 @@ func (f *MergedForecast) PlatformEngine() string {
 
 type MergedForecastList []*MergedForecast
 
-func (list MergedForecastList) Recommended(dir string) (pricing.RecommendedList, error) {
+func (list MergedForecastList) Recommend(dir string) (pricing.RecommendedList, error) {
 	rmap := make(map[string]*pricing.Repository)
 	for _, in := range list {
 		path := fmt.Sprintf("%s/pricing/%s.out", dir, in.Region)
@@ -316,7 +324,7 @@ func (list MergedForecastList) Array(date []string) [][]interface{} {
 	for _, m := range list {
 		val := []interface{}{
 			"n/a",
-			"n/a",
+			"all",
 			m.UsageType,
 			m.PlatformEngine(),
 		}
@@ -364,14 +372,13 @@ func (list ResultList) Array() [][]interface{} {
 }
 
 func NewResultList(list pricing.RecommendedList, dir string) (ResultList, error) {
-	out := ResultList{}
-
 	path := fmt.Sprintf("%s/reservation.out", dir)
 	repo, err := reservation.Read(path)
 	if err != nil {
 		return nil, fmt.Errorf("read reservation: %v", err)
 	}
 
+	out := ResultList{}
 	m := list.Merge()
 	for _, r := range m {
 		min := r.MinimumRecord
@@ -491,12 +498,7 @@ func (output *Output) Array() [][]interface{} {
 	array = append(array, output.Forecast.Array()...)
 	array = append(array, []interface{}{""})
 
-	date := []string{}
-	for _, d := range output.Forecast[0].InstanceNum {
-		date = append(date, d.Date)
-	}
-
-	array = append(array, output.MergedForecast.Array(date)...)
+	array = append(array, output.MergedForecast.Array(output.Forecast[0].Date())...)
 	array = append(array, []interface{}{""})
 
 	array = append(array, output.Recommended.Array()...)
@@ -517,20 +519,20 @@ func Action(c *cli.Context) {
 	var input Input
 	if uerr := json.Unmarshal(stdin, &input); uerr != nil {
 		fmt.Println(fmt.Errorf("unmarshal: %v", uerr))
-		return
+		os.Exit(1)
 	}
 
 	dir := c.GlobalString("dir")
 	mf := input.Forecast.Merge()
-	rec, err := mf.Recommended(dir)
+	rec, err := mf.Recommend(dir)
 	if err != nil {
-		fmt.Println(fmt.Errorf("recommended: %v", err))
-		return
+		fmt.Println(fmt.Errorf("recommend: %v", err))
+		os.Exit(1)
 	}
 	res, err := NewResultList(rec, dir)
 	if err != nil {
 		fmt.Println(fmt.Errorf("new result list: %v", err))
-		return
+		os.Exit(1)
 	}
 
 	output := &Output{

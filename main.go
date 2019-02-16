@@ -35,6 +35,7 @@ func New(version string) *cli.App {
 		Name: "region, r",
 		Value: &cli.StringSlice{
 			"ap-northeast-1",
+			"ap-southeast-1",
 			"eu-central-1",
 			"us-west-1",
 			"us-west-2",
