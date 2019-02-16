@@ -1,4 +1,4 @@
-package reservation
+package reserved
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ func TestSerialize(t *testing.T) {
 		"us-west-2",
 	}
 
-	path := "/var/tmp/hermes/reservation.out"
+	path := "/var/tmp/hermes/reserved.out"
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return
 	}
@@ -33,7 +33,7 @@ func TestSerialize(t *testing.T) {
 }
 
 func TestDeserialize(t *testing.T) {
-	repo, err := Read("/var/tmp/hermes/reservation.out")
+	repo, err := Read("/var/tmp/hermes/reserved.out")
 	if err != nil {
 		t.Errorf("read file: %v", err)
 	}
@@ -80,7 +80,7 @@ func TestRecommendBoxUsageM44xlarge(t *testing.T) {
 		t.Errorf("invalid offer term")
 	}
 
-	rsv, err := Read("/var/tmp/hermes/reservation.out")
+	rsv, err := Read("/var/tmp/hermes/reserved.out")
 	if err != nil {
 		t.Errorf("read file: %v", err)
 	}
@@ -103,7 +103,7 @@ func TestRecommendBoxUsageM44xlarge(t *testing.T) {
 	}
 }
 
-func TestReservationCache(t *testing.T) {
+func TestReservedCache(t *testing.T) {
 	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
 	repo, err := pricing.Read(path)
 	if err != nil {
@@ -114,7 +114,7 @@ func TestReservationCache(t *testing.T) {
 	fmt.Println(rs[0])
 
 	{
-		repo, err := Read("/var/tmp/hermes/reservation.out")
+		repo, err := Read("/var/tmp/hermes/reserved.out")
 		if err != nil {
 			t.Errorf("read file: %v", err)
 		}
@@ -132,7 +132,7 @@ func TestReservationCache(t *testing.T) {
 	}
 }
 
-func TestReservationDatabase(t *testing.T) {
+func TestReservedDatabase(t *testing.T) {
 	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
 	repo, err := pricing.Read(path)
 	if err != nil {
@@ -145,7 +145,7 @@ func TestReservationDatabase(t *testing.T) {
 	fmt.Println(rs[0])
 
 	{
-		repo, err := Read("/var/tmp/hermes/reservation.out")
+		repo, err := Read("/var/tmp/hermes/reserved.out")
 		if err != nil {
 			t.Errorf("read file: %v", err)
 		}

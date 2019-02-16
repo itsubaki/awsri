@@ -70,7 +70,7 @@ write: /var/tmp/hermes/costexp/2018-05.out
 write: /var/tmp/hermes/costexp/2018-04.out
 write: /var/tmp/hermes/costexp/2018-03.out
 write: /var/tmp/hermes/costexp/2018-02.out
-write: /var/tmp/hermes/reservation.out
+write: /var/tmp/hermes/reserved.out
 ```
 
 ```
@@ -243,7 +243,7 @@ fmt.Println(res)
 ```
 
 ```
-repo, _ := reservation.New([]string{"ap-northeast-1"})
+repo, _ := reserved.New([]string{"ap-northeast-1"})
 rs := repo.FindByInstanceType(min.InstanceType).
   Region(min.Region).
   Duration(func(length string) int64 {

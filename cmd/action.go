@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
-	"github.com/itsubaki/hermes/pkg/reservation"
+	"github.com/itsubaki/hermes/pkg/reserved"
 	"github.com/urfave/cli"
 )
 
@@ -372,8 +372,8 @@ func (list ResultList) Array() [][]interface{} {
 }
 
 func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, error) {
-	path := fmt.Sprintf("%s/reservation.out", dir)
-	repo, err := reservation.Read(path)
+	path := fmt.Sprintf("%s/reserved.out", dir)
+	repo, err := reserved.Read(path)
 	if err != nil {
 		return nil, fmt.Errorf("read reservation: %v", err)
 	}

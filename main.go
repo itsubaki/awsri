@@ -73,9 +73,9 @@ func New(version string) *cli.App {
 				Flags:   flags,
 			},
 			{
-				Name:    "reservation",
+				Name:    "reserved",
 				Aliases: []string{"r"},
-				Action:  store.ActionStoreReservation,
+				Action:  store.ActionStoreReserved,
 				Flags:   flags,
 			},
 		},

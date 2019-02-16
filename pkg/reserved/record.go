@@ -1,4 +1,4 @@
-package reservation
+package reserved
 
 import (
 	"encoding/json"

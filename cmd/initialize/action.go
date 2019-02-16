@@ -6,7 +6,7 @@ import (
 
 	"github.com/itsubaki/hermes/pkg/costexp"
 	"github.com/itsubaki/hermes/pkg/pricing"
-	"github.com/itsubaki/hermes/pkg/reservation"
+	"github.com/itsubaki/hermes/pkg/reserved"
 	"github.com/urfave/cli"
 )
 
@@ -24,7 +24,7 @@ func Action(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	if err := Reservation(region, dir); err != nil {
+	if err := Reserved(region, dir); err != nil {
 		fmt.Printf("write reservation: %v", err)
 		os.Exit(1)
 	}
@@ -58,13 +58,13 @@ func Pricing(region []string, dir string) error {
 	return nil
 }
 
-func Reservation(region []string, dir string) error {
-	path := fmt.Sprintf("%s/reservation.out", dir)
+func Reserved(region []string, dir string) error {
+	path := fmt.Sprintf("%s/reserved.out", dir)
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return nil
 	}
 
-	repo := reservation.NewRepository(region)
+	repo := reserved.NewRepository(region)
 	if err := repo.Fetch(); err != nil {
 		return fmt.Errorf("fetch reservation: %v", err)
 	}
