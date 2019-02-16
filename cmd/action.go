@@ -355,7 +355,7 @@ func (list ResultList) Array() [][]interface{} {
 		"os/engine",
 		"instance_num",
 		"current_ri",
-		"difference",
+		"coverage",
 	})
 
 	for _, r := range list {
