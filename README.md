@@ -53,6 +53,27 @@ $ go get github.com/itsubaki/hermes
 ## Example
 
 ```
+$ AWS_PROFILE=example hermes init
+write: /var/tmp/hermes/reservation.out
+write: /var/tmp/hermes/pricing/ap-northeast-1.out
+write: /var/tmp/hermes/pricing/eu-central-1.out
+write: /var/tmp/hermes/pricing/us-west-1.out
+write: /var/tmp/hermes/pricing/us-west-2.out
+write: /var/tmp/hermes/costexp/2019-01.out
+write: /var/tmp/hermes/costexp/2018-12.out
+write: /var/tmp/hermes/costexp/2018-11.out
+write: /var/tmp/hermes/costexp/2018-10.out
+write: /var/tmp/hermes/costexp/2018-09.out
+write: /var/tmp/hermes/costexp/2018-08.out
+write: /var/tmp/hermes/costexp/2018-07.out
+write: /var/tmp/hermes/costexp/2018-06.out
+write: /var/tmp/hermes/costexp/2018-05.out
+write: /var/tmp/hermes/costexp/2018-04.out
+write: /var/tmp/hermes/costexp/2018-03.out
+write: /var/tmp/hermes/costexp/2018-02.out
+```
+
+```
 $ cat test/forecast.json | hermes --format csv > data.csv
 $ cat data.csv | column -t -s, | less -S
 

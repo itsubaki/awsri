@@ -8,13 +8,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/itsubaki/hermes/pkg/costexp"
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/reservation"
 	"github.com/urfave/cli"
 )
-
-var tmpdir = "/var/tmp/hermes"
 
 type Input struct {
 	Forecast ForecastList `json:"forecast"`
@@ -99,80 +96,6 @@ func (list ForecastList) Merge() MergedForecastList {
 	return out
 }
 
-func (list ForecastList) Initialize() {
-	flat := make(map[string]bool)
-	for _, f := range list {
-		flat[f.Region] = true
-	}
-
-	region := []string{}
-	for k := range flat {
-		region = append(region, k)
-	}
-
-	path := fmt.Sprintf("%s/pricing", tmpdir)
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		os.MkdirAll(path, os.ModePerm)
-	}
-
-	for _, r := range region {
-		cache := fmt.Sprintf("%s/%s.out", path, r)
-		if _, err := os.Stat(cache); os.IsNotExist(err) {
-			repo := pricing.NewRepository([]string{r})
-			if err := repo.Fetch(); err != nil {
-				fmt.Println(fmt.Errorf("fetch pricing (region=%s): %v", r, err))
-				return
-			}
-
-			if err := repo.Write(cache); err != nil {
-				fmt.Println(fmt.Errorf("write pricing (region=%s): %v", r, err))
-				return
-			}
-		}
-	}
-
-	{
-		path := fmt.Sprintf("%s/reservation.out", tmpdir)
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			repo := reservation.NewRepository(region)
-			if err := repo.Fetch(); err != nil {
-				fmt.Println(fmt.Errorf("fetch reservation: %v", err))
-				return
-			}
-
-			if err := repo.Write(path); err != nil {
-				fmt.Println(fmt.Errorf("write reservation: %v", err))
-				return
-			}
-		}
-	}
-
-	{
-		path := fmt.Sprintf("%s/costexp", tmpdir)
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			os.MkdirAll(path, os.ModePerm)
-		}
-
-		// TODO
-		date := []*costexp.Date{}
-		for i := range date {
-			cache := fmt.Sprintf("%s/%s.out", path, date[i].Start[:7])
-			if _, err := os.Stat(cache); os.IsNotExist(err) {
-				repo := costexp.NewRepository([]*costexp.Date{date[i]})
-				if err := repo.Fetch(); err != nil {
-					fmt.Println(fmt.Errorf("fetch costexp (region=%s): %v", date[i], err))
-					return
-				}
-
-				if err := repo.Write(cache); err != nil {
-					fmt.Println(fmt.Errorf("write costexp (region=%s): %v", date[i], err))
-					return
-				}
-			}
-		}
-	}
-}
-
 func (list ForecastList) Array() [][]interface{} {
 	array := [][]interface{}{}
 
@@ -255,7 +178,17 @@ func (f *MergedForecast) PlatformEngine() string {
 
 type MergedForecastList []*MergedForecast
 
-func (list MergedForecastList) Recommended() (pricing.RecommendedList, error) {
+func (list MergedForecastList) Recommended(dir string) (pricing.RecommendedList, error) {
+	rmap := make(map[string]*pricing.Repository)
+	for _, in := range list {
+		path := fmt.Sprintf("%s/pricing/%s.out", dir, in.Region)
+		repo, err := pricing.Read(path)
+		if err != nil {
+			return nil, fmt.Errorf("read pricing (region=%s): %v", in.Region, err)
+		}
+		rmap[in.Region] = repo
+	}
+
 	out := pricing.RecommendedList{}
 	for _, in := range list {
 		if len(in.Platform) < 1 {
@@ -270,15 +203,9 @@ func (list MergedForecastList) Recommended() (pricing.RecommendedList, error) {
 			})
 		}
 
-		os := pricing.OperatingSystem[in.Platform]
-		path := fmt.Sprintf("%s/pricing/%s.out", tmpdir, in.Region)
-		repo, err := pricing.Read(path)
-		if err != nil {
-			return nil, fmt.Errorf("read pricing (region=%s): %v", in.Region, err)
-		}
-
+		repo := rmap[in.Region]
 		hit := repo.FindByUsageType(in.UsageType).
-			OperatingSystem(os).
+			OperatingSystem(pricing.OperatingSystem[in.Platform]).
 			LeaseContractLength("1yr").
 			PurchaseOption("All Upfront").
 			OfferingClass("standard").
@@ -312,12 +239,7 @@ func (list MergedForecastList) Recommended() (pricing.RecommendedList, error) {
 			})
 		}
 
-		path := fmt.Sprintf("%s/pricing/%s.out", tmpdir, in.Region)
-		repo, err := pricing.Read(path)
-		if err != nil {
-			return nil, fmt.Errorf("read pricing (region=%s): %v", in.Region, err)
-		}
-
+		repo := rmap[in.Region]
 		hit := repo.FindByUsageType(in.UsageType).
 			LeaseContractLength("1yr").
 			PurchaseOption("Heavy Utilization").
@@ -350,12 +272,7 @@ func (list MergedForecastList) Recommended() (pricing.RecommendedList, error) {
 			})
 		}
 
-		path := fmt.Sprintf("%s/pricing/%s.out", tmpdir, in.Region)
-		repo, err := pricing.Read(path)
-		if err != nil {
-			return nil, fmt.Errorf("read pricing (region=%s): %v", in.Region, err)
-		}
-
+		repo := rmap[in.Region]
 		hit := repo.FindByUsageType(in.UsageType).
 			LeaseContractLength("1yr").
 			PurchaseOption("All Upfront").
@@ -446,10 +363,11 @@ func (list ResultList) Array() [][]interface{} {
 	return array
 }
 
-func NewResultList(list pricing.RecommendedList) (ResultList, error) {
+func NewResultList(list pricing.RecommendedList, dir string) (ResultList, error) {
 	out := ResultList{}
 
-	repo, err := reservation.Read("/var/tmp/hermes/reservation.out")
+	path := fmt.Sprintf("%s/reservation.out", dir)
+	repo, err := reservation.Read(path)
 	if err != nil {
 		return nil, fmt.Errorf("read reservation: %v", err)
 	}
@@ -602,15 +520,14 @@ func Action(c *cli.Context) {
 		return
 	}
 
-	input.Forecast.Initialize()
-
+	dir := c.GlobalString("dir")
 	mf := input.Forecast.Merge()
-	rec, err := mf.Recommended()
+	rec, err := mf.Recommended(dir)
 	if err != nil {
 		fmt.Println(fmt.Errorf("recommended: %v", err))
 		return
 	}
-	res, err := NewResultList(rec)
+	res, err := NewResultList(rec, dir)
 	if err != nil {
 		fmt.Println(fmt.Errorf("new result list: %v", err))
 		return

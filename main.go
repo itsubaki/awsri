@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/itsubaki/hermes/cmd"
+	"github.com/itsubaki/hermes/cmd/initialize"
 	"github.com/itsubaki/hermes/cmd/store"
 	"github.com/urfave/cli"
 )
@@ -24,9 +25,31 @@ func New(version string) *cli.App {
 			Value: "json",
 			Usage: "json, csv, tsv",
 		},
+		cli.StringFlag{
+			Name:  "dir, d",
+			Value: "/var/tmp/hermes",
+		},
+	}
+
+	region := cli.StringSliceFlag{
+		Name: "region, r",
+		Value: &cli.StringSlice{
+			"ap-northeast-1",
+			"eu-central-1",
+			"us-west-1",
+			"us-west-2",
+		},
 	}
 
 	app.Commands = []cli.Command{
+		{
+			Name:   "init",
+			Action: initialize.Action,
+			Usage:  "download aws pricing, usage, reservation",
+			Flags: []cli.Flag{
+				region,
+			},
+		},
 		{
 			Name:   "store",
 			Action: store.Action,
@@ -35,6 +58,7 @@ func New(version string) *cli.App {
 				cli.StringFlag{
 					Name: "project, p",
 				},
+				region,
 			},
 		},
 	}

@@ -196,6 +196,10 @@ type Record struct {
 	CacheEngine             string  `json:"cache_engine,omitempty"`              // cache
 }
 
+func (r *Record) ID() string {
+	return fmt.Sprintf("%s.%s", r.SKU, r.OfferTermCode)
+}
+
 func (r *Record) OSEngine() string {
 	if len(r.OperatingSystem) > 0 {
 		return r.OperatingSystem
