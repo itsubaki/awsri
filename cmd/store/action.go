@@ -31,7 +31,6 @@ func Action(c *cli.Context) {
 		fmt.Printf("store reservation: %v", err)
 		os.Exit(1)
 	}
-
 }
 
 func StoreCostExp(project, dir string) error {
