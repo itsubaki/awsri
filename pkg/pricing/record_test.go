@@ -131,8 +131,8 @@ func TestFindByInstanceTypeCache(t *testing.T) {
 			t.Error("invalid reserved applied")
 		}
 
-		if e.Difference < 0 {
-			t.Error("invalid difference")
+		if e.SavingCost < 0 {
+			t.Error("invalid saving cost")
 		}
 
 		if e.DiscountRate < 0 {
@@ -232,8 +232,8 @@ func TestRecommend1yr(t *testing.T) {
 		t.Errorf("invalid reserved quantity")
 	}
 
-	if rec.Difference != 20852.000000000007 {
-		t.Error("invalid difference")
+	if rec.SavingCost != 20852.000000000007 {
+		t.Error("invalid saving cost")
 	}
 
 	if rec.DiscountRate != 0.2503723766793573 {

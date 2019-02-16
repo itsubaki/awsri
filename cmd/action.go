@@ -344,7 +344,7 @@ type Result struct {
 	OSEngine    string  `json:"os_engine"`
 	InstanceNum float64 `json:"instance_num"`
 	CurrentRI   float64 `json:"current_ri"`
-	Difference  float64 `json:"difference"`
+	Coverage    float64 `json:"coverage"`
 }
 
 type ResultList []*Result
@@ -364,7 +364,7 @@ func (list ResultList) Array() [][]interface{} {
 			r.OSEngine,
 			r.InstanceNum,
 			r.CurrentRI,
-			r.Difference,
+			r.Coverage,
 		})
 	}
 
@@ -407,7 +407,7 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			OSEngine:    min.OSEngine(),
 			InstanceNum: r.MinimumReservedInstanceNum,
 			CurrentRI:   current,
-			Difference:  r.MinimumReservedInstanceNum - current,
+			Coverage:    r.MinimumReservedInstanceNum - current,
 		})
 	}
 
@@ -439,7 +439,7 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			OSEngine:    min.OSEngine(),
 			InstanceNum: r.MinimumReservedInstanceNum,
 			CurrentRI:   current,
-			Difference:  r.MinimumReservedInstanceNum - current,
+			Coverage:    r.MinimumReservedInstanceNum - current,
 		})
 	}
 
@@ -477,7 +477,7 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			OSEngine:    min.OSEngine(),
 			InstanceNum: r.MinimumReservedInstanceNum,
 			CurrentRI:   current,
-			Difference:  r.MinimumReservedInstanceNum - current,
+			Coverage:    r.MinimumReservedInstanceNum - current,
 		})
 	}
 
