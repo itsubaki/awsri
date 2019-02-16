@@ -16,7 +16,7 @@ func New(version string) *cli.App {
 	app := cli.NewApp()
 
 	app.Name = "hermes"
-	app.Usage = "recommend aws reserved instances"
+	app.Usage = "aws cost optimization"
 	app.Version = version
 	app.Action = cmd.Action
 	app.Flags = []cli.Flag{
