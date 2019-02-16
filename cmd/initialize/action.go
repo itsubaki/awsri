@@ -38,18 +38,21 @@ func Pricing(region []string, dir string) error {
 
 	for _, r := range region {
 		cache := fmt.Sprintf("%s/%s.out", path, r)
-		if _, err := os.Stat(cache); os.IsNotExist(err) {
-			repo := pricing.NewRepository([]string{r})
-			if err := repo.Fetch(); err != nil {
-				return fmt.Errorf("fetch pricing (region=%s): %v", r, err)
-			}
-
-			if err := repo.Write(cache); err != nil {
-				return fmt.Errorf("write pricing (region=%s): %v", r, err)
-			}
-
-			fmt.Printf("write: %v\n", cache)
+		if _, err := os.Stat(cache); !os.IsNotExist(err) {
+			continue
 		}
+
+		repo := pricing.NewRepository([]string{r})
+		if err := repo.Fetch(); err != nil {
+			return fmt.Errorf("fetch pricing (region=%s): %v", r, err)
+		}
+
+		if err := repo.Write(cache); err != nil {
+			return fmt.Errorf("write pricing (region=%s): %v", r, err)
+		}
+
+		fmt.Printf("write: %v\n", cache)
+
 	}
 
 	return nil
@@ -57,19 +60,20 @@ func Pricing(region []string, dir string) error {
 
 func Reservation(region []string, dir string) error {
 	path := fmt.Sprintf("%s/reservation.out", dir)
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		repo := reservation.NewRepository(region)
-		if err := repo.Fetch(); err != nil {
-			return fmt.Errorf("fetch reservation: %v", err)
-		}
-
-		if err := repo.Write(path); err != nil {
-			return fmt.Errorf("write reservation: %v", err)
-		}
-
-		fmt.Printf("write: %v\n", path)
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		return nil
 	}
 
+	repo := reservation.NewRepository(region)
+	if err := repo.Fetch(); err != nil {
+		return fmt.Errorf("fetch reservation: %v", err)
+	}
+
+	if err := repo.Write(path); err != nil {
+		return fmt.Errorf("write reservation: %v", err)
+	}
+
+	fmt.Printf("write: %v\n", path)
 	return nil
 }
 
@@ -82,18 +86,20 @@ func CostExp(dir string) error {
 	date := costexp.GetCurrentDate()
 	for i := range date {
 		cache := fmt.Sprintf("%s/%s.out", path, date[i].YYYYMM())
-		if _, err := os.Stat(cache); os.IsNotExist(err) {
-			repo := costexp.NewRepository([]*costexp.Date{date[i]})
-			if err := repo.Fetch(); err != nil {
-				return fmt.Errorf("fetch costexp (region=%s): %v", date[i], err)
-			}
-
-			if err := repo.Write(cache); err != nil {
-				return fmt.Errorf("write costexp (region=%s): %v", date[i], err)
-			}
-
-			fmt.Printf("write: %v\n", cache)
+		if _, err := os.Stat(cache); !os.IsNotExist(err) {
+			continue
 		}
+
+		repo := costexp.NewRepository([]*costexp.Date{date[i]})
+		if err := repo.Fetch(); err != nil {
+			return fmt.Errorf("fetch costexp (region=%s): %v", date[i], err)
+		}
+
+		if err := repo.Write(cache); err != nil {
+			return fmt.Errorf("write costexp (region=%s): %v", date[i], err)
+		}
+
+		fmt.Printf("write: %v\n", cache)
 	}
 
 	return nil

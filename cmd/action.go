@@ -371,7 +371,7 @@ func (list ResultList) Array() [][]interface{} {
 	return array
 }
 
-func NewResultList(list pricing.RecommendedList, dir string) (ResultList, error) {
+func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, error) {
 	path := fmt.Sprintf("%s/reservation.out", dir)
 	repo, err := reservation.Read(path)
 	if err != nil {
@@ -379,8 +379,7 @@ func NewResultList(list pricing.RecommendedList, dir string) (ResultList, error)
 	}
 
 	out := ResultList{}
-	m := list.Merge()
-	for _, r := range m {
+	for _, r := range merged {
 		min := r.MinimumRecord
 		if len(min.OperatingSystem) < 1 {
 			continue
@@ -412,7 +411,7 @@ func NewResultList(list pricing.RecommendedList, dir string) (ResultList, error)
 		})
 	}
 
-	for _, r := range m {
+	for _, r := range merged {
 		min := r.MinimumRecord
 		if len(min.CacheEngine) < 1 {
 			continue
@@ -444,7 +443,7 @@ func NewResultList(list pricing.RecommendedList, dir string) (ResultList, error)
 		})
 	}
 
-	for _, r := range m {
+	for _, r := range merged {
 		min := r.MinimumRecord
 		if len(min.DatabaseEngine) < 1 {
 			continue
@@ -523,13 +522,13 @@ func Action(c *cli.Context) {
 	}
 
 	dir := c.GlobalString("dir")
-	mf := input.Forecast.Merge()
-	rec, err := mf.Recommend(dir)
+	merged := input.Forecast.Merge()
+	rec, err := merged.Recommend(dir)
 	if err != nil {
 		fmt.Println(fmt.Errorf("recommend: %v", err))
 		os.Exit(1)
 	}
-	res, err := NewResultList(rec, dir)
+	res, err := NewResultList(rec.Merge(), dir)
 	if err != nil {
 		fmt.Println(fmt.Errorf("new result list: %v", err))
 		os.Exit(1)
@@ -537,7 +536,7 @@ func Action(c *cli.Context) {
 
 	output := &Output{
 		Forecast:       input.Forecast,
-		MergedForecast: mf,
+		MergedForecast: merged,
 		Recommended:    rec,
 		Result:         res,
 	}
