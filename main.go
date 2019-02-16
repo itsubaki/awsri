@@ -42,26 +42,48 @@ func New(version string) *cli.App {
 		},
 	}
 
+	init := cli.Command{
+		Name:   "init",
+		Action: initialize.Action,
+		Usage:  "download aws pricing, usage, reservation",
+		Flags: []cli.Flag{
+			region,
+		},
+	}
+
+	flags := []cli.Flag{
+		cli.StringFlag{
+			Name: "project, p",
+		},
+	}
+
+	store := cli.Command{
+		Name: "store",
+		Subcommands: []cli.Command{
+			{
+				Name:    "pricing",
+				Aliases: []string{"p"},
+				Action:  store.ActionStorePricing,
+				Flags:   append(flags, region),
+			},
+			{
+				Name:    "costexp",
+				Aliases: []string{"c"},
+				Action:  store.ActionStoreCostExp,
+				Flags:   flags,
+			},
+			{
+				Name:    "reservation",
+				Aliases: []string{"r"},
+				Action:  store.ActionStoreReservation,
+				Flags:   flags,
+			},
+		},
+	}
+
 	app.Commands = []cli.Command{
-		{
-			Name:   "init",
-			Action: initialize.Action,
-			Usage:  "download aws pricing, usage, reservation",
-			Flags: []cli.Flag{
-				region,
-			},
-		},
-		{
-			Name:   "store",
-			Action: store.Action,
-			Usage:  "import google datastore",
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name: "project, p",
-				},
-				region,
-			},
-		},
+		init,
+		store,
 	}
 
 	return app
