@@ -76,32 +76,33 @@ write: /var/tmp/hermes/reserved.out
 ```
 $ cat test/forecast.json | hermes --format csv > data.csv
 $ cat data.csv | column -t -s, | less -S
+```
 
-# forecast instance usage
+```
 account_id,   alias,    usage_type,                      platform/engine, 2019-01, 2018-02, 2019-03, 2019-04, 2019-05, 2019-06, 2019-07, 2019-08, 2019-09, 2019-10, 2019-11, 2019-12,
 987654321098, projectA, APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      100,     50,      50,      50,      50,      50,      50,      100,    50,      50,       50,      80,
 123456789012, projectB, APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      200,     150,     80,      80,      150,     80,      80,      150,    80,      80,       80,      150,
 123456789012, projectB, APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL,    100,     100,     100,     100,     100,     100,     100,     100,    100,     100,      100,     100,
 123456789012, projectB, APN1-NodeUsage:cache.r4.xlarge,  Redis,           100,     100,     100,     100,     100,     100,     100,     100,    100,     100,      100,     100,
 
-# forecast instance usage merged
-                        usage_type,                      platform/engine, 2019-01, 2018-02, 2019-03, 2019-04, 2019-05, 2019-06, 2019-07, 2019-08, 2019-09, 2019-10, 2019-11, 2019-12,
-                        APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      300,     200,     130,     130,     200,     130,     130,     250,     130,     130,     130,     230,
-                        APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL,    100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
-                        APN1-NodeUsage:cache.r4.xlarge,  Redis,           100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
+account_id,   alias,    usage_type,                      platform/engine, 2019-01, 2018-02, 2019-03, 2019-04, 2019-05, 2019-06, 2019-07, 2019-08, 2019-09, 2019-10, 2019-11, 2019-12,
+n/a,          all,      APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      300,     200,     130,     130,     200,     130,     130,     250,     130,     130,     130,     230,
+n/a,          all,      APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL,    100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
+n/a,          all,      APN1-NodeUsage:cache.r4.xlarge,  Redis,           100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
+```
 
-# recommended reserved instance num
-                        usage_type,                      os/engine,    ondemand_num_avg, reserved_num, full_ondemand_cost, reserved_applied_cost, difference,  discount_rate,      reserved_quantity,
-                        APN1-BoxUsage:c4.2xlarge,        Linux,        44.1666666666666, 130,          768952.7999999999,  580057.6,              188895.1999, 0.2456525289978786, 385060,
-                        APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL, 0,                100,          613200,             340800,                272400,      0.4442270058708415, 340800,
-                        APN1-NodeUsage:cache.r4.xlarge,  Redis,        0,                100,          1.913184e+06,       1.245312e+06,          667872,      0.3490892668974861, 621600,
+```
+usage_type,                      os/engine,    ondemand_num_avg, reserved_num, full_ondemand_cost, reserved_applied_cost, difference,  discount_rate,      reserved_quantity,
+APN1-BoxUsage:c4.2xlarge,        Linux,        44.1666666666666, 130,          768952.7999999999,  580057.6,              188895.1999, 0.2456525289978786, 385060,
+APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL, 0,                100,          613200,             340800,                272400,      0.4442270058708415, 340800,
+APN1-NodeUsage:cache.r4.xlarge,  Redis,        0,                100,          1.913184e+06,       1.245312e+06,          667872,      0.3490892668974861, 621600,
+```
 
-# recommended reserved instance num for normalization size factor
-                        usage_type,                      os/engine,    instance_num, current_ri, difference,
-                        APN1-BoxUsage:c4.large,          Linux,        520,          200,        330,
-                        APN1-InstanceUsage:db.r3.large,  Aurora MySQL, 200,          100,        100,
-                        APN1-NodeUsage:cache.r4.xlarge,  Redis,        100,          100,        0,
-
+```
+usage_type,                      os/engine,    instance_num, current_ri, difference,
+APN1-BoxUsage:c4.large,          Linux,        520,          200,        330,
+APN1-InstanceUsage:db.r3.large,  Aurora MySQL, 200,          100,        100,
+APN1-NodeUsage:cache.r4.xlarge,  Redis,        100,          100,        0,
 ```
 
 
