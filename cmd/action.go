@@ -407,7 +407,7 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			OSEngine:    min.OSEngine(),
 			InstanceNum: r.MinimumReservedInstanceNum,
 			CurrentRI:   current,
-			Coverage:    r.MinimumReservedInstanceNum - current,
+			Coverage:    current / r.MinimumReservedInstanceNum,
 		})
 	}
 
@@ -439,7 +439,7 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			OSEngine:    min.OSEngine(),
 			InstanceNum: r.MinimumReservedInstanceNum,
 			CurrentRI:   current,
-			Coverage:    r.MinimumReservedInstanceNum - current,
+			Coverage:    current / r.MinimumReservedInstanceNum,
 		})
 	}
 
@@ -477,7 +477,7 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			OSEngine:    min.OSEngine(),
 			InstanceNum: r.MinimumReservedInstanceNum,
 			CurrentRI:   current,
-			Coverage:    r.MinimumReservedInstanceNum - current,
+			Coverage:    current / r.MinimumReservedInstanceNum,
 		})
 	}
 

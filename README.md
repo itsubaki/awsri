@@ -102,9 +102,9 @@ APN1-NodeUsage:cache.r4.xlarge,  Redis,        0,                100,          1
 
 ```
 usage_type,                      os/engine,    instance_num, current_ri, coverage,
-APN1-BoxUsage:c4.large,          Linux,        520,          200,        330,
-APN1-InstanceUsage:db.r3.large,  Aurora MySQL, 200,          100,        100,
-APN1-NodeUsage:cache.r4.xlarge,  Redis,        100,          100,        0,
+APN1-BoxUsage:c4.large,          Linux,        520,          200,        0.37735849056,
+APN1-InstanceUsage:db.r3.large,  Aurora MySQL, 200,          100,        0.5,
+APN1-NodeUsage:cache.r4.xlarge,  Redis,        100,          100,        1,
 ```
 
 
