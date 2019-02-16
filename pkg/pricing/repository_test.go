@@ -31,6 +31,25 @@ func TestSerialize(t *testing.T) {
 	}
 }
 
+func TestFindByUsageType(t *testing.T) {
+	repo, err := Read("/var/tmp/hermes/pricing/ap-northeast-1.out")
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
+		OperatingSystem("Linux").
+		Tenancy("Shared").
+		LeaseContractLength("1yr").
+		PurchaseOption("All Upfront").
+		OfferingClass("standard").
+		PreInstalled("NA")
+
+	for _, r := range rs {
+		fmt.Println(r)
+	}
+}
+
 func TestFindMinimumDatabaseT2Medium(t *testing.T) {
 	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
 	repo, err := Read(path)

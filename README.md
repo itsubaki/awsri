@@ -54,7 +54,6 @@ $ go get github.com/itsubaki/hermes
 
 ```
 $ AWS_PROFILE=example hermes init
-write: /var/tmp/hermes/reservation.out
 write: /var/tmp/hermes/pricing/ap-northeast-1.out
 write: /var/tmp/hermes/pricing/eu-central-1.out
 write: /var/tmp/hermes/pricing/us-west-1.out
@@ -71,6 +70,7 @@ write: /var/tmp/hermes/costexp/2018-05.out
 write: /var/tmp/hermes/costexp/2018-04.out
 write: /var/tmp/hermes/costexp/2018-03.out
 write: /var/tmp/hermes/costexp/2018-02.out
+write: /var/tmp/hermes/reservation.out
 ```
 
 ```
@@ -104,6 +104,7 @@ account_id,   alias,    usage_type,                      platform/engine, 2019-0
 
 ```
 
+
 ## API Example
 
 ```
@@ -115,7 +116,7 @@ date := []*costexp.Date{
   },
 }
 
-repo := costexp.New(date)
+repo, _ := costexp.New(date)
 for _, r := range repo.SelectAll() {
   fmt.Println(r)
 }
@@ -128,17 +129,46 @@ for _, r := range repo.SelectAll() {
   "instance_hour":2264.238066,
   "instance_num":3.1447750916666664
 }
+```
 
+```
 # find aws pricing
-repo := pricing.New([]string{"ap-northeast-1"})
+repo, _ := pricing.New([]string{"ap-northeast-1"})
 rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
   OperatingSystem("Linux").
   Tenancy("Shared").
   LeaseContractLength("1yr").
   PurchaseOption("All Upfront").
-  OfferingClass("standard")
+  OfferingClass("standard").
+  PreInstalled("NA")
 
-# predict future usage (the method is various)
+for _, r := range rs {
+  fmt.Println(r)
+}
+
+{
+  "version":"20190215225445",
+  "sku":"XU2NYYPCRTK4T7CN",
+  "offer_term_code":"6QCMYABX3D",
+  "region":"ap-northeast-1",
+  "instance_type":"m4.4xlarge",
+  "usage_type":"APN1-BoxUsage:m4.4xlarge",
+  "lease_contract_length":"1yr",
+  "purchase_option":"All Upfront",
+  "ondemand":1.032,
+  "reserved_quantity":5700,
+  "reserved_hrs":0,
+  "tenancy":"Shared",
+  "pre_installed":"NA",
+  "operating_system":"Linux",
+  "operation":"RunInstances",
+  "offering_class":"standard",
+  "normalization_size_factor":"32"
+}
+```
+
+```
+# predict future usage (no provide predict method)
 forecast := []pricing.Forecast{
   {Date: "2021-01", InstanceNum: 120.4},
   {Date: "2021-02", InstanceNum: 110.3},
@@ -155,8 +185,8 @@ forecast := []pricing.Forecast{
 }
 
 # get recommended reserved instance
-result, _ := repo.Recommend(rs[0], forecast)
-fmt.Println(result)
+res, _ := repo.Recommend(r, forecast)
+fmt.Println(res)
 
 {
   "record":{
@@ -210,13 +240,10 @@ fmt.Println(result)
   },
   "minimum_reserved_instance_num":400
 }
+```
 
-# buy m4.large x400 instead of m4.4xlarge x50
-# and
-
-min := result.MinimumRecord
-
-repo := reservation.New([]string{"ap-northeast-1"})
+```
+repo, _ := reservation.New([]string{"ap-northeast-1"})
 rs := repo.FindByInstanceType(min.InstanceType).
   Region(min.Region).
   Duration(func(length string) int64 {
@@ -230,7 +257,9 @@ rs := repo.FindByInstanceType(min.InstanceType).
   OfferingType(min.PurchaseOption).
   ProductDescription(min.OperatingSystem)
 
-fmt.Println(rs[0])
+for _, r := range rs {
+  fmt.Println(r)
+}
 
 {
   "region":"ap-northeast-1",
@@ -242,7 +271,4 @@ fmt.Println(rs[0])
   "instance_count":100,
   "start":"2020-12-01T12:00:00Z"
 }
-
-# already bought 100 instances
-# finally, buy m4.large x300
 ```
