@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"os"
 	"sort"
 	"strings"
@@ -344,6 +345,7 @@ type Result struct {
 	OSEngine    string  `json:"os_engine"`
 	InstanceNum float64 `json:"instance_num"`
 	CurrentRI   float64 `json:"current_ri"`
+	Short       float64 `json:"short"`
 	Coverage    float64 `json:"coverage"`
 }
 
@@ -355,6 +357,7 @@ func (list ResultList) Array() [][]interface{} {
 		"os/engine",
 		"instance_num",
 		"current_ri",
+		"short",
 		"coverage",
 	})
 
@@ -364,6 +367,7 @@ func (list ResultList) Array() [][]interface{} {
 			r.OSEngine,
 			r.InstanceNum,
 			r.CurrentRI,
+			r.Short,
 			r.Coverage,
 		})
 	}
@@ -378,6 +382,7 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 		return nil, fmt.Errorf("read reservation: %v", err)
 	}
 
+	used := reserved.RecordList{}
 	out := ResultList{}
 	for _, r := range merged {
 		min := r.MinimumRecord
@@ -398,6 +403,7 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			// not found
 		} else if len(rs) > 0 {
 			current = float64(rs.CountSum())
+			used = append(used, rs...)
 		} else {
 			return nil, fmt.Errorf("invalid ec2 reservation: %v", rs)
 		}
@@ -407,6 +413,7 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			OSEngine:    min.OSEngine(),
 			InstanceNum: r.MinimumReservedInstanceNum,
 			CurrentRI:   current,
+			Short:       r.MinimumReservedInstanceNum - current,
 			Coverage:    current / r.MinimumReservedInstanceNum,
 		})
 	}
@@ -430,6 +437,7 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			// not found
 		} else if len(rs) > 0 {
 			current = float64(rs.CountSum())
+			used = append(used, rs...)
 		} else {
 			return nil, fmt.Errorf("invalid cache reservation: %v", rs)
 		}
@@ -439,6 +447,7 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			OSEngine:    min.OSEngine(),
 			InstanceNum: r.MinimumReservedInstanceNum,
 			CurrentRI:   current,
+			Short:       r.MinimumReservedInstanceNum - current,
 			Coverage:    current / r.MinimumReservedInstanceNum,
 		})
 	}
@@ -468,6 +477,7 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			// not found
 		} else if len(rs) > 0 {
 			current = float64(rs.CountSum())
+			used = append(used, rs...)
 		} else {
 			return nil, fmt.Errorf("invalid database reservation: %v", rs)
 		}
@@ -477,7 +487,33 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			OSEngine:    min.OSEngine(),
 			InstanceNum: r.MinimumReservedInstanceNum,
 			CurrentRI:   current,
+			Short:       r.MinimumReservedInstanceNum - current,
 			Coverage:    current / r.MinimumReservedInstanceNum,
+		})
+	}
+
+	unused := reserved.RecordList{}
+	for _, r := range repo.SelectAll().Active() {
+		found := false
+		for _, u := range used {
+			if r.Equals(u) {
+				found = true
+			}
+		}
+
+		if !found {
+			unused = append(unused, r)
+		}
+	}
+
+	for _, r := range unused {
+		out = append(out, &Result{
+			UsageType:   r.Region + "-" + r.InstanceType + r.CacheNodeType + r.DBInstanceClass,
+			OSEngine:    r.ProductDescription,
+			InstanceNum: 0,
+			CurrentRI:   float64(r.Count()),
+			Short:       float64(-r.Count()),
+			Coverage:    math.MaxFloat64,
 		})
 	}
 

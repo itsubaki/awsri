@@ -1,6 +1,8 @@
 package reserved
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"strings"
 	"time"
@@ -41,6 +43,25 @@ type Record struct {
 	MultiAZ            bool      `json:"multi_az,omitempty"`
 	Start              time.Time `json:"start"`
 	State              string    `json:"state"`
+}
+
+func (u *Record) Equals(t *Record) bool {
+	if u.Hash() == t.Hash() {
+		return true
+	}
+
+	return false
+}
+
+func (u *Record) Hash() string {
+	bytea, err := json.Marshal(u)
+	if err != nil {
+		panic(err)
+	}
+
+	sha := sha256.Sum256(bytea)
+	hash := hex.EncodeToString(sha[:])
+	return hash
 }
 
 func (r *Record) String() string {

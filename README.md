@@ -84,9 +84,7 @@ account_id,   alias,    usage_type,                      platform/engine, 2019-0
 123456789012, projectB, APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      200,     150,     80,      80,      150,     80,      80,      150,    80,      80,       80,      150,
 123456789012, projectB, APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL,    100,     100,     100,     100,     100,     100,     100,     100,    100,     100,      100,     100,
 123456789012, projectB, APN1-NodeUsage:cache.r4.xlarge,  Redis,           100,     100,     100,     100,     100,     100,     100,     100,    100,     100,      100,     100,
-```
 
-```
 account_id,   alias,    usage_type,                      platform/engine, 2019-01, 2018-02, 2019-03, 2019-04, 2019-05, 2019-06, 2019-07, 2019-08, 2019-09, 2019-10, 2019-11, 2019-12,
 n/a,          n/a,      APN1-BoxUsage:c4.2xlarge,        Linux/UNIX,      300,     200,     130,     130,     200,     130,     130,     250,     130,     130,     130,     230,
 n/a,          n/a,      APN1-InstanceUsage:db.r3.xlarge, Aurora MySQL,    100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,     100,
@@ -101,10 +99,10 @@ APN1-NodeUsage:cache.r4.xlarge,  Redis,        0,                100,          1
 ```
 
 ```
-usage_type,                      os/engine,    instance_num, current_ri, coverage,
-APN1-BoxUsage:c4.large,          Linux,        520,          200,        0.37735849056,
-APN1-InstanceUsage:db.r3.large,  Aurora MySQL, 200,          100,        0.5,
-APN1-NodeUsage:cache.r4.xlarge,  Redis,        100,          100,        1,
+usage_type,                      os/engine,    instance_num, current_ri, short, coverage,
+APN1-BoxUsage:c4.large,          Linux,        520,          200,        320,   0.37735849056,
+APN1-InstanceUsage:db.r3.large,  Aurora MySQL, 200,          100,        100,   0.5,          
+APN1-NodeUsage:cache.r4.xlarge,  Redis,        100,          100,        0,     1,           
 ```
 
 
