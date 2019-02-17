@@ -251,3 +251,22 @@ func (repo *Repository) FindByInstanceType(tipe string) RecordList {
 
 	return out
 }
+
+func Download(region []string, dir string) error {
+	path := fmt.Sprintf("%s/reserved.out", dir)
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		return nil
+	}
+
+	repo := NewRepository(region)
+	if err := repo.Fetch(); err != nil {
+		return fmt.Errorf("fetch reservation: %v", err)
+	}
+
+	if err := repo.Write(path); err != nil {
+		return fmt.Errorf("write reservation: %v", err)
+	}
+
+	fmt.Printf("write: %v\n", path)
+	return nil
+}

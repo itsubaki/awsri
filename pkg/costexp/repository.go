@@ -128,3 +128,32 @@ func (repo *Repository) AccountID() []string {
 	sort.Slice(out, func(i, j int) bool { return out[i] < out[j] })
 	return out
 }
+
+func Download(dir string) error {
+	path := fmt.Sprintf("%s/costexp", dir)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.MkdirAll(path, os.ModePerm)
+	}
+
+	date := GetCurrentDate()
+	for i := range date {
+		cache := fmt.Sprintf("%s/%s.out", path, date[i].YYYYMM())
+		if _, err := os.Stat(cache); !os.IsNotExist(err) {
+			continue
+		}
+
+		repo := NewRepository([]*Date{date[i]})
+		if err := repo.Fetch(); err != nil {
+			return fmt.Errorf("fetch costexp (region=%s): %v", date[i], err)
+		}
+
+		if err := repo.Write(cache); err != nil {
+			return fmt.Errorf("write costexp (region=%s): %v", date[i], err)
+		}
+
+		fmt.Printf("write: %v\n", cache)
+	}
+
+	return nil
+
+}

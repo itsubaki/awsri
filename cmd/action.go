@@ -204,9 +204,9 @@ func (list MergedForecastList) Recommend(dir string) (pricing.RecommendedList, e
 			continue
 		}
 
-		forecast := []pricing.Forecast{}
+		forecast := pricing.ForecastList{}
 		for _, n := range in.InstanceNum {
-			forecast = append(forecast, pricing.Forecast{
+			forecast = append(forecast, &pricing.Forecast{
 				Date:        n.Date,
 				InstanceNum: n.InstanceNum,
 			})
@@ -240,9 +240,9 @@ func (list MergedForecastList) Recommend(dir string) (pricing.RecommendedList, e
 			continue
 		}
 
-		forecast := []pricing.Forecast{}
+		forecast := pricing.ForecastList{}
 		for _, n := range in.InstanceNum {
-			forecast = append(forecast, pricing.Forecast{
+			forecast = append(forecast, &pricing.Forecast{
 				Date:        n.Date,
 				InstanceNum: n.InstanceNum,
 			})
@@ -273,9 +273,9 @@ func (list MergedForecastList) Recommend(dir string) (pricing.RecommendedList, e
 			continue
 		}
 
-		forecast := []pricing.Forecast{}
+		forecast := pricing.ForecastList{}
 		for _, n := range in.InstanceNum {
-			forecast = append(forecast, pricing.Forecast{
+			forecast = append(forecast, &pricing.Forecast{
 				Date:        n.Date,
 				InstanceNum: n.InstanceNum,
 			})

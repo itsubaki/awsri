@@ -191,7 +191,7 @@ func TestRecommendM4large(t *testing.T) {
 		NormalizationSizeFactor: "4",
 	}
 
-	forecast := []Forecast{
+	forecast := ForecastList{
 		{Date: "2018-01", InstanceNum: 120.4},
 		{Date: "2018-02", InstanceNum: 110.3},
 		{Date: "2018-03", InstanceNum: 100.1},

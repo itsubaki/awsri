@@ -314,7 +314,7 @@ func (repo *Repository) FindByUsageType(tipe string) RecordList {
 	return out
 }
 
-func (repo *Repository) Recommend(record *Record, forecast []Forecast, strategy ...string) (*Recommended, error) {
+func (repo *Repository) Recommend(record *Record, forecast ForecastList, strategy ...string) (*Recommended, error) {
 	out := record.Recommend(forecast, strategy...)
 
 	if strings.Contains(record.InstanceType, "cache") {
@@ -343,4 +343,31 @@ func (repo *Repository) Recommend(record *Record, forecast []Forecast, strategy 
 	out.MinimumReservedInstanceNum = float64(out.ReservedInstanceNum) * rf64 / mf64
 
 	return out, nil
+}
+
+func Download(region []string, dir string) error {
+	path := fmt.Sprintf("%s/pricing", dir)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.MkdirAll(path, os.ModePerm)
+	}
+
+	for _, r := range region {
+		cache := fmt.Sprintf("%s/%s.out", path, r)
+		if _, err := os.Stat(cache); !os.IsNotExist(err) {
+			continue
+		}
+
+		repo := NewRepository([]string{r})
+		if err := repo.Fetch(); err != nil {
+			return fmt.Errorf("fetch pricing (region=%s): %v", r, err)
+		}
+
+		if err := repo.Write(cache); err != nil {
+			return fmt.Errorf("write pricing (region=%s): %v", r, err)
+		}
+
+		fmt.Printf("write: %v\n", cache)
+	}
+
+	return nil
 }

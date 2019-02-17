@@ -251,31 +251,29 @@ type RecommendedList []*Recommended
 func (list RecommendedList) Merge() RecommendedList {
 	flat := make(map[string]*Recommended)
 	for i := range list {
-		in := list[i]
-
-		if in.MinimumRecord == nil {
+		if list[i].MinimumRecord == nil {
 			key := fmt.Sprintf("%s_%s_%s_%s_%s",
-				in.Record.Region,
-				in.Record.UsageType,
-				in.Record.OperatingSystem,
-				in.Record.CacheEngine,
-				in.Record.DatabaseEngine,
+				list[i].Record.Region,
+				list[i].Record.UsageType,
+				list[i].Record.OperatingSystem,
+				list[i].Record.CacheEngine,
+				list[i].Record.DatabaseEngine,
 			)
 
 			flat[key] = &Recommended{
-				Record:                     in.Record,
-				MinimumRecord:              in.Record,
-				MinimumReservedInstanceNum: float64(in.ReservedInstanceNum),
+				Record:                     list[i].Record,
+				MinimumRecord:              list[i].Record,
+				MinimumReservedInstanceNum: float64(list[i].ReservedInstanceNum),
 			}
 			continue
 		}
 
 		key := fmt.Sprintf("%s_%s_%s_%s_%s",
-			in.MinimumRecord.Region,
-			in.MinimumRecord.UsageType,
-			in.MinimumRecord.OperatingSystem,
-			in.MinimumRecord.CacheEngine,
-			in.MinimumRecord.DatabaseEngine,
+			list[i].MinimumRecord.Region,
+			list[i].MinimumRecord.UsageType,
+			list[i].MinimumRecord.OperatingSystem,
+			list[i].MinimumRecord.CacheEngine,
+			list[i].MinimumRecord.DatabaseEngine,
 		)
 
 		v, ok := flat[key]
@@ -283,12 +281,12 @@ func (list RecommendedList) Merge() RecommendedList {
 			flat[key] = &Recommended{
 				Record:                     v.Record,
 				MinimumRecord:              v.MinimumRecord,
-				MinimumReservedInstanceNum: v.MinimumReservedInstanceNum + in.MinimumReservedInstanceNum,
+				MinimumReservedInstanceNum: v.MinimumReservedInstanceNum + list[i].MinimumReservedInstanceNum,
 			}
 			continue
 		}
 
-		flat[key] = in
+		flat[key] = list[i]
 	}
 
 	out := RecommendedList{}
@@ -380,6 +378,8 @@ type Forecast struct {
 	InstanceNum float64 `json:"instance_num"`
 }
 
+type ForecastList []*Forecast
+
 type ReservedAppliedCost struct {
 	LeaseContractLength string  `json:"lease_contract_length"`
 	PurchaseOption      string  `json:"purchase_option"`
@@ -405,7 +405,7 @@ type Cost struct {
 	Total    float64 `json:"total"`
 }
 
-func (r *Record) Recommend(forecast []Forecast, strategy ...string) *Recommended {
+func (r *Record) Recommend(forecast ForecastList, strategy ...string) *Recommended {
 	actual, ondemand, reserved := r.GetInstanceNum(forecast, strategy...)
 	cost := r.GetCost(ondemand, reserved)
 
@@ -423,7 +423,7 @@ func (r *Record) Recommend(forecast []Forecast, strategy ...string) *Recommended
 	}
 }
 
-func (r *Record) GetInstanceNum(forecast []Forecast, strategy ...string) (string, float64, int64) {
+func (r *Record) GetInstanceNum(forecast ForecastList, strategy ...string) (string, float64, int64) {
 	bep := r.BreakevenPointInMonth()
 	if len(forecast) < bep {
 		sum := 0.0
@@ -434,7 +434,7 @@ func (r *Record) GetInstanceNum(forecast []Forecast, strategy ...string) (string
 		return "nothing", sum / float64(len(forecast)), 0
 	}
 
-	tmp := append([]Forecast{}, forecast...)
+	tmp := append(ForecastList{}, forecast...)
 	sort.Slice(tmp, func(i, j int) bool { return tmp[i].InstanceNum > tmp[j].InstanceNum })
 
 	// default strategy is breakevenpoint

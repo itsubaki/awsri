@@ -58,7 +58,7 @@ func TestRecommendBoxUsageM44xlarge(t *testing.T) {
 		PurchaseOption("All Upfront").
 		OfferingClass("standard")
 
-	forecast := []pricing.Forecast{
+	forecast := pricing.ForecastList{
 		{Date: "2018-01", InstanceNum: 120.4},
 		{Date: "2018-02", InstanceNum: 110.3},
 		{Date: "2018-03", InstanceNum: 100.1},

@@ -161,7 +161,7 @@ func TestRecommendNoReserved(t *testing.T) {
 		NormalizationSizeFactor: "4",
 	}
 
-	forecast := []Forecast{
+	forecast := ForecastList{
 		{Date: "2018-06", InstanceNum: 10},
 		{Date: "2018-07", InstanceNum: 20},
 		{Date: "2018-08", InstanceNum: 10},
@@ -204,7 +204,7 @@ func TestRecommend1yr(t *testing.T) {
 		NormalizationSizeFactor: "4",
 	}
 
-	forecast := []Forecast{
+	forecast := ForecastList{
 		{Date: "2018-01", InstanceNum: 120.4},
 		{Date: "2018-02", InstanceNum: 110.3},
 		{Date: "2018-03", InstanceNum: 100.1},
@@ -261,7 +261,7 @@ func TestRecommend1yrMinimum(t *testing.T) {
 		NormalizationSizeFactor: "4",
 	}
 
-	forecast := []Forecast{
+	forecast := ForecastList{
 		{Date: "2018-01", InstanceNum: 120.4},
 		{Date: "2018-02", InstanceNum: 110.3},
 		{Date: "2018-03", InstanceNum: 100.1},
@@ -302,7 +302,7 @@ func TestRecommend3yr(t *testing.T) {
 		NormalizationSizeFactor: "4",
 	}
 
-	forecast := []Forecast{
+	forecast := ForecastList{
 		{Date: "2018-01", InstanceNum: 120.4},
 		{Date: "2018-02", InstanceNum: 110.3},
 		{Date: "2018-03", InstanceNum: 100.1},
