@@ -394,10 +394,10 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			Active()
 
 		var current float64
-		if len(rs) == 1 {
-			current = float64(rs[0].Count())
-		} else if len(rs) == 0 {
-			// not found.
+		if len(rs) == 0 {
+			// not found
+		} else if len(rs) > 0 {
+			current = float64(rs.CountSum())
 		} else {
 			return nil, fmt.Errorf("invalid ec2 reservation: %v", rs)
 		}
@@ -426,10 +426,10 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			Active()
 
 		var current float64
-		if len(rs) == 1 {
-			current = float64(rs[0].Count())
-		} else if len(rs) == 0 {
-			// not found.
+		if len(rs) == 0 {
+			// not found
+		} else if len(rs) > 0 {
+			current = float64(rs.CountSum())
 		} else {
 			return nil, fmt.Errorf("invalid cache reservation: %v", rs)
 		}
@@ -464,10 +464,10 @@ func NewResultList(merged pricing.RecommendedList, dir string) (ResultList, erro
 			Active()
 
 		var current float64
-		if len(rs) == 1 {
-			current = float64(rs[0].Count())
-		} else if len(rs) == 0 {
-			// not found.
+		if len(rs) == 0 {
+			// not found
+		} else if len(rs) > 0 {
+			current = float64(rs.CountSum())
 		} else {
 			return nil, fmt.Errorf("invalid database reservation: %v", rs)
 		}

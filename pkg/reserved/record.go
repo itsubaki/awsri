@@ -8,6 +8,14 @@ import (
 
 type RecordList []*Record
 
+func (list RecordList) CountSum() int64 {
+	var sum int64
+	for i := range list {
+		sum = sum + list[i].Count()
+	}
+	return sum
+}
+
 func (list RecordList) String() string {
 	bytea, err := json.Marshal(list)
 	if err != nil {
