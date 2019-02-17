@@ -1,4 +1,4 @@
-package store
+package costexp
 
 import (
 	"context"
@@ -10,17 +10,17 @@ import (
 	"github.com/urfave/cli"
 )
 
-func ActionStoreCostExp(c *cli.Context) {
+func Action(c *cli.Context) {
 	dir := c.GlobalString("dir")
 	project := c.String("project")
 
-	if err := StoreCostExp(project, dir); err != nil {
+	if err := Store(project, dir); err != nil {
 		fmt.Printf("store costexp: %v", err)
 		os.Exit(1)
 	}
 }
 
-func StoreCostExp(project, dir string) error {
+func Store(project, dir string) error {
 	ctx := context.Background()
 	ds, err := datastore.NewClient(ctx, project)
 	if err != nil {

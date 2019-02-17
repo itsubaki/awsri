@@ -1,4 +1,4 @@
-package store
+package pricing
 
 import (
 	"context"
@@ -10,18 +10,18 @@ import (
 	"github.com/urfave/cli"
 )
 
-func ActionStorePricing(c *cli.Context) {
+func Action(c *cli.Context) {
 	dir := c.GlobalString("dir")
 	project := c.String("project")
 	region := c.StringSlice("region")
 
-	if err := StorePricing(project, dir, region); err != nil {
+	if err := Store(project, dir, region); err != nil {
 		fmt.Printf("store pricing: %v", err)
 		os.Exit(1)
 	}
 }
 
-func StorePricing(project, dir string, region []string) error {
+func Store(project, dir string, region []string) error {
 	ctx := context.Background()
 	ds, err := datastore.NewClient(ctx, project)
 	if err != nil {

@@ -6,7 +6,9 @@ import (
 
 	"github.com/itsubaki/hermes/cmd"
 	"github.com/itsubaki/hermes/cmd/initialize"
-	"github.com/itsubaki/hermes/cmd/store"
+	"github.com/itsubaki/hermes/cmd/store/costexp"
+	"github.com/itsubaki/hermes/cmd/store/pricing"
+	"github.com/itsubaki/hermes/cmd/store/reserved"
 	"github.com/urfave/cli"
 )
 
@@ -63,19 +65,19 @@ func New(version string) *cli.App {
 			{
 				Name:    "pricing",
 				Aliases: []string{"p"},
-				Action:  store.ActionStorePricing,
+				Action:  pricing.Action,
 				Flags:   append(flags, region),
 			},
 			{
 				Name:    "costexp",
 				Aliases: []string{"c"},
-				Action:  store.ActionStoreCostExp,
+				Action:  costexp.Action,
 				Flags:   flags,
 			},
 			{
 				Name:    "reserved",
 				Aliases: []string{"r"},
-				Action:  store.ActionStoreReserved,
+				Action:  reserved.Action,
 				Flags:   flags,
 			},
 		},
