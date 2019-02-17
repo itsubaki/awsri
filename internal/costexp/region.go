@@ -1,5 +1,7 @@
 package costexp
 
+import "fmt"
+
 /*
 Region returns fullname (ap-northeast-1) from UsageType style (APN1)
 
@@ -22,4 +24,14 @@ var Region = map[string]string{
 	"USE2": "us-east-2",
 	"USW1": "us-west-1",
 	"USW2": "us-west-2",
+}
+
+func Lookup(fullname string) string {
+	for k, v := range Region {
+		if v == fullname {
+			return k
+		}
+	}
+
+	panic(fmt.Sprintf("region=%s not found", fullname))
 }

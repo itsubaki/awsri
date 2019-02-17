@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/itsubaki/hermes/internal/costexp"
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/reserved"
 )
@@ -168,6 +169,18 @@ type InstanceNum struct {
 
 type InstanceNumList []*InstanceNum
 
+func (list InstanceNumList) ForecastList() pricing.ForecastList {
+	forecast := pricing.ForecastList{}
+	for _, n := range list {
+		forecast = append(forecast, &pricing.Forecast{
+			Date:        n.Date,
+			InstanceNum: n.InstanceNum,
+		})
+	}
+
+	return forecast
+}
+
 func (list InstanceNumList) Add(input InstanceNumList) InstanceNumList {
 	out := InstanceNumList{}
 	for i := range list {
@@ -196,16 +209,8 @@ func Recommend(list ForecastList, repo []*pricing.Repository) (pricing.Recommend
 			continue
 		}
 
-		forecast := pricing.ForecastList{}
-		for _, n := range in.InstanceNum {
-			forecast = append(forecast, &pricing.Forecast{
-				Date:        n.Date,
-				InstanceNum: n.InstanceNum,
-			})
-		}
-
 		repo := rmap[in.Region]
-		hit := repo.FindByUsageType(in.UsageType).
+		price := repo.FindByUsageType(in.UsageType).
 			OperatingSystem(pricing.OperatingSystem[in.Platform]).
 			LeaseContractLength("1yr").
 			PurchaseOption("All Upfront").
@@ -213,17 +218,18 @@ func Recommend(list ForecastList, repo []*pricing.Repository) (pricing.Recommend
 			PreInstalled("NA").
 			Tenancy("Shared")
 
-		if len(hit) != 1 {
+		if len(price) != 1 {
 			continue
 		}
 
-		recommend, err := repo.Recommend(hit[0], forecast)
+		forecast := in.InstanceNum.ForecastList()
+		rec, err := repo.Recommend(price[0], forecast)
 		if err != nil {
 			return nil, fmt.Errorf("recommend ec2: %v", err)
 		}
 
-		if recommend.ReservedInstanceNum > 0 {
-			out = append(out, recommend)
+		if rec.ReservedInstanceNum > 0 {
+			out = append(out, rec)
 		}
 	}
 
@@ -232,31 +238,24 @@ func Recommend(list ForecastList, repo []*pricing.Repository) (pricing.Recommend
 			continue
 		}
 
-		forecast := pricing.ForecastList{}
-		for _, n := range in.InstanceNum {
-			forecast = append(forecast, &pricing.Forecast{
-				Date:        n.Date,
-				InstanceNum: n.InstanceNum,
-			})
-		}
-
 		repo := rmap[in.Region]
-		hit := repo.FindByUsageType(in.UsageType).
+		price := repo.FindByUsageType(in.UsageType).
 			LeaseContractLength("1yr").
 			PurchaseOption("Heavy Utilization").
 			CacheEngine(in.CacheEngine)
 
-		if len(hit) != 1 {
+		if len(price) != 1 {
 			continue
 		}
 
-		recommend, err := repo.Recommend(hit[0], forecast, "minimum")
+		forecast := in.InstanceNum.ForecastList()
+		rec, err := repo.Recommend(price[0], forecast, "minimum")
 		if err != nil {
 			return nil, fmt.Errorf("recommend cache: %v", err)
 		}
 
-		if recommend.ReservedInstanceNum > 0 {
-			out = append(out, recommend)
+		if rec.ReservedInstanceNum > 0 {
+			out = append(out, rec)
 		}
 	}
 
@@ -265,31 +264,24 @@ func Recommend(list ForecastList, repo []*pricing.Repository) (pricing.Recommend
 			continue
 		}
 
-		forecast := pricing.ForecastList{}
-		for _, n := range in.InstanceNum {
-			forecast = append(forecast, &pricing.Forecast{
-				Date:        n.Date,
-				InstanceNum: n.InstanceNum,
-			})
-		}
-
 		repo := rmap[in.Region]
-		hit := repo.FindByUsageType(in.UsageType).
+		price := repo.FindByUsageType(in.UsageType).
 			LeaseContractLength("1yr").
 			PurchaseOption("All Upfront").
 			DatabaseEngine(in.DatabaseEngine)
 
-		if len(hit) != 1 {
+		if len(price) != 1 {
 			continue
 		}
 
-		recommend, err := repo.Recommend(hit[0], forecast, "minimum")
+		forecast := in.InstanceNum.ForecastList()
+		rec, err := repo.Recommend(price[0], forecast, "minimum")
 		if err != nil {
 			return nil, fmt.Errorf("recommend rds: %v", err)
 		}
 
-		if recommend.ReservedInstanceNum > 0 {
-			out = append(out, recommend)
+		if rec.ReservedInstanceNum > 0 {
+			out = append(out, rec)
 		}
 	}
 
@@ -335,7 +327,7 @@ func (list CoverageList) Array() [][]interface{} {
 	return array
 }
 
-func GetCoverage(list pricing.RecommendedList, repo *reserved.Repository) (CoverageList, error) {
+func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (CoverageList, error) {
 	used := reserved.RecordList{}
 	out := CoverageList{}
 	for i := range list {
@@ -344,7 +336,7 @@ func GetCoverage(list pricing.RecommendedList, repo *reserved.Repository) (Cover
 		}
 
 		min := list[i].MinimumRecord
-		rs := repo.FindByInstanceType(min.InstanceType).
+		rs := rsv.FindByInstanceType(min.InstanceType).
 			Region(min.Region).
 			LeaseContractLength(min.LeaseContractLength).
 			OfferingClass(min.OfferingClass).
@@ -378,7 +370,7 @@ func GetCoverage(list pricing.RecommendedList, repo *reserved.Repository) (Cover
 		}
 
 		min := list[i].MinimumRecord
-		rs := repo.SelectAll().
+		rs := rsv.SelectAll().
 			CacheNodeType(min.InstanceType).
 			Region(min.Region).
 			LeaseContractLength(min.LeaseContractLength).
@@ -417,7 +409,7 @@ func GetCoverage(list pricing.RecommendedList, repo *reserved.Repository) (Cover
 			maz = true
 		}
 
-		rs := repo.SelectAll().
+		rs := rsv.SelectAll().
 			DBInstanceClass(min.InstanceType).
 			Region(min.Region).
 			LeaseContractLength(min.LeaseContractLength).
@@ -447,7 +439,7 @@ func GetCoverage(list pricing.RecommendedList, repo *reserved.Repository) (Cover
 	}
 
 	unused := reserved.RecordList{}
-	for _, r := range repo.SelectAll().Active() {
+	for _, r := range rsv.SelectAll().Active() {
 		found := false
 		for _, u := range used {
 			if r.Equals(u) {
@@ -462,7 +454,7 @@ func GetCoverage(list pricing.RecommendedList, repo *reserved.Repository) (Cover
 
 	for _, r := range unused {
 		out = append(out, &Coverage{
-			UsageType:   r.Region + "-" + r.InstanceType + r.CacheNodeType + r.DBInstanceClass,
+			UsageType:   UsageType(r),
 			OSEngine:    r.ProductDescription,
 			InstanceNum: 0,
 			CurrentRI:   float64(r.Count()),
@@ -472,4 +464,24 @@ func GetCoverage(list pricing.RecommendedList, repo *reserved.Repository) (Cover
 	}
 
 	return out, nil
+}
+
+func UsageType(r *reserved.Record) string {
+	region := costexp.Lookup(r.Region)
+	if len(r.InstanceType) > 0 {
+		return region + "-BoxUsage:" + r.InstanceType
+	}
+
+	if len(r.CacheNodeType) > 0 {
+		return region + "-NodeUsage:" + r.CacheNodeType
+	}
+
+	if len(r.DBInstanceClass) > 0 {
+		if r.MultiAZ {
+			return region + "-Multi-AZUsage:" + r.DBInstanceClass
+		}
+		return region + "-InstanceUsage:" + r.DBInstanceClass
+	}
+
+	panic("instancetype/cachenodetype/dbinstanceclass not found")
 }

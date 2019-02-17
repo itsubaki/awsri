@@ -45,16 +45,16 @@ type Record struct {
 	State              string    `json:"state"`
 }
 
-func (u *Record) Equals(t *Record) bool {
-	if u.Hash() == t.Hash() {
+func (r *Record) Equals(t *Record) bool {
+	if r.Hash() == t.Hash() {
 		return true
 	}
 
 	return false
 }
 
-func (u *Record) Hash() string {
-	bytea, err := json.Marshal(u)
+func (r *Record) Hash() string {
+	bytea, err := json.Marshal(r)
 	if err != nil {
 		panic(err)
 	}
