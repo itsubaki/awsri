@@ -200,16 +200,37 @@ func (r *Record) ID() string {
 	return fmt.Sprintf("%s.%s", r.SKU, r.OfferTermCode)
 }
 
-func (r *Record) OSEngine() string {
+func (r *Record) IsInstance() bool {
 	if len(r.OperatingSystem) > 0 {
+		return true
+	}
+	return false
+}
+
+func (r *Record) IsCacheNode() bool {
+	if len(r.CacheEngine) > 0 {
+		return true
+	}
+	return false
+}
+
+func (r *Record) IsDatabase() bool {
+	if len(r.DatabaseEngine) > 0 {
+		return true
+	}
+	return false
+}
+
+func (r *Record) OSEngine() string {
+	if r.IsInstance() {
 		return r.OperatingSystem
 	}
 
-	if len(r.DatabaseEngine) > 0 {
+	if r.IsDatabase() {
 		return r.DatabaseEngine
 	}
 
-	if len(r.CacheEngine) > 0 {
+	if r.IsCacheNode() {
 		return r.CacheEngine
 	}
 

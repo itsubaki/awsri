@@ -3,18 +3,20 @@ package cmd
 import (
 	"fmt"
 	"testing"
+
+	"github.com/itsubaki/hermes/pkg/api"
 )
 
 func TestGenerateInput(t *testing.T) {
-	input := &Input{
-		Forecast: ForecastList{
+	input := &api.Input{
+		Forecast: api.ForecastList{
 			{
 				AccountID: "012345678901",
 				Alias:     "projectA",
 				Region:    "ap-northeast-1",
 				UsageType: "APN1-BoxUsage:c4.2xlarge",
 				Platform:  "Linux/Unix",
-				InstanceNum: InstanceNumList{
+				InstanceNum: api.InstanceNumList{
 					{Date: "2019-01", InstanceNum: 200},
 					{Date: "2019-02", InstanceNum: 150},
 					{Date: "2019-03", InstanceNum: 80},
@@ -35,7 +37,7 @@ func TestGenerateInput(t *testing.T) {
 				Region:         "ap-northeast-1",
 				UsageType:      "APN1-InstanceUsage:db.r3.xlarge",
 				DatabaseEngine: "Aurora MySQL",
-				InstanceNum: InstanceNumList{
+				InstanceNum: api.InstanceNumList{
 					{Date: "2019-01", InstanceNum: 100},
 					{Date: "2019-02", InstanceNum: 100},
 					{Date: "2019-03", InstanceNum: 100},
@@ -56,7 +58,7 @@ func TestGenerateInput(t *testing.T) {
 				Region:      "ap-northeast-1",
 				UsageType:   "APN1-NodeUsage:cache.r3.4xlarge",
 				CacheEngine: "Redis",
-				InstanceNum: InstanceNumList{
+				InstanceNum: api.InstanceNumList{
 					{Date: "2019-01", InstanceNum: 100},
 					{Date: "2019-02", InstanceNum: 100},
 					{Date: "2019-03", InstanceNum: 100},
@@ -77,7 +79,7 @@ func TestGenerateInput(t *testing.T) {
 				Region:    "ap-northeast-1",
 				UsageType: "APN1-BoxUsage:c4.2xlarge",
 				Platform:  "Linux/Unix",
-				InstanceNum: InstanceNumList{
+				InstanceNum: api.InstanceNumList{
 					{Date: "2019-01", InstanceNum: 100},
 					{Date: "2019-02", InstanceNum: 50},
 					{Date: "2019-03", InstanceNum: 50},

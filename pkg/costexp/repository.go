@@ -155,5 +155,4 @@ func Download(dir string) error {
 	}
 
 	return nil
-
 }

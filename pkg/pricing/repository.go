@@ -212,7 +212,7 @@ func (repo *Repository) FindMinimumInstanceType(record *Record) (*Record, error)
 	instanceType := record.InstanceType
 	familiy := instanceType[:strings.LastIndex(instanceType, ".")]
 
-	if len(record.OperatingSystem) > 0 {
+	if record.IsInstance() {
 		tmp := RecordList{}
 		for i := range defined {
 			suspect := fmt.Sprintf("%s.%s", familiy, defined[i])
@@ -251,7 +251,7 @@ func (repo *Repository) FindMinimumInstanceType(record *Record) (*Record, error)
 		return rs[0], nil
 	}
 
-	if len(record.DatabaseEngine) > 0 {
+	if record.IsDatabase() {
 		tmp := RecordList{}
 		for i := range defined {
 			suspect := fmt.Sprintf("%s.%s", familiy, defined[i])
