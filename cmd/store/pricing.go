@@ -11,8 +11,8 @@ import (
 )
 
 func ActionStorePricing(c *cli.Context) {
-	project := c.String("project")
 	dir := c.GlobalString("dir")
+	project := c.String("project")
 	region := c.StringSlice("region")
 
 	if err := StorePricing(project, dir, region); err != nil {

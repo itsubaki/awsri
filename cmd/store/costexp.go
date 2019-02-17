@@ -11,8 +11,8 @@ import (
 )
 
 func ActionStoreCostExp(c *cli.Context) {
-	project := c.String("project")
 	dir := c.GlobalString("dir")
+	project := c.String("project")
 
 	if err := StoreCostExp(project, dir); err != nil {
 		fmt.Printf("store costexp: %v", err)

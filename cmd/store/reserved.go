@@ -11,8 +11,8 @@ import (
 )
 
 func ActionStoreReserved(c *cli.Context) {
-	project := c.String("project")
 	dir := c.GlobalString("dir")
+	project := c.String("project")
 
 	if err := StoreReserved(project, dir); err != nil {
 		fmt.Printf("store reserved: %v", err)
