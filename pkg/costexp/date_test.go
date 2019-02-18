@@ -1,14 +1,11 @@
 package costexp
 
-import (
-	"fmt"
-	"testing"
-)
+import "testing"
 
 func TestGetCurrentDate(t *testing.T) {
 	current := GetCurrentDate()
 
-	for _, c := range current {
-		fmt.Printf("%v\n", c)
+	if len(current) != 12 {
+		t.Errorf("invalid current date=%v", current)
 	}
 }

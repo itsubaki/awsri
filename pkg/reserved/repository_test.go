@@ -50,7 +50,8 @@ func TestRecommendBoxUsageM44xlarge(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
+	rs := repo.SelectAll().
+		UsageType("APN1-BoxUsage:m4.4xlarge").
 		OperatingSystem("Linux").
 		Tenancy("Shared").
 		PreInstalled("NA").
@@ -85,7 +86,8 @@ func TestRecommendBoxUsageM44xlarge(t *testing.T) {
 		t.Errorf("read file: %v", err)
 	}
 
-	rs2 := rsv.FindByInstanceType(min.InstanceType).
+	rs2 := rsv.SelectAll().
+		InstanceType(min.InstanceType).
 		Region(min.Region).
 		Duration(func(length string) int64 {
 			duration := 31536000
@@ -139,10 +141,10 @@ func TestReservedDatabase(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	rs := repo.FindByUsageType("APN1-InstanceUsage:db.r4.large").
+	rs := repo.SelectAll().
+		UsageType("APN1-InstanceUsage:db.r4.large").
 		DatabaseEngine("Aurora MySQL").
 		PurchaseOption("All Upfront")
-	fmt.Println(rs[0])
 
 	{
 		repo, err := Read("/var/tmp/hermes/reserved.out")

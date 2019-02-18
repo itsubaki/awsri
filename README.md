@@ -135,7 +135,8 @@ for _, r := range repo.SelectAll() {
 ```
 # find aws pricing
 repo, _ := pricing.New([]string{"ap-northeast-1"})
-rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
+rs := repo.SelectAll().
+  UsageType("APN1-BoxUsage:m4.4xlarge").
   OperatingSystem("Linux").
   Tenancy("Shared").
   LeaseContractLength("1yr").
@@ -245,8 +246,8 @@ fmt.Println(res)
 
 ```
 repo, _ := reserved.New([]string{"ap-northeast-1"})
-rs := repo.FindByInstanceType(min.InstanceType).
-  Region(min.Region).
+rs := repo.SelectAll().
+  InstanceType(min.InstanceType).
   Duration(func(length string) int64 {
     duration := 31536000
     if length == "3yr" {

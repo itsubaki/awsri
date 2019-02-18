@@ -221,6 +221,15 @@ func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.Recommen
 	return out, nil
 }
 
+func (list ForecastList) Region() []string {
+	out := []string{}
+	for i := range list {
+		out = append(out, list[i].Region)
+	}
+
+	return out
+}
+
 func (list ForecastList) Merge() ForecastList {
 	flat := make(map[string]InstanceNumList)
 	for _, in := range list {

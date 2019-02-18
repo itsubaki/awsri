@@ -57,7 +57,8 @@ func TestBreakevenPoint1yr(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	rs := repo.FindByInstanceType("m4.large").
+	rs := repo.SelectAll().
+		InstanceType("m4.large").
 		OperatingSystem("Linux").
 		Tenancy("Shared").
 		PreInstalled("NA").
@@ -87,7 +88,8 @@ func TestBreakevenPoint3yr(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	rs := repo.FindByInstanceType("m4.large").
+	rs := repo.SelectAll().
+		InstanceType("m4.large").
 		OperatingSystem("Linux").
 		Tenancy("Shared").
 		PreInstalled("NA").
@@ -116,7 +118,8 @@ func TestFindByInstanceTypeCache(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	rs := repo.FindByInstanceType("cache.m4.large").
+	rs := repo.SelectAll().
+		InstanceType("cache.m4.large").
 		CacheEngine("Redis").
 		PurchaseOption("Heavy Utilization").
 		LeaseContractLength("3yr")

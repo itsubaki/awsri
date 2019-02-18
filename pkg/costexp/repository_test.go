@@ -83,8 +83,4 @@ func TestRepository(t *testing.T) {
 	if len(repo.SelectAll()) < 1 {
 		t.Errorf("repository is empty")
 	}
-
-	for _, r := range repo.SelectAll() {
-		fmt.Println(r.Hash())
-	}
 }

@@ -37,7 +37,8 @@ func TestFindByUsageType(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	rs := repo.FindByUsageType("APN1-BoxUsage:m4.4xlarge").
+	rs := repo.SelectAll().
+		UsageType("APN1-BoxUsage:m4.4xlarge").
 		OperatingSystem("Linux").
 		Tenancy("Shared").
 		LeaseContractLength("1yr").
@@ -45,8 +46,8 @@ func TestFindByUsageType(t *testing.T) {
 		OfferingClass("standard").
 		PreInstalled("NA")
 
-	for _, r := range rs {
-		fmt.Println(r)
+	if len(rs) != 1 {
+		t.Errorf("invalid result set=%v", rs)
 	}
 }
 
@@ -57,7 +58,8 @@ func TestFindMinimumDatabaseT2Medium(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	rs := repo.FindByInstanceType("db.t2.medium").
+	rs := repo.SelectAll().
+		InstanceType("db.t2.medium").
 		PurchaseOption("All Upfront").
 		LeaseContractLength("1yr").
 		DatabaseEngine("Aurora MySQL")
@@ -79,7 +81,8 @@ func TestFindMinimumDatabase(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	rs := repo.FindByInstanceType("db.m4.4xlarge").
+	rs := repo.SelectAll().
+		InstanceType("db.m4.4xlarge").
 		PurchaseOption("All Upfront").
 		LeaseContractLength("1yr").
 		DatabaseEngine("PostgreSQL")
@@ -137,7 +140,8 @@ func TestFindByInstanceType(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	rs := repo.FindByInstanceType("m4.large").
+	rs := repo.SelectAll().
+		InstanceType("m4.large").
 		OperatingSystem("Linux").
 		Tenancy("Shared").
 		PreInstalled("NA").

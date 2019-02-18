@@ -26,17 +26,12 @@ func Action(c *cli.Context) {
 	}
 
 	dir := c.GlobalString("dir")
-	merged := input.Forecast.Merge()
 
-	price := []*pricing.Repository{}
-	for _, in := range merged {
-		path := fmt.Sprintf("%s/pricing/%s.out", dir, in.Region)
-		repo, rerr := pricing.Read(path)
-		if rerr != nil {
-			fmt.Println(fmt.Errorf("read pricing (region=%s): %v", in.Region, rerr))
-			os.Exit(1)
-		}
-		price = append(price, repo)
+	merged := input.Forecast.Merge()
+	price, err := NewPricingRepository(merged.Region(), dir)
+	if err != nil {
+		fmt.Println(fmt.Errorf("new pricing repository: %v", err))
+		os.Exit(1)
 	}
 
 	rec, err := merged.Recommend(price)
@@ -45,10 +40,9 @@ func Action(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	path := fmt.Sprintf("%s/reserved.out", dir)
-	rsv, err := reserved.Read(path)
+	rsv, err := NewReservedRepository(dir)
 	if err != nil {
-		fmt.Println(fmt.Errorf("read reservation: %v", err))
+		fmt.Println(fmt.Errorf("new reserved repository: %v", err))
 		os.Exit(1)
 	}
 
@@ -77,4 +71,28 @@ func Action(c *cli.Context) {
 
 	//  c.String("format") == "json"
 	fmt.Println(output.JSON())
+}
+
+func NewPricingRepository(region []string, dir string) ([]*pricing.Repository, error) {
+	out := []*pricing.Repository{}
+	for _, r := range region {
+		path := fmt.Sprintf("%s/pricing/%s.out", dir, r)
+		repo, err := pricing.Read(path)
+		if err != nil {
+			return nil, fmt.Errorf("read pricing (path=%s): %v", path, err)
+		}
+		out = append(out, repo)
+	}
+
+	return out, nil
+}
+
+func NewReservedRepository(dir string) (*reserved.Repository, error) {
+	path := fmt.Sprintf("%s/reserved.out", dir)
+	repo, err := reserved.Read(path)
+	if err != nil {
+		return nil, fmt.Errorf("read reservation (path=%s): %v", path, err)
+	}
+
+	return repo, nil
 }
