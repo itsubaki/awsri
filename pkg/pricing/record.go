@@ -322,8 +322,8 @@ func (list RecommendedList) Merge() RecommendedList {
 	return out
 }
 
-func (list RecommendedList) Array() [][]interface{} {
-	array := append([][]interface{}{}, []interface{}{
+func (list RecommendedList) Header() []interface{} {
+	return []interface{}{
 		"usage_type",
 		"os/engine",
 		"ondemand_num_avg",
@@ -335,10 +335,13 @@ func (list RecommendedList) Array() [][]interface{} {
 		"saving_cost",
 		"discount_rate",
 		"reserved_quantity",
-	})
+	}
+}
 
+func (list RecommendedList) Array() [][]interface{} {
+	out := [][]interface{}{}
 	for _, r := range list {
-		array = append(array, []interface{}{
+		out = append(out, []interface{}{
 			r.Record.UsageType,
 			r.Record.OSEngine(),
 			r.OnDemandInstanceNumAvg,
@@ -353,7 +356,7 @@ func (list RecommendedList) Array() [][]interface{} {
 		})
 	}
 
-	return array
+	return out
 }
 
 type Recommended struct {

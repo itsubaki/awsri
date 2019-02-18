@@ -39,7 +39,7 @@ func Action(c *cli.Context) {
 		price = append(price, repo)
 	}
 
-	rec, err := api.Recommend(merged, price)
+	rec, err := merged.Recommend(price)
 	if err != nil {
 		fmt.Println(fmt.Errorf("recommend: %v", err))
 		os.Exit(1)
@@ -66,31 +66,15 @@ func Action(c *cli.Context) {
 	}
 
 	if c.String("format") == "csv" {
-		for _, r := range output.Array() {
-			for _, c := range r {
-				fmt.Printf("%v,", c)
-			}
-			fmt.Println()
-		}
+		fmt.Println(output.CSV())
 		return
 	}
 
 	if c.String("format") == "tsv" {
-		for _, r := range output.Array() {
-			for _, c := range r {
-				fmt.Printf("%v\t", c)
-			}
-			fmt.Println()
-		}
+		fmt.Println(output.TSV())
 		return
 	}
 
 	//  c.String("format") == "json"
-	bytes, err := json.Marshal(&output)
-	if err != nil {
-		fmt.Println(fmt.Errorf("marshal: %v", err))
-		return
-	}
-
-	fmt.Println(string(bytes))
+	fmt.Println(output.JSON())
 }

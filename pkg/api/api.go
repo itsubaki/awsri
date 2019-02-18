@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -32,19 +33,56 @@ type Output struct {
 	Coverage    CoverageList            `json:"coverage"`
 }
 
+func (output *Output) CSV() string {
+	var buf bytes.Buffer
+	for _, r := range output.Array() {
+		for _, c := range r {
+			buf.WriteString(fmt.Sprintf("%v,", c))
+		}
+		buf.WriteString("\n")
+	}
+
+	return buf.String()
+}
+
+func (output *Output) TSV() string {
+	var buf bytes.Buffer
+	for _, r := range output.Array() {
+		for _, c := range r {
+			buf.WriteString(fmt.Sprintf("%v\t", c))
+		}
+		buf.WriteString("\n")
+	}
+
+	return buf.String()
+}
+
+func (output *Output) JSON() string {
+	bytea, err := json.Marshal(output)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(bytea)
+}
+
 func (output *Output) Array() [][]interface{} {
 	array := [][]interface{}{}
 
 	array = append(array, []interface{}{"# forecast usage"})
+	array = append(array, output.Forecast.Header())
 	array = append(array, output.Forecast.Array()...)
 
 	array = append(array, []interface{}{"# forecast usage merged"})
+	array = append(array, output.Merged.Header())
 	array = append(array, output.Merged.Array()...)
 
 	array = append(array, []interface{}{"# recommended reserved instances"})
+	array = append(array, output.Recommended.Header())
 	array = append(array, output.Recommended.Array()...)
 
 	array = append(array, []interface{}{"# coverage"})
+	array = append(array, output.Coverage.Header())
 	array = append(array, output.Coverage.Array()...)
 
 	return array
@@ -88,116 +126,7 @@ func (f *Forecast) PlatformEngine() string {
 
 type ForecastList []*Forecast
 
-func (list ForecastList) Merge() ForecastList {
-	flat := make(map[string]InstanceNumList)
-	for _, in := range list {
-		key := fmt.Sprintf("%s_%s_%s_%s_%s",
-			in.Region,
-			in.UsageType,
-			in.Platform,
-			in.CacheEngine,
-			in.DatabaseEngine,
-		)
-
-		val, ok := flat[key]
-		if ok {
-			flat[key] = val.Add(in.InstanceNum)
-			continue
-		}
-
-		flat[key] = in.InstanceNum
-	}
-
-	out := ForecastList{}
-	for k, v := range flat {
-		keys := strings.Split(k, "_")
-		out = append(out, &Forecast{
-			AccountID:      "n/a",
-			Alias:          "n/a",
-			Region:         keys[0],
-			UsageType:      keys[1],
-			Platform:       keys[2],
-			CacheEngine:    keys[3],
-			DatabaseEngine: keys[4],
-			InstanceNum:    v,
-		})
-	}
-
-	sort.SliceStable(out, func(i, j int) bool {
-		return out[i].UsageType < out[j].UsageType
-	})
-
-	return out
-}
-
-func (list ForecastList) Array() [][]interface{} {
-	array := [][]interface{}{}
-
-	header := []interface{}{
-		"account_id",
-		"alias",
-		"usage_type",
-		"platform/engine",
-	}
-	for _, n := range list[0].InstanceNum {
-		header = append(header, n.Date)
-	}
-	array = append(array, header)
-
-	for _, f := range list {
-		val := []interface{}{
-			f.AccountID,
-			f.Alias,
-			f.UsageType,
-			f.PlatformEngine(),
-		}
-
-		for _, n := range f.InstanceNum {
-			val = append(val, n.InstanceNum)
-		}
-
-		array = append(array, val)
-	}
-
-	return array
-}
-
-type InstanceNum struct {
-	Date        string  `json:"date"`
-	InstanceNum float64 `json:"instance_num"`
-}
-
-type InstanceNumList []*InstanceNum
-
-func (list InstanceNumList) ForecastList() pricing.ForecastList {
-	forecast := pricing.ForecastList{}
-	for _, n := range list {
-		forecast = append(forecast, &pricing.Forecast{
-			Date:        n.Date,
-			InstanceNum: n.InstanceNum,
-		})
-	}
-
-	return forecast
-}
-
-func (list InstanceNumList) Add(input InstanceNumList) InstanceNumList {
-	out := InstanceNumList{}
-	for i := range list {
-		if list[i].Date != input[i].Date {
-			panic(fmt.Sprintf("invalid args %v %v", list[i], input[i]))
-		}
-
-		out = append(out, &InstanceNum{
-			Date:        list[i].Date,
-			InstanceNum: list[i].InstanceNum + input[i].InstanceNum,
-		})
-	}
-
-	return out
-}
-
-func Recommend(list ForecastList, repo []*pricing.Repository) (pricing.RecommendedList, error) {
+func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.RecommendedList, error) {
 	rmap := make(map[string]*pricing.Repository)
 	for i := range repo {
 		rmap[repo[i].Region[0]] = repo[i]
@@ -292,6 +221,117 @@ func Recommend(list ForecastList, repo []*pricing.Repository) (pricing.Recommend
 	return out, nil
 }
 
+func (list ForecastList) Merge() ForecastList {
+	flat := make(map[string]InstanceNumList)
+	for _, in := range list {
+		key := fmt.Sprintf("%s_%s_%s_%s_%s",
+			in.Region,
+			in.UsageType,
+			in.Platform,
+			in.CacheEngine,
+			in.DatabaseEngine,
+		)
+
+		val, ok := flat[key]
+		if ok {
+			flat[key] = val.Add(in.InstanceNum)
+			continue
+		}
+
+		flat[key] = in.InstanceNum
+	}
+
+	out := ForecastList{}
+	for k, v := range flat {
+		keys := strings.Split(k, "_")
+		out = append(out, &Forecast{
+			AccountID:      "n/a",
+			Alias:          "n/a",
+			Region:         keys[0],
+			UsageType:      keys[1],
+			Platform:       keys[2],
+			CacheEngine:    keys[3],
+			DatabaseEngine: keys[4],
+			InstanceNum:    v,
+		})
+	}
+
+	sort.SliceStable(out, func(i, j int) bool {
+		return out[i].UsageType < out[j].UsageType
+	})
+
+	return out
+}
+
+func (list ForecastList) Header() []interface{} {
+	header := []interface{}{
+		"account_id",
+		"alias",
+		"usage_type",
+		"platform/engine",
+	}
+	for _, n := range list[0].InstanceNum {
+		header = append(header, n.Date)
+	}
+
+	return header
+}
+
+func (list ForecastList) Array() [][]interface{} {
+	out := [][]interface{}{}
+	for _, f := range list {
+		val := []interface{}{
+			f.AccountID,
+			f.Alias,
+			f.UsageType,
+			f.PlatformEngine(),
+		}
+
+		for _, n := range f.InstanceNum {
+			val = append(val, n.InstanceNum)
+		}
+
+		out = append(out, val)
+	}
+
+	return out
+}
+
+type InstanceNum struct {
+	Date        string  `json:"date"`
+	InstanceNum float64 `json:"instance_num"`
+}
+
+type InstanceNumList []*InstanceNum
+
+func (list InstanceNumList) ForecastList() pricing.ForecastList {
+	forecast := pricing.ForecastList{}
+	for _, n := range list {
+		forecast = append(forecast, &pricing.Forecast{
+			Date:        n.Date,
+			InstanceNum: n.InstanceNum,
+		})
+	}
+
+	return forecast
+}
+
+func (list InstanceNumList) Add(input InstanceNumList) InstanceNumList {
+	out := InstanceNumList{}
+	for i := range list {
+		if list[i].Date != input[i].Date {
+			panic(fmt.Sprintf("invalid args %v %v", list[i], input[i]))
+		}
+
+		out = append(out, &InstanceNum{
+			Date:        list[i].Date,
+			InstanceNum: list[i].InstanceNum + input[i].InstanceNum,
+		})
+	}
+
+	return out
+}
+
 type Coverage struct {
 	UsageType   string  `json:"usage_type"`
 	OSEngine    string  `json:"os_engine"`
@@ -303,18 +343,21 @@ type Coverage struct {
 
 type CoverageList []*Coverage
 
-func (list CoverageList) Array() [][]interface{} {
-	array := append([][]interface{}{}, []interface{}{
+func (list CoverageList) Header() []interface{} {
+	return []interface{}{
 		"usage_type",
 		"os/engine",
 		"instance_num",
 		"current_ri",
 		"short",
 		"coverage",
-	})
+	}
+}
 
+func (list CoverageList) Array() [][]interface{} {
+	out := [][]interface{}{}
 	for _, r := range list {
-		array = append(array, []interface{}{
+		out = append(out, []interface{}{
 			r.UsageType,
 			r.OSEngine,
 			r.InstanceNum,
@@ -324,7 +367,7 @@ func (list CoverageList) Array() [][]interface{} {
 		})
 	}
 
-	return array
+	return out
 }
 
 func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (CoverageList, error) {
