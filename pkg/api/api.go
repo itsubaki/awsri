@@ -507,7 +507,7 @@ func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (Covera
 	for _, r := range unused {
 		out = append(out, &Coverage{
 			UsageType:   UsageType(r),
-			OSEngine:    r.ProductDescription,
+			OSEngine:    OSEngine(r),
 			InstanceNum: 0,
 			CurrentRI:   float64(r.Count()),
 			Short:       float64(-r.Count()),
@@ -533,6 +533,22 @@ func UsageType(r *reserved.Record) string {
 			return region + "-Multi-AZUsage:" + r.DBInstanceClass
 		}
 		return region + "-InstanceUsage:" + r.DBInstanceClass
+	}
+
+	panic("instancetype/cachenodetype/dbinstanceclass not found")
+}
+
+func OSEngine(r *reserved.Record) string {
+	if len(r.InstanceType) > 0 {
+		return pricing.OperatingSystem[r.ProductDescription]
+	}
+
+	if len(r.CacheNodeType) > 0 {
+		return strings.Title(r.ProductDescription)
+	}
+
+	if len(r.DBInstanceClass) > 0 {
+		return strings.Replace(strings.Title(r.ProductDescription), "-", " ", -1)
 	}
 
 	panic("instancetype/cachenodetype/dbinstanceclass not found")
