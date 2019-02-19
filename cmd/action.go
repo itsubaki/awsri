@@ -26,7 +26,6 @@ func Action(c *cli.Context) {
 	}
 
 	dir := c.GlobalString("dir")
-
 	merged := input.Forecast.Merge()
 	price, err := NewPricingRepository(merged.Region(), dir)
 	if err != nil {
@@ -48,7 +47,7 @@ func Action(c *cli.Context) {
 
 	cov, err := api.GetCoverage(rec.Merge(), rsv)
 	if err != nil {
-		fmt.Println(fmt.Errorf("new result list: %v", err))
+		fmt.Println(fmt.Errorf("new coverage list: %v", err))
 		os.Exit(1)
 	}
 
