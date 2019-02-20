@@ -144,11 +144,11 @@ func Download(dir string) error {
 
 		repo := NewRepository([]*Date{date[i]})
 		if err := repo.Fetch(); err != nil {
-			return fmt.Errorf("fetch costexp (region=%s): %v", date[i], err)
+			return fmt.Errorf("fetch costexp (date=%s): %v", date[i], err)
 		}
 
 		if err := repo.Write(cache); err != nil {
-			return fmt.Errorf("write costexp (region=%s): %v", date[i], err)
+			return fmt.Errorf("write costexp (date=%s): %v", date[i], err)
 		}
 
 		fmt.Printf("write: %v\n", cache)
