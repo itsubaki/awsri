@@ -187,8 +187,8 @@ type Record struct {
 	ReservedQuantity        float64 `json:"reserved_quantity"`                   // common
 	ReservedHrs             float64 `json:"reserved_hrs"`                        // common
 	Tenancy                 string  `json:"tenancy,omitempty"`                   // ec2: Shared, Host, Dedicated
-	PreInstalled            string  `json:"pre_installed,omitempty"`             // ec2:  SQL Web, SQL Ent, SQL Std, NA
-	OperatingSystem         string  `json:"operating_system,omitempty"`          // ec2:  Windows, Linux, SUSE, RHEL
+	PreInstalled            string  `json:"pre_installed,omitempty"`             // ec2: SQL Web, SQL Ent, SQL Std, NA
+	OperatingSystem         string  `json:"operating_system,omitempty"`          // ec2: Windows, Linux, SUSE, RHEL
 	Operation               string  `json:"operation,omitempty"`                 // ec2
 	OfferingClass           string  `json:"offering_class,omitempty"`            // ec2, rds
 	NormalizationSizeFactor string  `json:"normalization_size_factor,omitempty"` // ec2, rds
