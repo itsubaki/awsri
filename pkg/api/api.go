@@ -139,7 +139,8 @@ func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.Recommen
 		}
 
 		repo := rmap[in.Region]
-		price := repo.FindByUsageType(in.UsageType).
+		price := repo.SelectAll().
+			UsageType(in.UsageType).
 			OperatingSystem(pricing.OperatingSystem[in.Platform]).
 			LeaseContractLength("1yr").
 			PurchaseOption("All Upfront").
@@ -168,10 +169,25 @@ func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.Recommen
 		}
 
 		repo := rmap[in.Region]
-		price := repo.FindByUsageType(in.UsageType).
+		price := repo.SelectAll().
+			UsageType(in.UsageType).
 			LeaseContractLength("1yr").
 			PurchaseOption("Heavy Utilization").
 			CacheEngine(in.CacheEngine)
+
+		// https://aws.amazon.com/elasticache/reserved-cache-nodes/
+		// For latest generation nodes (M5, R5 onwards),
+		// you can choose between three payment options
+		// when you purchase a Reserved Instance.
+		// With the All Upfront option,
+		// you pay for the entire Reserved Instance with one upfront payment.
+		if len(price) == 0 {
+			price = repo.SelectAll().
+				UsageType(in.UsageType).
+				LeaseContractLength("1yr").
+				PurchaseOption("All Upfront").
+				CacheEngine(in.CacheEngine)
+		}
 
 		if len(price) != 1 {
 			continue
@@ -194,7 +210,8 @@ func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.Recommen
 		}
 
 		repo := rmap[in.Region]
-		price := repo.FindByUsageType(in.UsageType).
+		price := repo.SelectAll().
+			UsageType(in.UsageType).
 			LeaseContractLength("1yr").
 			PurchaseOption("All Upfront").
 			DatabaseEngine(in.DatabaseEngine)
@@ -388,7 +405,8 @@ func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (Covera
 		}
 
 		min := list[i].MinimumRecord
-		rs := rsv.FindByInstanceType(min.InstanceType).
+		rs := rsv.SelectAll().
+			InstanceType(min.InstanceType).
 			Region(min.Region).
 			LeaseContractLength(min.LeaseContractLength).
 			OfferingClass(min.OfferingClass).

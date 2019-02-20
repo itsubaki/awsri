@@ -112,7 +112,7 @@ func TestReservedCache(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	rs := repo.FindByUsageType("APN1-NodeUsage:cache.m4.large")
+	rs := repo.SelectAll().UsageType("APN1-NodeUsage:cache.m4.large")
 	fmt.Println(rs[0])
 
 	{
