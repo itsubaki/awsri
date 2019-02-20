@@ -197,7 +197,33 @@ func (repo *Repository) SelectAll() RecordList {
 
 func (repo *Repository) Normalize(record *Record) (*Record, error) {
 	if strings.Contains(record.InstanceType, "cache") {
-		return nil, fmt.Errorf("invalid input. cache hasn't normalization size factor")
+		return record, nil
+	}
+
+	// https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/apply_ri.html
+	// Instance size flexibility does not apply to Reserved Instances
+	// that are purchased for a specific Availability Zone,
+	// bare metal instances,
+	// Reserved Instances with dedicated tenancy,
+	// and Reserved Instances for Windows,
+	// Windows with SQL Standard,
+	// Windows with SQL Server Enterprise,
+	// Windows with SQL Server Web,
+	// RHEL, and SLES.
+	if strings.Contains(record.OSEngine(), "Windows") {
+		return record, nil
+	}
+
+	if strings.Contains(record.OSEngine(), "Red Hat Enterprise Linux") {
+		return record, nil
+	}
+
+	if strings.Contains(record.OSEngine(), "SUSE Linux") {
+		return record, nil
+	}
+
+	if strings.Contains(record.Tenancy, "dedicated") {
+		return record, nil
 	}
 
 	defined := []string{
@@ -315,44 +341,9 @@ func (repo *Repository) FindByUsageType(tipe string) RecordList {
 }
 
 func (repo *Repository) Recommend(record *Record, forecast ForecastList, strategy ...string) (*Recommended, error) {
-	out := record.Recommend(forecast, strategy...)
-
-	if strings.Contains(record.InstanceType, "cache") {
-		return out, nil
-	}
-
-	// https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/apply_ri.html
-	// Instance size flexibility does not apply to Reserved Instances
-	// that are purchased for a specific Availability Zone,
-	// bare metal instances,
-	// Reserved Instances with dedicated tenancy,
-	// and Reserved Instances for Windows,
-	// Windows with SQL Standard,
-	// Windows with SQL Server Enterprise,
-	// Windows with SQL Server Web,
-	// RHEL, and SLES.
-	if strings.Contains(record.OSEngine(), "Windows") {
-		return out, nil
-	}
-
-	if strings.Contains(record.OSEngine(), "Red Hat Enterprise Linux") {
-		return out, nil
-	}
-
-	if strings.Contains(record.OSEngine(), "SUSE Linux") {
-		return out, nil
-	}
-
-	if strings.Contains(record.Tenancy, "dedicated") {
-		return out, nil
-	}
-
 	min, err := repo.Normalize(record)
 	if err != nil {
-		out.NormalizedRecord = &Record{
-			SKU: fmt.Sprintf("normalize record: %v", err),
-		}
-		return out, nil
+		return nil, fmt.Errorf("normalize record=%v: %v", record, err)
 	}
 
 	rf64, err := strconv.ParseFloat(record.NormalizationSizeFactor, 64)
@@ -365,6 +356,7 @@ func (repo *Repository) Recommend(record *Record, forecast ForecastList, strateg
 		return nil, fmt.Errorf("parse float normalization size factor in normalized record: %v", err)
 	}
 
+	out := record.Recommend(forecast, strategy...)
 	out.NormalizedRecord = min
 	out.NormalizedInstanceNum = float64(out.NormalizedInstanceNum) * rf64 / mf64
 
