@@ -321,6 +321,10 @@ func (repo *Repository) Recommend(record *Record, forecast ForecastList, strateg
 		return out, nil
 	}
 
+	if strings.Contains(record.OSEngine(), "Windows") {
+		return out, nil
+	}
+
 	min, err := repo.FindMinimumInstanceType(record)
 	if err != nil {
 		out.MinimumRecord = &Record{
