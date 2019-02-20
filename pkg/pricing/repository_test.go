@@ -51,7 +51,7 @@ func TestFindByUsageType(t *testing.T) {
 	}
 }
 
-func TestFindMinimumDatabaseT2Medium(t *testing.T) {
+func TestNormalizeDatabaseT2Medium(t *testing.T) {
 	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
 	repo, err := Read(path)
 	if err != nil {
@@ -64,7 +64,7 @@ func TestFindMinimumDatabaseT2Medium(t *testing.T) {
 		LeaseContractLength("1yr").
 		DatabaseEngine("Aurora MySQL")
 
-	min, err := repo.FindMinimumInstanceType(rs[0])
+	min, err := repo.Normalize(rs[0])
 	if err != nil {
 		t.Errorf("%v", err)
 	}
@@ -74,7 +74,7 @@ func TestFindMinimumDatabaseT2Medium(t *testing.T) {
 	}
 }
 
-func TestFindMinimumDatabase(t *testing.T) {
+func TestNormalizeDatabase(t *testing.T) {
 	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
 	repo, err := Read(path)
 	if err != nil {
@@ -87,17 +87,17 @@ func TestFindMinimumDatabase(t *testing.T) {
 		LeaseContractLength("1yr").
 		DatabaseEngine("PostgreSQL")
 
-	r, err := repo.FindMinimumInstanceType(rs[0])
+	r, err := repo.Normalize(rs[0])
 	if err != nil {
-		t.Errorf("find minimum instance type: %v", err)
+		t.Errorf("find normalized record: %v", err)
 	}
 
 	if r.InstanceType != "db.m4.large" {
-		t.Errorf("invalid minimum instance type=%s", r.InstanceType)
+		t.Errorf("invalid instance type=%s in normalized record", r.InstanceType)
 	}
 }
 
-func TestFindMinimumCompute(t *testing.T) {
+func TestNormalizeCompute(t *testing.T) {
 	path := "/var/tmp/hermes/pricing/ap-northeast-1.out"
 	repo, err := Read(path)
 	if err != nil {
@@ -123,13 +123,13 @@ func TestFindMinimumCompute(t *testing.T) {
 		NormalizationSizeFactor: "32",
 	}
 
-	min, err := repo.FindMinimumInstanceType(r)
+	min, err := repo.Normalize(r)
 	if err != nil {
-		t.Errorf("find minimum instance type: %v", err)
+		t.Errorf("find normalized record: %v", err)
 	}
 
 	if min.InstanceType != "m4.large" {
-		t.Errorf("invalid minimum instance type=%s", min.InstanceType)
+		t.Errorf("invalid instance type=%s in normalized record", min.InstanceType)
 	}
 }
 
@@ -213,7 +213,7 @@ func TestRecommendM4large(t *testing.T) {
 	r0 := r.Recommend(forecast)
 	r1, _ := repo.Recommend(r, forecast)
 
-	if r0.Record.UsageType != r1.MinimumRecord.UsageType {
+	if r0.Record.UsageType != r1.NormalizedRecord.UsageType {
 		t.Errorf("invalid usage type in recommend")
 	}
 }

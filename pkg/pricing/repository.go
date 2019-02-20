@@ -195,7 +195,7 @@ func (repo *Repository) SelectAll() RecordList {
 	return repo.Internal
 }
 
-func (repo *Repository) FindMinimumInstanceType(record *Record) (*Record, error) {
+func (repo *Repository) Normalize(record *Record) (*Record, error) {
 	if strings.Contains(record.InstanceType, "cache") {
 		return nil, fmt.Errorf("invalid input. cache hasn't normalization size factor")
 	}
@@ -347,10 +347,10 @@ func (repo *Repository) Recommend(record *Record, forecast ForecastList, strateg
 		return out, nil
 	}
 
-	min, err := repo.FindMinimumInstanceType(record)
+	min, err := repo.Normalize(record)
 	if err != nil {
-		out.MinimumRecord = &Record{
-			SKU: fmt.Sprintf("find minimum instance type: %v", err),
+		out.NormalizedRecord = &Record{
+			SKU: fmt.Sprintf("normalize record: %v", err),
 		}
 		return out, nil
 	}
@@ -362,11 +362,11 @@ func (repo *Repository) Recommend(record *Record, forecast ForecastList, strateg
 
 	mf64, err := strconv.ParseFloat(min.NormalizationSizeFactor, 64)
 	if err != nil {
-		return nil, fmt.Errorf("parse float normalization size factor in minimum: %v", err)
+		return nil, fmt.Errorf("parse float normalization size factor in normalized record: %v", err)
 	}
 
-	out.MinimumRecord = min
-	out.MinimumReservedInstanceNum = float64(out.ReservedInstanceNum) * rf64 / mf64
+	out.NormalizedRecord = min
+	out.NormalizedInstanceNum = float64(out.NormalizedInstanceNum) * rf64 / mf64
 
 	return out, nil
 }

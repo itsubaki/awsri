@@ -393,11 +393,11 @@ func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (Covera
 	used := reserved.RecordList{}
 	out := CoverageList{}
 	for i := range list {
-		if !list[i].MinimumRecord.IsInstance() {
+		if !list[i].NormalizedRecord.IsInstance() {
 			continue
 		}
 
-		min := list[i].MinimumRecord
+		min := list[i].NormalizedRecord
 		rs := rsv.SelectAll().
 			InstanceType(min.InstanceType).
 			Region(min.Region).
@@ -420,19 +420,19 @@ func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (Covera
 		out = append(out, &Coverage{
 			UsageType:   min.UsageType,
 			OSEngine:    min.OSEngine(),
-			InstanceNum: list[i].MinimumReservedInstanceNum,
+			InstanceNum: list[i].NormalizedInstanceNum,
 			CurrentRI:   current,
-			Short:       list[i].MinimumReservedInstanceNum - current,
-			Coverage:    current / list[i].MinimumReservedInstanceNum,
+			Short:       list[i].NormalizedInstanceNum - current,
+			Coverage:    current / list[i].NormalizedInstanceNum,
 		})
 	}
 
 	for i := range list {
-		if !list[i].MinimumRecord.IsCacheNode() {
+		if !list[i].NormalizedRecord.IsCacheNode() {
 			continue
 		}
 
-		min := list[i].MinimumRecord
+		min := list[i].NormalizedRecord
 		rs := rsv.SelectAll().
 			CacheNodeType(min.InstanceType).
 			Region(min.Region).
@@ -454,19 +454,19 @@ func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (Covera
 		out = append(out, &Coverage{
 			UsageType:   min.UsageType,
 			OSEngine:    min.OSEngine(),
-			InstanceNum: list[i].MinimumReservedInstanceNum,
+			InstanceNum: list[i].NormalizedInstanceNum,
 			CurrentRI:   current,
-			Short:       list[i].MinimumReservedInstanceNum - current,
-			Coverage:    current / list[i].MinimumReservedInstanceNum,
+			Short:       list[i].NormalizedInstanceNum - current,
+			Coverage:    current / list[i].NormalizedInstanceNum,
 		})
 	}
 
 	for i := range list {
-		if !list[i].MinimumRecord.IsDatabase() {
+		if !list[i].NormalizedRecord.IsDatabase() {
 			continue
 		}
 
-		min := list[i].MinimumRecord
+		min := list[i].NormalizedRecord
 		maz := false
 		if strings.Contains(min.UsageType, "Multi-AZ") {
 			maz = true
@@ -494,10 +494,10 @@ func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (Covera
 		out = append(out, &Coverage{
 			UsageType:   min.UsageType,
 			OSEngine:    min.OSEngine(),
-			InstanceNum: list[i].MinimumReservedInstanceNum,
+			InstanceNum: list[i].NormalizedInstanceNum,
 			CurrentRI:   current,
-			Short:       list[i].MinimumReservedInstanceNum - current,
-			Coverage:    current / list[i].MinimumReservedInstanceNum,
+			Short:       list[i].NormalizedInstanceNum - current,
+			Coverage:    current / list[i].NormalizedInstanceNum,
 		})
 	}
 

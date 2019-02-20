@@ -222,7 +222,7 @@ fmt.Println(res)
   "saving_cost":167016.00000000006,
   "discount_rate":0.2506725545719808,
   "reserved_quantity":285000,
-  "minimum_record":{
+  "normalized_record":{
     "sku":"7MYWT7Y96UT3NJ2D",
     "offer_term_code":"6QCMYABX3D",
     "region":"ap-northeast-1",
@@ -240,7 +240,7 @@ fmt.Println(res)
     "offering_class":"standard",
     "normalization_size_factor":"4"
   },
-  "minimum_reserved_instance_num":400
+  "normalized_instance_num":400
 }
 ```
 

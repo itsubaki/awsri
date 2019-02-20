@@ -244,7 +244,7 @@ func TestRecommend1yr(t *testing.T) {
 	}
 }
 
-func TestRecommend1yrMinimum(t *testing.T) {
+func TestRecommend1yrNormalized(t *testing.T) {
 	r := &Record{
 		SKU:                     "7MYWT7Y96UT3NJ2D",
 		OfferTermCode:           "4NA7Y494T4",
