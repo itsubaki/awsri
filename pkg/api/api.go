@@ -169,11 +169,6 @@ func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.Recommen
 		}
 
 		repo := rmap[in.Region]
-		price := repo.SelectAll().
-			UsageType(in.UsageType).
-			LeaseContractLength("1yr").
-			PurchaseOption("Heavy Utilization").
-			CacheEngine(in.CacheEngine)
 
 		// https://aws.amazon.com/elasticache/reserved-cache-nodes/
 		// For latest generation nodes (M5, R5 onwards),
@@ -181,13 +176,11 @@ func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.Recommen
 		// when you purchase a Reserved Instance.
 		// With the All Upfront option,
 		// you pay for the entire Reserved Instance with one upfront payment.
-		if len(price) == 0 {
-			price = repo.SelectAll().
-				UsageType(in.UsageType).
-				LeaseContractLength("1yr").
-				PurchaseOption("All Upfront").
-				CacheEngine(in.CacheEngine)
-		}
+		price := repo.SelectAll().
+			UsageType(in.UsageType).
+			LeaseContractLength("1yr").
+			PurchaseOptionOR([]string{"All Upfront", "Heavy Utilization"}).
+			CacheEngine(in.CacheEngine)
 
 		if len(price) != 1 {
 			continue

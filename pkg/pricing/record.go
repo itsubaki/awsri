@@ -135,6 +135,21 @@ func (list RecordList) PurchaseOption(purchase string) RecordList {
 	return ret
 }
 
+func (list RecordList) PurchaseOptionOR(purchase []string) RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		for j := range purchase {
+			if list[i].PurchaseOption != purchase[j] {
+				continue
+			}
+			ret = append(ret, list[i])
+		}
+	}
+
+	return ret
+}
+
 func (list RecordList) PreInstalled(preinstalled string) RecordList {
 	ret := RecordList{}
 
