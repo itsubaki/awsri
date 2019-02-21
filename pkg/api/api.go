@@ -392,6 +392,7 @@ func (list CoverageList) Array() [][]interface{} {
 func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (CoverageList, error) {
 	used := reserved.RecordList{}
 	out := CoverageList{}
+
 	for i := range list {
 		if !list[i].NormalizedRecord.IsInstance() {
 			continue

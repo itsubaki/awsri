@@ -287,23 +287,6 @@ type RecommendedList []*Recommended
 func (list RecommendedList) Merge() RecommendedList {
 	flat := make(map[string]*Recommended)
 	for i := range list {
-		if list[i].NormalizedRecord == nil {
-			key := fmt.Sprintf("%s_%s_%s_%s_%s",
-				list[i].Record.Region,
-				list[i].Record.UsageType,
-				list[i].Record.OperatingSystem,
-				list[i].Record.CacheEngine,
-				list[i].Record.DatabaseEngine,
-			)
-
-			flat[key] = &Recommended{
-				Record:                list[i].Record,
-				NormalizedRecord:      list[i].Record,
-				NormalizedInstanceNum: float64(list[i].ReservedInstanceNum),
-			}
-			continue
-		}
-
 		key := fmt.Sprintf("%s_%s_%s_%s_%s",
 			list[i].NormalizedRecord.Region,
 			list[i].NormalizedRecord.UsageType,
@@ -322,7 +305,11 @@ func (list RecommendedList) Merge() RecommendedList {
 			continue
 		}
 
-		flat[key] = list[i]
+		flat[key] = &Recommended{
+			Record:                list[i].Record,
+			NormalizedRecord:      list[i].NormalizedRecord,
+			NormalizedInstanceNum: list[i].NormalizedInstanceNum,
+		}
 	}
 
 	out := RecommendedList{}

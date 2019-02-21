@@ -346,6 +346,15 @@ func (repo *Repository) Recommend(record *Record, forecast ForecastList, strateg
 		return nil, fmt.Errorf("normalize record=%v: %v", record, err)
 	}
 
+	out := record.Recommend(forecast, strategy...)
+	out.NormalizedRecord = min
+	out.NormalizedInstanceNum = float64(out.ReservedInstanceNum) * 1.0
+
+	// cache hasnt normalization size factor
+	if record.IsCacheNode() {
+		return out, nil
+	}
+
 	rf64, err := strconv.ParseFloat(record.NormalizationSizeFactor, 64)
 	if err != nil {
 		return nil, fmt.Errorf("parse float normalization size factor in record: %v", err)
@@ -356,9 +365,8 @@ func (repo *Repository) Recommend(record *Record, forecast ForecastList, strateg
 		return nil, fmt.Errorf("parse float normalization size factor in normalized record: %v", err)
 	}
 
-	out := record.Recommend(forecast, strategy...)
-	out.NormalizedRecord = min
-	out.NormalizedInstanceNum = float64(out.NormalizedInstanceNum) * rf64 / mf64
+	scale := rf64 / mf64
+	out.NormalizedInstanceNum = float64(out.ReservedInstanceNum) * scale
 
 	return out, nil
 }
