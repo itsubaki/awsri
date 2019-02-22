@@ -37,7 +37,7 @@ func (repo *Repository) FetchWithClient(client *http.Client) error {
 		return err
 	}
 
-	if err := repo.fetchWithClient(pricing.DatabseURL, client); err != nil {
+	if err := repo.fetchWithClient(pricing.DatabaseURL, client); err != nil {
 		return err
 	}
 

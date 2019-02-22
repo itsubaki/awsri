@@ -450,11 +450,11 @@ func GetComputeCoverage(list pricing.RecommendedList, rsv *reserved.Repository) 
 	used := reserved.RecordList{}
 	out := CoverageList{}
 	for i := range list {
-		if !list[i].NormalizedRecord.IsInstance() {
+		min := list[i].NormalizedRecord
+		if !min.IsInstance() {
 			continue
 		}
 
-		min := list[i].NormalizedRecord
 		rs := rsv.SelectAll().
 			InstanceType(min.InstanceType).
 			Region(min.Region).
@@ -520,11 +520,11 @@ func GetCacheCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (C
 	used := reserved.RecordList{}
 	out := CoverageList{}
 	for i := range list {
-		if !list[i].NormalizedRecord.IsCacheNode() {
+		min := list[i].NormalizedRecord
+		if !min.IsCacheNode() {
 			continue
 		}
 
-		min := list[i].NormalizedRecord
 		rs := rsv.SelectAll().
 			CacheNodeType(min.InstanceType).
 			Region(min.Region).
@@ -589,11 +589,11 @@ func GetDatabaseCoverage(list pricing.RecommendedList, rsv *reserved.Repository)
 	used := reserved.RecordList{}
 	out := CoverageList{}
 	for i := range list {
-		if !list[i].NormalizedRecord.IsDatabase() {
+		min := list[i].NormalizedRecord
+		if !min.IsDatabase() {
 			continue
 		}
 
-		min := list[i].NormalizedRecord
 		maz := false
 		if strings.Contains(min.UsageType, "Multi-AZ") {
 			maz = true
