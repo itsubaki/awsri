@@ -126,7 +126,7 @@ func (f *Forecast) PlatformEngine() string {
 
 type ForecastList []*Forecast
 
-func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.RecommendedList, error) {
+func (list ForecastList) RecommendCompute(repo []*pricing.Repository) (pricing.RecommendedList, error) {
 	rmap := make(map[string]*pricing.Repository)
 	for i := range repo {
 		rmap[repo[i].Region[0]] = repo[i]
@@ -163,6 +163,20 @@ func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.Recommen
 		}
 	}
 
+	sort.SliceStable(out, func(i, j int) bool {
+		return out[i].Record.UsageType < out[j].Record.UsageType
+	})
+
+	return out, nil
+}
+
+func (list ForecastList) RecommendCache(repo []*pricing.Repository) (pricing.RecommendedList, error) {
+	rmap := make(map[string]*pricing.Repository)
+	for i := range repo {
+		rmap[repo[i].Region[0]] = repo[i]
+	}
+
+	out := pricing.RecommendedList{}
 	for _, in := range list {
 		if len(in.CacheEngine) < 1 {
 			continue
@@ -197,6 +211,21 @@ func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.Recommen
 		}
 	}
 
+	sort.SliceStable(out, func(i, j int) bool {
+		return out[i].Record.UsageType < out[j].Record.UsageType
+	})
+
+	return out, nil
+}
+
+func (list ForecastList) RecommendDatabase(repo []*pricing.Repository) (pricing.RecommendedList, error) {
+	rmap := make(map[string]*pricing.Repository)
+	for i := range repo {
+		rmap[repo[i].Region[0]] = repo[i]
+	}
+
+	out := pricing.RecommendedList{}
+
 	for _, in := range list {
 		if len(in.DatabaseEngine) < 1 {
 			continue
@@ -223,6 +252,34 @@ func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.Recommen
 			out = append(out, rec)
 		}
 	}
+
+	sort.SliceStable(out, func(i, j int) bool {
+		return out[i].Record.UsageType < out[j].Record.UsageType
+	})
+
+	return out, nil
+}
+
+func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.RecommendedList, error) {
+	compute, err := list.RecommendCompute(repo)
+	if err != nil {
+		return nil, fmt.Errorf("recommend compute: %v", err)
+	}
+
+	cache, err := list.RecommendCache(repo)
+	if err != nil {
+		return nil, fmt.Errorf("recommend cache: %v", err)
+	}
+
+	database, err := list.RecommendDatabase(repo)
+	if err != nil {
+		return nil, fmt.Errorf("recommend database: %v", err)
+	}
+
+	out := pricing.RecommendedList{}
+	out = append(out, compute...)
+	out = append(out, cache...)
+	out = append(out, database...)
 
 	sort.SliceStable(out, func(i, j int) bool {
 		return out[i].Record.UsageType < out[j].Record.UsageType
@@ -389,10 +446,9 @@ func (list CoverageList) Array() [][]interface{} {
 	return out
 }
 
-func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (CoverageList, error) {
+func GetComputeCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (CoverageList, error) {
 	used := reserved.RecordList{}
 	out := CoverageList{}
-
 	for i := range list {
 		if !list[i].NormalizedRecord.IsInstance() {
 			continue
@@ -428,6 +484,41 @@ func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (Covera
 		})
 	}
 
+	unused := reserved.RecordList{}
+	for _, r := range rsv.SelectAll().Active() {
+		if len(r.InstanceType) < 1 {
+			continue
+		}
+
+		found := false
+		for _, u := range used {
+			if r.Equals(u) {
+				found = true
+			}
+		}
+
+		if !found {
+			unused = append(unused, r)
+		}
+	}
+
+	for _, r := range unused {
+		out = append(out, &Coverage{
+			UsageType:   UsageType(r),
+			OSEngine:    OSEngine(r),
+			InstanceNum: 0,
+			CurrentRI:   float64(r.Count()),
+			Short:       float64(-r.Count()),
+			Coverage:    math.MaxFloat64,
+		})
+	}
+
+	return out, nil
+}
+
+func GetCacheCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (CoverageList, error) {
+	used := reserved.RecordList{}
+	out := CoverageList{}
 	for i := range list {
 		if !list[i].NormalizedRecord.IsCacheNode() {
 			continue
@@ -462,6 +553,41 @@ func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (Covera
 		})
 	}
 
+	unused := reserved.RecordList{}
+	for _, r := range rsv.SelectAll().Active() {
+		if len(r.CacheNodeType) < 1 {
+			continue
+		}
+
+		found := false
+		for _, u := range used {
+			if r.Equals(u) {
+				found = true
+			}
+		}
+
+		if !found {
+			unused = append(unused, r)
+		}
+	}
+
+	for _, r := range unused {
+		out = append(out, &Coverage{
+			UsageType:   UsageType(r),
+			OSEngine:    OSEngine(r),
+			InstanceNum: 0,
+			CurrentRI:   float64(r.Count()),
+			Short:       float64(-r.Count()),
+			Coverage:    math.MaxFloat64,
+		})
+	}
+
+	return out, nil
+}
+
+func GetDatabaseCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (CoverageList, error) {
+	used := reserved.RecordList{}
+	out := CoverageList{}
 	for i := range list {
 		if !list[i].NormalizedRecord.IsDatabase() {
 			continue
@@ -504,6 +630,10 @@ func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (Covera
 
 	unused := reserved.RecordList{}
 	for _, r := range rsv.SelectAll().Active() {
+		if len(r.DBInstanceClass) < 1 {
+			continue
+		}
+
 		found := false
 		for _, u := range used {
 			if r.Equals(u) {
@@ -526,6 +656,30 @@ func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (Covera
 			Coverage:    math.MaxFloat64,
 		})
 	}
+
+	return out, nil
+}
+
+func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (CoverageList, error) {
+	compute, err := GetComputeCoverage(list, rsv)
+	if err != nil {
+		return nil, fmt.Errorf("get compute coverage: %v", err)
+	}
+
+	cache, err := GetCacheCoverage(list, rsv)
+	if err != nil {
+		return nil, fmt.Errorf("get cache coverage: %v", err)
+	}
+
+	database, err := GetDatabaseCoverage(list, rsv)
+	if err != nil {
+		return nil, fmt.Errorf("get database coverage: %v", err)
+	}
+
+	out := CoverageList{}
+	out = append(out, compute...)
+	out = append(out, cache...)
+	out = append(out, database...)
 
 	return out, nil
 }

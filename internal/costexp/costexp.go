@@ -49,20 +49,18 @@ func New() *CostExp {
 	}
 }
 
-func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
-	out := UsageQuantityList{}
-
+func (c *CostExp) GetComputeUsageQuantity(date *Date) (UsageQuantityList, error) {
 	linkedAccount, err := c.GetLinkedAccount(date)
 	if err != nil {
-		return out, fmt.Errorf("get linked account: %v", err)
+		return nil, fmt.Errorf("get linked account: %v", err)
 	}
 
 	usageType, err := c.GetUsageType(date)
 	if err != nil {
-		return out, fmt.Errorf("get usage type: %v", err)
+		return nil, fmt.Errorf("get usage type: %v", err)
 	}
 
-	// compute
+	out := UsageQuantityList{}
 	for i := range linkedAccount {
 		computeType := []string{}
 		for i := range usageType {
@@ -90,7 +88,21 @@ func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
 		out = append(out, compute...)
 	}
 
-	// cache
+	return out, nil
+}
+
+func (c *CostExp) GetCacheUsageQuantity(date *Date) (UsageQuantityList, error) {
+	linkedAccount, err := c.GetLinkedAccount(date)
+	if err != nil {
+		return nil, fmt.Errorf("get linked account: %v", err)
+	}
+
+	usageType, err := c.GetUsageType(date)
+	if err != nil {
+		return nil, fmt.Errorf("get usage type: %v", err)
+	}
+
+	out := UsageQuantityList{}
 	for i := range linkedAccount {
 		cacheUsageType := []string{}
 		for i := range usageType {
@@ -118,7 +130,21 @@ func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
 		out = append(out, cache...)
 	}
 
-	// database
+	return out, nil
+}
+
+func (c *CostExp) GetDatabaseUsageQuantity(date *Date) (UsageQuantityList, error) {
+	linkedAccount, err := c.GetLinkedAccount(date)
+	if err != nil {
+		return nil, fmt.Errorf("get linked account: %v", err)
+	}
+
+	usageType, err := c.GetUsageType(date)
+	if err != nil {
+		return nil, fmt.Errorf("get usage type: %v", err)
+	}
+
+	out := UsageQuantityList{}
 	for i := range linkedAccount {
 		databaseType := []string{}
 		for i := range usageType {
@@ -145,6 +171,30 @@ func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
 
 		out = append(out, db...)
 	}
+
+	return out, nil
+}
+
+func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
+	compute, err := c.GetComputeUsageQuantity(date)
+	if err != nil {
+		return nil, fmt.Errorf("get compute usage quantity: %v", err)
+	}
+
+	cache, err := c.GetCacheUsageQuantity(date)
+	if err != nil {
+		return nil, fmt.Errorf("get cache usage quantity: %v", err)
+	}
+
+	database, err := c.GetDatabaseUsageQuantity(date)
+	if err != nil {
+		return nil, fmt.Errorf("get database usage quantity: %v", err)
+	}
+
+	out := UsageQuantityList{}
+	out = append(out, compute...)
+	out = append(out, cache...)
+	out = append(out, database...)
 
 	return out, nil
 }
