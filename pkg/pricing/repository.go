@@ -33,15 +33,15 @@ func (repo *Repository) Fetch() error {
 }
 
 func (repo *Repository) FetchWithClient(client *http.Client) error {
-	if err := repo.fetchWithClient(pricing.EC2URL, client); err != nil {
+	if err := repo.fetchWithClient(pricing.ComputeURL, client); err != nil {
+		return err
+	}
+
+	if err := repo.fetchWithClient(pricing.DatabseURL, client); err != nil {
 		return err
 	}
 
 	if err := repo.fetchWithClient(pricing.CacheURL, client); err != nil {
-		return err
-	}
-
-	if err := repo.fetchWithClient(pricing.RDSURL, client); err != nil {
 		return err
 	}
 
