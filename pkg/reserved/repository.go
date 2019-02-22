@@ -34,7 +34,7 @@ func (repo *Repository) Fetch() error {
 	return repo.FetchWithClient(http.DefaultClient)
 }
 
-func (repo *Repository) fetchEC2WithClient(client *http.Client) error {
+func (repo *Repository) fetchComputeWithClient(client *http.Client) error {
 	for _, r := range repo.Region {
 		ses, err := session.NewSession(
 			&aws.Config{
@@ -123,7 +123,7 @@ func (repo *Repository) fetchCacheWithClient(client *http.Client) error {
 	return nil
 }
 
-func (repo *Repository) fetchRDSWithClient(client *http.Client) error {
+func (repo *Repository) fetchDatabaseWithClient(client *http.Client) error {
 	for _, r := range repo.Region {
 		ses, err := session.NewSession(
 			&aws.Config{
@@ -174,7 +174,7 @@ func (repo *Repository) fetchRDSWithClient(client *http.Client) error {
 }
 
 func (repo *Repository) FetchWithClient(client *http.Client) error {
-	if err := repo.fetchEC2WithClient(client); err != nil {
+	if err := repo.fetchComputeWithClient(client); err != nil {
 		return err
 	}
 
@@ -182,7 +182,7 @@ func (repo *Repository) FetchWithClient(client *http.Client) error {
 		return err
 	}
 
-	if err := repo.fetchRDSWithClient(client); err != nil {
+	if err := repo.fetchDatabaseWithClient(client); err != nil {
 		return err
 	}
 

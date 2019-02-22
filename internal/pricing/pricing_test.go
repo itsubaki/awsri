@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestReadEC2Price(t *testing.T) {
+func TestReadCompute(t *testing.T) {
 	path := fmt.Sprintf("%s/%s", os.Getenv("GOPATH"),
 		"src/github.com/itsubaki/hermes/internal/pricing/_json/ec2/ap-northeast-1.json",
 	)
@@ -26,7 +26,7 @@ func TestReadEC2Price(t *testing.T) {
 	}
 }
 
-func TestReadCachePrice(t *testing.T) {
+func TestReadCache(t *testing.T) {
 	path := fmt.Sprintf("%s/%s", os.Getenv("GOPATH"),
 		"src/github.com/itsubaki/hermes/internal/pricing/_json/cache/ap-northeast-1.json",
 	)
@@ -45,7 +45,7 @@ func TestReadCachePrice(t *testing.T) {
 	}
 }
 
-func TestReadRDSPrice(t *testing.T) {
+func TestReadDatabase(t *testing.T) {
 	path := fmt.Sprintf("%s/%s", os.Getenv("GOPATH"),
 		"src/github.com/itsubaki/hermes/internal/pricing/_json/rds/ap-northeast-1.json",
 	)
@@ -64,8 +64,8 @@ func TestReadRDSPrice(t *testing.T) {
 	}
 }
 
-func TestGetEC2Price(t *testing.T) {
-	p, err := Fetch(EC2URL, "ap-northeast-1")
+func TestGetCompute(t *testing.T) {
+	p, err := Fetch(ComputeURL, "ap-northeast-1")
 	if err != nil {
 		t.Error(err)
 	}
@@ -75,7 +75,7 @@ func TestGetEC2Price(t *testing.T) {
 	}
 }
 
-func TestGetCachePrice(t *testing.T) {
+func TestGetCache(t *testing.T) {
 	p, err := Fetch(CacheURL, "ap-northeast-1")
 	if err != nil {
 		t.Error(err)
@@ -86,8 +86,8 @@ func TestGetCachePrice(t *testing.T) {
 	}
 }
 
-func TestGetRDSPrice(t *testing.T) {
-	p, err := Fetch(RDSURL, "ap-northeast-1")
+func TestGetDatabase(t *testing.T) {
+	p, err := Fetch(DatabseURL, "ap-northeast-1")
 	if err != nil {
 		t.Error(err)
 	}

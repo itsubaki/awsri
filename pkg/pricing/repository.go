@@ -9,9 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/itsubaki/hermes/internal/pricing/cache"
-	"github.com/itsubaki/hermes/internal/pricing/ec2"
-	"github.com/itsubaki/hermes/internal/pricing/rds"
+	"github.com/itsubaki/hermes/internal/pricing"
 )
 
 type Repository struct {
@@ -34,11 +32,27 @@ func (repo *Repository) Fetch() error {
 	return repo.FetchWithClient(http.DefaultClient)
 }
 
-func (repo *Repository) fetchEC2WithClient(client *http.Client) error {
+func (repo *Repository) FetchWithClient(client *http.Client) error {
+	if err := repo.fetchWithClient(pricing.ComputeURL, client); err != nil {
+		return err
+	}
+
+	if err := repo.fetchWithClient(pricing.DatabseURL, client); err != nil {
+		return err
+	}
+
+	if err := repo.fetchWithClient(pricing.CacheURL, client); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo *Repository) fetchWithClient(url string, client *http.Client) error {
 	for _, r := range repo.Region {
-		price, err := ec2.GetPriceWithClient(r, client)
+		price, err := pricing.Fetch(url, r)
 		if err != nil {
-			return fmt.Errorf("get ec2 price: %v", err)
+			return fmt.Errorf("get price url=%s: %v", url, err)
 		}
 
 		for k := range price {
@@ -61,83 +75,10 @@ func (repo *Repository) fetchEC2WithClient(client *http.Client) error {
 				SKU:                     v.SKU,
 				Tenancy:                 v.Tenancy,
 				UsageType:               v.UsageType,
-			})
-		}
-	}
-
-	return nil
-}
-
-func (repo *Repository) fetchCacheWithClient(client *http.Client) error {
-	for _, r := range repo.Region {
-		price, err := cache.GetPriceWithClient(r, client)
-		if err != nil {
-			return fmt.Errorf("get cache price: %v", err)
-		}
-
-		for k := range price {
-			v := price[k]
-			repo.Internal = append(repo.Internal, &Record{
-				Version:             v.Version,
-				CacheEngine:         v.CacheEngine,
-				InstanceType:        v.InstanceType,
-				LeaseContractLength: v.LeaseContractLength,
-				OfferTermCode:       v.OfferTermCode,
-				OnDemand:            v.OnDemand,
-				PurchaseOption:      v.PurchaseOption,
-				Region:              v.Region,
-				ReservedHrs:         v.ReservedHrs,
-				ReservedQuantity:    v.ReservedQuantity,
-				SKU:                 v.SKU,
-				UsageType:           v.UsageType,
-			})
-		}
-	}
-
-	return nil
-}
-
-func (repo *Repository) fetchRDSWithClient(client *http.Client) error {
-	for _, r := range repo.Region {
-		price, err := rds.GetPriceWithClient(r, client)
-		if err != nil {
-			return fmt.Errorf("cache price: %v", err)
-		}
-
-		for k := range price {
-			v := price[k]
-			repo.Internal = append(repo.Internal, &Record{
-				Version:                 v.Version,
+				CacheEngine:             v.CacheEngine,
 				DatabaseEngine:          v.DatabaseEngine,
-				InstanceType:            v.InstanceType,
-				LeaseContractLength:     v.LeaseContractLength,
-				NormalizationSizeFactor: v.NormalizationSizeFactor,
-				OfferTermCode:           v.OfferTermCode,
-				OnDemand:                v.OnDemand,
-				PurchaseOption:          v.PurchaseOption,
-				Region:                  v.Region,
-				ReservedHrs:             v.ReservedHrs,
-				ReservedQuantity:        v.ReservedQuantity,
-				SKU:                     v.SKU,
-				UsageType:               v.UsageType,
 			})
 		}
-	}
-
-	return nil
-}
-
-func (repo *Repository) FetchWithClient(client *http.Client) error {
-	if err := repo.fetchEC2WithClient(client); err != nil {
-		return err
-	}
-
-	if err := repo.fetchCacheWithClient(client); err != nil {
-		return err
-	}
-
-	if err := repo.fetchRDSWithClient(client); err != nil {
-		return err
 	}
 
 	return nil

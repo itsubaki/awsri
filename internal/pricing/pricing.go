@@ -10,9 +10,9 @@ import (
 )
 
 var BaseURL = "https://pricing.us-east-1.amazonaws.com"
-var EC2URL = fmt.Sprintf("%s%s", BaseURL, "/offers/v1.0/aws/AmazonEC2/current/region_index.json")
+var ComputeURL = fmt.Sprintf("%s%s", BaseURL, "/offers/v1.0/aws/AmazonEC2/current/region_index.json")
+var DatabseURL = fmt.Sprintf("%s%s", BaseURL, "/offers/v1.0/aws/AmazonRDS/current/region_index.json")
 var CacheURL = fmt.Sprintf("%s%s", BaseURL, "/offers/v1.0/aws/AmazonElastiCache/current/region_index.json")
-var RDSURL = fmt.Sprintf("%s%s", BaseURL, "/offers/v1.0/aws/AmazonRDS/current/region_index.json")
 
 type InputPrice struct {
 	FormatVersion   string               `json:"formatVersion"`
@@ -83,8 +83,8 @@ type OutputPrice struct {
 	ReservedQuantity        float64 // common
 	ReservedHrs             float64 // common
 	Tenancy                 string  // ec2: Shared, Host, Dedicated
-	PreInstalled            string  // ec2:  SQL Web, SQL Ent, SQL Std, NA
-	OperatingSystem         string  // ec2:  Windows, Linux, SUSE, RHEL
+	PreInstalled            string  // ec2: SQL Web, SQL Ent, SQL Std, NA
+	OperatingSystem         string  // ec2: Windows, Linux, SUSE, RHEL
 	Operation               string  // ec2
 	CacheEngine             string  // cache
 	DatabaseEngine          string  // rds
@@ -105,9 +105,6 @@ func Fetch(url, region string) (map[string]OutputPrice, error) {
 	return FetchWithClient(url, region, http.DefaultClient)
 }
 
-// url := fmt.Sprintf("%s%s",baseURL, "/offers/v1.0/aws/AmazonEC2/current/region_index.json")
-// url := fmt.Sprintf("%s%s",baseURL, "/offers/v1.0/aws/AmazonElastiCache/current/region_index.json")
-// url := fmt.Sprintf("%s%s",baseURL, "/offers/v1.0/aws/AmazonRDS/current/region_index.json")
 func FetchWithClient(url, region string, client *http.Client) (map[string]OutputPrice, error) {
 	var input InputPrice
 	{
