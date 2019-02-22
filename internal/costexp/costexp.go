@@ -30,7 +30,7 @@ type UsageQuantity struct {
 	InstanceNum    float64 `json:"instance_num"`
 }
 
-func (u *UsageQuantity) String() string {
+func (u *UsageQuantity) JSON() string {
 	bytea, err := json.Marshal(u)
 	if err != nil {
 		panic(err)
@@ -62,21 +62,21 @@ func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
 		return out, fmt.Errorf("get usage type: %v", err)
 	}
 
-	// ec2
+	// compute
 	for i := range linkedAccount {
-		ec2UsageType := []string{}
+		computeType := []string{}
 		for i := range usageType {
 			if !strings.Contains(usageType[i], "BoxUsage") {
 				continue
 			}
-			ec2UsageType = append(ec2UsageType, usageType[i])
+			computeType = append(computeType, usageType[i])
 		}
 
-		ec2, err := c.getUsageQuantity(&getUsageQuantityInput{
+		compute, err := c.getUsageQuantity(&getUsageQuantityInput{
 			AccountID:   linkedAccount[i].AccountID,
 			Description: linkedAccount[i].Description,
 			Dimension:   "PLATFORM",
-			UsageType:   ec2UsageType,
+			UsageType:   computeType,
 			Period: &costexplorer.DateInterval{
 				Start: &date.Start,
 				End:   &date.End,
@@ -84,10 +84,10 @@ func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
 		})
 
 		if err != nil {
-			return out, fmt.Errorf("get ec2 usage quantity: %v", err)
+			return out, fmt.Errorf("get compute usage quantity: %v", err)
 		}
 
-		out = append(out, ec2...)
+		out = append(out, compute...)
 	}
 
 	// cache
@@ -118,21 +118,21 @@ func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
 		out = append(out, cache...)
 	}
 
-	// db
+	// database
 	for i := range linkedAccount {
-		dbUsageType := []string{}
+		databaseType := []string{}
 		for i := range usageType {
 			if !strings.Contains(usageType[i], "InstanceUsage") && !strings.Contains(usageType[i], "Multi-AZUsage") {
 				continue
 			}
-			dbUsageType = append(dbUsageType, usageType[i])
+			databaseType = append(databaseType, usageType[i])
 		}
 
 		db, err := c.getUsageQuantity(&getUsageQuantityInput{
 			AccountID:   linkedAccount[i].AccountID,
 			Description: linkedAccount[i].Description,
 			Dimension:   "DATABASE_ENGINE",
-			UsageType:   dbUsageType,
+			UsageType:   databaseType,
 			Period: &costexplorer.DateInterval{
 				Start: &date.Start,
 				End:   &date.End,

@@ -136,11 +136,108 @@ func (repo *Repository) SelectAll() RecordList {
 	return repo.Internal
 }
 
-func (repo *Repository) Normalize(record *Record) (*Record, error) {
-	if strings.Contains(record.InstanceType, "cache") {
-		return record, nil
+func (repo *Repository) NormalizeCompute(record *Record) (*Record, error) {
+	defined := []string{
+		"nano",
+		"micro",
+		"small",
+		"medium",
+		"large",
+		"xlarge",
 	}
 
+	instanceType := record.InstanceType
+	familiy := instanceType[:strings.LastIndex(instanceType, ".")]
+
+	tmp := RecordList{}
+	for i := range defined {
+		suspect := fmt.Sprintf("%s.%s", familiy, defined[i])
+		for j := range repo.Internal {
+			if repo.Internal[j].InstanceType == suspect &&
+				strings.LastIndex(repo.Internal[j].UsageType, ".") > 0 {
+				tmp = append(tmp, repo.Internal[j])
+			}
+		}
+		if len(tmp) > 0 {
+			break
+		}
+	}
+
+	if len(tmp) < 1 {
+		return nil, fmt.Errorf("undefined instance type=%s family=%s. defined=%v", instanceType, familiy, defined)
+	}
+
+	usageType := fmt.Sprintf("%s%s",
+		record.UsageType[:strings.LastIndex(record.UsageType, ".")],
+		tmp[0].UsageType[strings.LastIndex(tmp[0].UsageType, "."):],
+	)
+
+	rs := tmp.UsageType(usageType).
+		OperatingSystem(record.OperatingSystem).
+		LeaseContractLength(record.LeaseContractLength).
+		PurchaseOption(record.PurchaseOption).
+		PreInstalled(record.PreInstalled).
+		OfferingClass(record.OfferingClass).
+		Region(record.Region)
+
+	if len(rs) != 1 {
+		return nil, fmt.Errorf("invalid compute result set=%v", rs)
+	}
+
+	return rs[0], nil
+}
+
+func (repo *Repository) NormalizeDatabase(record *Record) (*Record, error) {
+	defined := []string{
+		"nano",
+		"micro",
+		"small",
+		"medium",
+		"large",
+		"xlarge",
+	}
+
+	instanceType := record.InstanceType
+	familiy := instanceType[:strings.LastIndex(instanceType, ".")]
+
+	tmp := RecordList{}
+	for i := range defined {
+		suspect := fmt.Sprintf("%s.%s", familiy, defined[i])
+		for j := range repo.Internal {
+			if repo.Internal[j].InstanceType == suspect &&
+				repo.Internal[j].DatabaseEngine == record.DatabaseEngine &&
+				strings.LastIndex(repo.Internal[j].UsageType, ".") > 0 {
+				tmp = append(tmp, repo.Internal[j])
+			}
+		}
+		if len(tmp) > 0 {
+			break
+		}
+	}
+
+	if len(tmp) < 1 {
+		return nil, fmt.Errorf("undefined instance type. defined=%v", defined)
+	}
+
+	usageType := fmt.Sprintf("%s%s",
+		record.UsageType[:strings.LastIndex(record.UsageType, ".")],
+		tmp[0].UsageType[strings.LastIndex(tmp[0].UsageType, "."):],
+	)
+
+	rs := tmp.UsageType(usageType).
+		DatabaseEngine(record.DatabaseEngine).
+		LeaseContractLength(record.LeaseContractLength).
+		PurchaseOption(record.PurchaseOption).
+		Region(record.Region)
+
+	if len(rs) != 1 {
+		return nil, fmt.Errorf("invalid database result set=%v", rs)
+	}
+
+	return rs[0], nil
+}
+
+func (repo *Repository) Normalize(record *Record) (*Record, error) {
 	// https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/apply_ri.html
 	// Instance size flexibility does not apply to Reserved Instances
 	// that are purchased for a specific Availability Zone,
@@ -167,93 +264,16 @@ func (repo *Repository) Normalize(record *Record) (*Record, error) {
 		return record, nil
 	}
 
-	defined := []string{
-		"nano",
-		"micro",
-		"small",
-		"medium",
-		"large",
-		"xlarge",
+	if strings.Contains(record.InstanceType, "cache") {
+		return record, nil
 	}
 
-	instanceType := record.InstanceType
-	familiy := instanceType[:strings.LastIndex(instanceType, ".")]
-
 	if record.IsInstance() {
-		tmp := RecordList{}
-		for i := range defined {
-			suspect := fmt.Sprintf("%s.%s", familiy, defined[i])
-			for j := range repo.Internal {
-				if repo.Internal[j].InstanceType == suspect &&
-					strings.LastIndex(repo.Internal[j].UsageType, ".") > 0 {
-					tmp = append(tmp, repo.Internal[j])
-				}
-			}
-			if len(tmp) > 0 {
-				break
-			}
-		}
-
-		if len(tmp) < 1 {
-			return nil, fmt.Errorf("undefined instance type=%s family=%s. defined=%v", instanceType, familiy, defined)
-		}
-
-		usageType := fmt.Sprintf("%s%s",
-			record.UsageType[:strings.LastIndex(record.UsageType, ".")],
-			tmp[0].UsageType[strings.LastIndex(tmp[0].UsageType, "."):],
-		)
-
-		rs := tmp.UsageType(usageType).
-			OperatingSystem(record.OperatingSystem).
-			LeaseContractLength(record.LeaseContractLength).
-			PurchaseOption(record.PurchaseOption).
-			PreInstalled(record.PreInstalled).
-			OfferingClass(record.OfferingClass).
-			Region(record.Region)
-
-		if len(rs) != 1 {
-			return nil, fmt.Errorf("invalid ec2 result set=%v", rs)
-		}
-
-		return rs[0], nil
+		return repo.NormalizeCompute(record)
 	}
 
 	if record.IsDatabase() {
-		tmp := RecordList{}
-		for i := range defined {
-			suspect := fmt.Sprintf("%s.%s", familiy, defined[i])
-			for j := range repo.Internal {
-				if repo.Internal[j].InstanceType == suspect &&
-					repo.Internal[j].DatabaseEngine == record.DatabaseEngine &&
-					strings.LastIndex(repo.Internal[j].UsageType, ".") > 0 {
-					tmp = append(tmp, repo.Internal[j])
-				}
-			}
-			if len(tmp) > 0 {
-				break
-			}
-		}
-
-		if len(tmp) < 1 {
-			return nil, fmt.Errorf("undefined instance type. defined=%v", defined)
-		}
-
-		usageType := fmt.Sprintf("%s%s",
-			record.UsageType[:strings.LastIndex(record.UsageType, ".")],
-			tmp[0].UsageType[strings.LastIndex(tmp[0].UsageType, "."):],
-		)
-
-		rs := tmp.UsageType(usageType).
-			DatabaseEngine(record.DatabaseEngine).
-			LeaseContractLength(record.LeaseContractLength).
-			PurchaseOption(record.PurchaseOption).
-			Region(record.Region)
-
-		if len(rs) != 1 {
-			return nil, fmt.Errorf("invalid database result set=%v", rs)
-		}
-
-		return rs[0], nil
+		return repo.NormalizeDatabase(record)
 	}
 
 	return nil, fmt.Errorf("invalid record=%v", record)

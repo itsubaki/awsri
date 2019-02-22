@@ -11,7 +11,7 @@ import (
 
 type RecordList []*Record
 
-func (list RecordList) String() string {
+func (list RecordList) JSON() string {
 	bytea, err := json.Marshal(list)
 	if err != nil {
 		panic(err)
@@ -39,8 +39,8 @@ type Record struct {
 	Description    string  `json:"description"`
 	Region         string  `json:"region"`
 	UsageType      string  `json:"usage_type"`
-	Platform       string  `json:"platform,omitempty"`        // ec2
-	DatabaseEngine string  `json:"database_engine,omitempty"` // rds
+	Platform       string  `json:"platform,omitempty"`        // compute
+	DatabaseEngine string  `json:"database_engine,omitempty"` // database
 	CacheEngine    string  `json:"cache_engine,omitempty"`    // cache
 	Date           string  `json:"date"`
 	InstanceHour   float64 `json:"instance_hour"`
@@ -58,7 +58,7 @@ func (u *Record) Hash() string {
 	return hash
 }
 
-func (u *Record) String() string {
+func (u *Record) JSON() string {
 	bytea, err := json.Marshal(u)
 	if err != nil {
 		panic(err)

@@ -82,14 +82,14 @@ type OutputPrice struct {
 	OnDemand                float64 // common
 	ReservedQuantity        float64 // common
 	ReservedHrs             float64 // common
-	Tenancy                 string  // ec2: Shared, Host, Dedicated
-	PreInstalled            string  // ec2: SQL Web, SQL Ent, SQL Std, NA
-	OperatingSystem         string  // ec2: Windows, Linux, SUSE, RHEL
-	Operation               string  // ec2
+	Tenancy                 string  // compute: Shared, Host, Dedicated
+	PreInstalled            string  // compute: SQL Web, SQL Ent, SQL Std, NA
+	OperatingSystem         string  // compute: Windows, Linux, SUSE, RHEL
+	Operation               string  // compute
 	CacheEngine             string  // cache
-	DatabaseEngine          string  // rds
-	OfferingClass           string  // ec2, rds
-	NormalizationSizeFactor string  // ec2, rds
+	DatabaseEngine          string  // database
+	OfferingClass           string  // compute, database
+	NormalizationSizeFactor string  // compute, database
 }
 
 func Read(region string, buf []byte) (map[string]OutputPrice, error) {

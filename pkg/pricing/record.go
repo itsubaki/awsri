@@ -201,13 +201,13 @@ type Record struct {
 	OnDemand                float64 `json:"ondemand"`                            // common
 	ReservedQuantity        float64 `json:"reserved_quantity"`                   // common
 	ReservedHrs             float64 `json:"reserved_hrs"`                        // common
-	Tenancy                 string  `json:"tenancy,omitempty"`                   // ec2: Shared, Host, Dedicated
-	PreInstalled            string  `json:"pre_installed,omitempty"`             // ec2: SQL Web, SQL Ent, SQL Std, NA
-	OperatingSystem         string  `json:"operating_system,omitempty"`          // ec2: Windows, Linux, SUSE, RHEL
-	Operation               string  `json:"operation,omitempty"`                 // ec2
-	OfferingClass           string  `json:"offering_class,omitempty"`            // ec2, rds
-	NormalizationSizeFactor string  `json:"normalization_size_factor,omitempty"` // ec2, rds
-	DatabaseEngine          string  `json:"database_engine,omitempty"`           // rds
+	Tenancy                 string  `json:"tenancy,omitempty"`                   // compute: Shared, Host, Dedicated
+	PreInstalled            string  `json:"pre_installed,omitempty"`             // compute: SQL Web, SQL Ent, SQL Std, NA
+	OperatingSystem         string  `json:"operating_system,omitempty"`          // compute: Windows, Linux, SUSE, RHEL
+	Operation               string  `json:"operation,omitempty"`                 // compute
+	OfferingClass           string  `json:"offering_class,omitempty"`            // compute, database
+	NormalizationSizeFactor string  `json:"normalization_size_factor,omitempty"` // compute, database
+	DatabaseEngine          string  `json:"database_engine,omitempty"`           // database
 	CacheEngine             string  `json:"cache_engine,omitempty"`              // cache
 }
 
@@ -252,7 +252,7 @@ func (r *Record) OSEngine() string {
 	return ""
 }
 
-func (r *Record) String() string {
+func (r *Record) JSON() string {
 	bytea, err := json.Marshal(r)
 	if err != nil {
 		panic(err)
@@ -376,7 +376,7 @@ type Recommended struct {
 	NormalizedInstanceNum  float64 `json:"normalized_instance_num,omitempty"`
 }
 
-func (r *Recommended) String() string {
+func (r *Recommended) JSON() string {
 	bytea, err := json.Marshal(r)
 	if err != nil {
 		panic(err)
@@ -416,7 +416,7 @@ type ReservedAppliedCost struct {
 	ReservedQuantity    float64 `json:"reserved_quantity"`
 }
 
-func (r *ReservedAppliedCost) String() string {
+func (r *ReservedAppliedCost) JSON() string {
 	bytea, err := json.Marshal(r)
 	if err != nil {
 		panic(err)
@@ -543,7 +543,7 @@ type AnnualCost struct {
 	ReservedQuantity    float64 `json:"reserved_quantity"`
 }
 
-func (r *AnnualCost) String() string {
+func (r *AnnualCost) JSON() string {
 	bytea, err := json.Marshal(r)
 	if err != nil {
 		panic(err)

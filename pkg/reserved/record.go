@@ -18,7 +18,7 @@ func (list RecordList) CountSum() int64 {
 	return sum
 }
 
-func (list RecordList) String() string {
+func (list RecordList) JSON() string {
 	bytea, err := json.Marshal(list)
 	if err != nil {
 		panic(err)
@@ -64,7 +64,7 @@ func (r *Record) Hash() string {
 	return hash
 }
 
-func (r *Record) String() string {
+func (r *Record) JSON() string {
 	bytea, err := json.Marshal(r)
 	if err != nil {
 		panic(err)

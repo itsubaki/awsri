@@ -155,7 +155,7 @@ func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.Recommen
 		forecast := in.InstanceNum.ForecastList()
 		rec, err := repo.Recommend(price[0], forecast)
 		if err != nil {
-			return nil, fmt.Errorf("recommend ec2: %v", err)
+			return nil, fmt.Errorf("recommend compute: %v", err)
 		}
 
 		if rec.ReservedInstanceNum > 0 {
@@ -216,7 +216,7 @@ func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.Recommen
 		forecast := in.InstanceNum.ForecastList()
 		rec, err := repo.Recommend(price[0], forecast, "minimum")
 		if err != nil {
-			return nil, fmt.Errorf("recommend rds: %v", err)
+			return nil, fmt.Errorf("recommend database: %v", err)
 		}
 
 		if rec.ReservedInstanceNum > 0 {
@@ -415,7 +415,7 @@ func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (Covera
 			current = float64(rs.CountSum())
 			used = append(used, rs...)
 		} else {
-			return nil, fmt.Errorf("invalid ec2 reservation: %v", rs)
+			return nil, fmt.Errorf("invalid compute reservation: %v", rs)
 		}
 
 		out = append(out, &Coverage{
