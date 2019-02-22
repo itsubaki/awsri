@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"math"
 	"sort"
 	"strings"
 
@@ -509,7 +508,7 @@ func GetComputeCoverage(list pricing.RecommendedList, rsv *reserved.Repository) 
 			InstanceNum: 0,
 			CurrentRI:   float64(r.Count()),
 			Short:       float64(-r.Count()),
-			Coverage:    math.MaxFloat64,
+			Coverage:    float64(r.Count()) / 0.0,
 		})
 	}
 
@@ -578,7 +577,7 @@ func GetCacheCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (C
 			InstanceNum: 0,
 			CurrentRI:   float64(r.Count()),
 			Short:       float64(-r.Count()),
-			Coverage:    math.MaxFloat64,
+			Coverage:    float64(r.Count()) / 0.0,
 		})
 	}
 
@@ -653,7 +652,7 @@ func GetDatabaseCoverage(list pricing.RecommendedList, rsv *reserved.Repository)
 			InstanceNum: 0,
 			CurrentRI:   float64(r.Count()),
 			Short:       float64(-r.Count()),
-			Coverage:    math.MaxFloat64,
+			Coverage:    float64(r.Count()) / 0.0,
 		})
 	}
 
