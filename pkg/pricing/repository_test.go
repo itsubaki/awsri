@@ -69,8 +69,8 @@ func TestNormalizeDatabaseT2Medium(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	if min.UsageType != "APN1-InstanceUsage:db.t2.small" {
-		t.Errorf("invalid usage type=%s", min.UsageType)
+	if min.Record.UsageType != "APN1-InstanceUsage:db.t2.small" {
+		t.Errorf("invalid usage type=%s", min.Record.UsageType)
 	}
 }
 
@@ -92,8 +92,8 @@ func TestNormalizeDatabase(t *testing.T) {
 		t.Errorf("find normalized record: %v", err)
 	}
 
-	if r.InstanceType != "db.m4.large" {
-		t.Errorf("invalid instance type=%s in normalized record", r.InstanceType)
+	if r.Record.InstanceType != "db.m4.large" {
+		t.Errorf("invalid instance type=%s in normalized record", r.Record.InstanceType)
 	}
 }
 
@@ -128,8 +128,8 @@ func TestNormalizeCompute(t *testing.T) {
 		t.Errorf("find normalized record: %v", err)
 	}
 
-	if min.InstanceType != "m4.large" {
-		t.Errorf("invalid instance type=%s in normalized record", min.InstanceType)
+	if min.Record.InstanceType != "m4.large" {
+		t.Errorf("invalid instance type=%s in normalized record", min.Record.InstanceType)
 	}
 }
 
@@ -213,7 +213,7 @@ func TestRecommendM4large(t *testing.T) {
 	r0 := r.Recommend(forecast)
 	r1, _ := repo.Recommend(r, forecast)
 
-	if r0.Record.UsageType != r1.NormalizedRecord.UsageType {
+	if r0.Record.UsageType != r1.Normalized.Record.UsageType {
 		t.Errorf("invalid usage type in recommend")
 	}
 }

@@ -45,7 +45,7 @@ func Action(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	cov, err := api.GetCoverage(rec.Merge(), rsv)
+	cov, err := api.GetCoverage(rec.NormalizedList(), rsv)
 	if err != nil {
 		fmt.Println(fmt.Errorf("new coverage list: %v", err))
 		os.Exit(1)

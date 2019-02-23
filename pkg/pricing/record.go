@@ -284,35 +284,30 @@ func (r *Record) BreakevenPointInMonth() int {
 
 type RecommendedList []*Recommended
 
-func (list RecommendedList) Merge() RecommendedList {
-	flat := make(map[string]*Recommended)
+func (list RecommendedList) NormalizedList() NormalizedList {
+	flat := make(map[string]*Normalized)
 	for i := range list {
 		key := fmt.Sprintf("%s_%s_%s_%s_%s",
-			list[i].NormalizedRecord.Region,
-			list[i].NormalizedRecord.UsageType,
-			list[i].NormalizedRecord.OperatingSystem,
-			list[i].NormalizedRecord.CacheEngine,
-			list[i].NormalizedRecord.DatabaseEngine,
+			list[i].Normalized.Record.Region,
+			list[i].Normalized.Record.UsageType,
+			list[i].Normalized.Record.OperatingSystem,
+			list[i].Normalized.Record.CacheEngine,
+			list[i].Normalized.Record.DatabaseEngine,
 		)
 
 		v, ok := flat[key]
 		if ok {
-			flat[key] = &Recommended{
-				Record:                v.Record,
-				NormalizedRecord:      v.NormalizedRecord,
-				NormalizedInstanceNum: v.NormalizedInstanceNum + list[i].NormalizedInstanceNum,
+			flat[key] = &Normalized{
+				Record:      v.Record,
+				InstanceNum: v.InstanceNum + list[i].Normalized.InstanceNum,
 			}
 			continue
 		}
 
-		flat[key] = &Recommended{
-			Record:                list[i].Record,
-			NormalizedRecord:      list[i].NormalizedRecord,
-			NormalizedInstanceNum: list[i].NormalizedInstanceNum,
-		}
+		flat[key] = list[i].Normalized
 	}
 
-	out := RecommendedList{}
+	out := NormalizedList{}
 	for _, v := range flat {
 		out = append(out, v)
 	}
@@ -361,19 +356,25 @@ func (list RecommendedList) Array() [][]interface{} {
 	return out
 }
 
+type Normalized struct {
+	Record      *Record `json:"record"`
+	InstanceNum float64 `json:"instance_num"`
+}
+
+type NormalizedList []*Normalized
+
 type Recommended struct {
-	Record                 *Record `json:"record"`
-	BreakevenPointInMonth  int     `json:"breakevenpoint_in_month"`
-	Strategy               string  `json:"strategy"`
-	OnDemandInstanceNumAvg float64 `json:"ondemand_instance_num_avg"`
-	ReservedInstanceNum    int64   `json:"reserved_instance_num"`
-	FullOnDemandCost       float64 `json:"full_ondemand_cost"`
-	ReservedAppliedCost    Cost    `json:"reserved_applied_cost"`
-	ReservedQuantity       float64 `json:"reserved_quantity"`
-	SavingCost             float64 `json:"saving_cost"`
-	DiscountRate           float64 `json:"discount_rate"`
-	NormalizedRecord       *Record `json:"normalized_record,omitempty"`
-	NormalizedInstanceNum  float64 `json:"normalized_instance_num,omitempty"`
+	Record                 *Record     `json:"record"`
+	BreakevenPointInMonth  int         `json:"breakevenpoint_in_month"`
+	Strategy               string      `json:"strategy"`
+	OnDemandInstanceNumAvg float64     `json:"ondemand_instance_num_avg"`
+	ReservedInstanceNum    int64       `json:"reserved_instance_num"`
+	FullOnDemandCost       float64     `json:"full_ondemand_cost"`
+	ReservedAppliedCost    Cost        `json:"reserved_applied_cost"`
+	ReservedQuantity       float64     `json:"reserved_quantity"`
+	SavingCost             float64     `json:"saving_cost"`
+	DiscountRate           float64     `json:"discount_rate"`
+	Normalized             *Normalized `json:"normalized,omitempty"`
 }
 
 func (r *Recommended) JSON() string {

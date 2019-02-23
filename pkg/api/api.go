@@ -445,11 +445,11 @@ func (list CoverageList) Array() [][]interface{} {
 	return out
 }
 
-func GetComputeCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (CoverageList, error) {
+func GetComputeCoverage(list pricing.NormalizedList, rsv *reserved.Repository) (CoverageList, error) {
 	used := reserved.RecordList{}
 	out := CoverageList{}
 	for i := range list {
-		min := list[i].NormalizedRecord
+		min := list[i].Record
 		if !min.IsInstance() {
 			continue
 		}
@@ -476,10 +476,10 @@ func GetComputeCoverage(list pricing.RecommendedList, rsv *reserved.Repository) 
 		out = append(out, &Coverage{
 			UsageType:   min.UsageType,
 			OSEngine:    min.OSEngine(),
-			InstanceNum: list[i].NormalizedInstanceNum,
+			InstanceNum: list[i].InstanceNum,
 			CurrentRI:   current,
-			Short:       list[i].NormalizedInstanceNum - current,
-			Coverage:    current / list[i].NormalizedInstanceNum,
+			Short:       list[i].InstanceNum - current,
+			Coverage:    current / list[i].InstanceNum,
 		})
 	}
 
@@ -515,11 +515,11 @@ func GetComputeCoverage(list pricing.RecommendedList, rsv *reserved.Repository) 
 	return out, nil
 }
 
-func GetCacheCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (CoverageList, error) {
+func GetCacheCoverage(list pricing.NormalizedList, rsv *reserved.Repository) (CoverageList, error) {
 	used := reserved.RecordList{}
 	out := CoverageList{}
 	for i := range list {
-		min := list[i].NormalizedRecord
+		min := list[i].Record
 		if !min.IsCacheNode() {
 			continue
 		}
@@ -545,10 +545,10 @@ func GetCacheCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (C
 		out = append(out, &Coverage{
 			UsageType:   min.UsageType,
 			OSEngine:    min.OSEngine(),
-			InstanceNum: list[i].NormalizedInstanceNum,
+			InstanceNum: list[i].InstanceNum,
 			CurrentRI:   current,
-			Short:       list[i].NormalizedInstanceNum - current,
-			Coverage:    current / list[i].NormalizedInstanceNum,
+			Short:       list[i].InstanceNum - current,
+			Coverage:    current / list[i].InstanceNum,
 		})
 	}
 
@@ -584,11 +584,11 @@ func GetCacheCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (C
 	return out, nil
 }
 
-func GetDatabaseCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (CoverageList, error) {
+func GetDatabaseCoverage(list pricing.NormalizedList, rsv *reserved.Repository) (CoverageList, error) {
 	used := reserved.RecordList{}
 	out := CoverageList{}
 	for i := range list {
-		min := list[i].NormalizedRecord
+		min := list[i].Record
 		if !min.IsDatabase() {
 			continue
 		}
@@ -620,10 +620,10 @@ func GetDatabaseCoverage(list pricing.RecommendedList, rsv *reserved.Repository)
 		out = append(out, &Coverage{
 			UsageType:   min.UsageType,
 			OSEngine:    min.OSEngine(),
-			InstanceNum: list[i].NormalizedInstanceNum,
+			InstanceNum: list[i].InstanceNum,
 			CurrentRI:   current,
-			Short:       list[i].NormalizedInstanceNum - current,
-			Coverage:    current / list[i].NormalizedInstanceNum,
+			Short:       list[i].InstanceNum - current,
+			Coverage:    current / list[i].InstanceNum,
 		})
 	}
 
@@ -659,7 +659,7 @@ func GetDatabaseCoverage(list pricing.RecommendedList, rsv *reserved.Repository)
 	return out, nil
 }
 
-func GetCoverage(list pricing.RecommendedList, rsv *reserved.Repository) (CoverageList, error) {
+func GetCoverage(list pricing.NormalizedList, rsv *reserved.Repository) (CoverageList, error) {
 	compute, err := GetComputeCoverage(list, rsv)
 	if err != nil {
 		return nil, fmt.Errorf("get compute coverage: %v", err)

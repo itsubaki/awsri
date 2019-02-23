@@ -136,7 +136,7 @@ func (repo *Repository) SelectAll() RecordList {
 	return repo.Internal
 }
 
-func (repo *Repository) NormalizeCompute(record *Record) (*Record, error) {
+func (repo *Repository) NormalizeCompute(record *Record) (*Normalized, error) {
 	defined := []string{
 		"nano",
 		"micro",
@@ -184,10 +184,10 @@ func (repo *Repository) NormalizeCompute(record *Record) (*Record, error) {
 		return nil, fmt.Errorf("invalid compute result set=%v", rs)
 	}
 
-	return rs[0], nil
+	return &Normalized{Record: rs[0]}, nil
 }
 
-func (repo *Repository) NormalizeDatabase(record *Record) (*Record, error) {
+func (repo *Repository) NormalizeDatabase(record *Record) (*Normalized, error) {
 	defined := []string{
 		"nano",
 		"micro",
@@ -234,10 +234,10 @@ func (repo *Repository) NormalizeDatabase(record *Record) (*Record, error) {
 		return nil, fmt.Errorf("invalid database result set=%v", rs)
 	}
 
-	return rs[0], nil
+	return &Normalized{Record: rs[0]}, nil
 }
 
-func (repo *Repository) Normalize(record *Record) (*Record, error) {
+func (repo *Repository) Normalize(record *Record) (*Normalized, error) {
 	// https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/apply_ri.html
 	// Instance size flexibility does not apply to Reserved Instances
 	// that are purchased for a specific Availability Zone,
@@ -249,23 +249,23 @@ func (repo *Repository) Normalize(record *Record) (*Record, error) {
 	// Windows with SQL Server Web,
 	// RHEL, and SLES.
 	if strings.Contains(record.OSEngine(), "Windows") {
-		return record, nil
+		return &Normalized{Record: record}, nil
 	}
 
 	if strings.Contains(record.OSEngine(), "Red Hat Enterprise Linux") {
-		return record, nil
+		return &Normalized{Record: record}, nil
 	}
 
 	if strings.Contains(record.OSEngine(), "SUSE Linux") {
-		return record, nil
+		return &Normalized{Record: record}, nil
 	}
 
 	if strings.Contains(record.Tenancy, "dedicated") {
-		return record, nil
+		return &Normalized{Record: record}, nil
 	}
 
 	if strings.Contains(record.InstanceType, "cache") {
-		return record, nil
+		return &Normalized{Record: record}, nil
 	}
 
 	if record.IsInstance() {
@@ -308,8 +308,8 @@ func (repo *Repository) Recommend(record *Record, forecast ForecastList, strateg
 	}
 
 	out := record.Recommend(forecast, strategy...)
-	out.NormalizedRecord = min
-	out.NormalizedInstanceNum = float64(out.ReservedInstanceNum) * 1.0
+	out.Normalized = min
+	out.Normalized.InstanceNum = float64(out.ReservedInstanceNum) * 1.0
 
 	// cache hasnt normalization size factor
 	if record.IsCacheNode() {
@@ -321,13 +321,13 @@ func (repo *Repository) Recommend(record *Record, forecast ForecastList, strateg
 		return nil, fmt.Errorf("parse float normalization size factor in record: %v", err)
 	}
 
-	mf64, err := strconv.ParseFloat(min.NormalizationSizeFactor, 64)
+	mf64, err := strconv.ParseFloat(min.Record.NormalizationSizeFactor, 64)
 	if err != nil {
 		return nil, fmt.Errorf("parse float normalization size factor in normalized record: %v", err)
 	}
 
 	scale := rf64 / mf64
-	out.NormalizedInstanceNum = float64(out.ReservedInstanceNum) * scale
+	out.Normalized.InstanceNum = float64(out.ReservedInstanceNum) * scale
 
 	return out, nil
 }
