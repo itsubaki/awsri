@@ -132,15 +132,16 @@ func (list ForecastList) RecommendCompute(repo []*pricing.Repository) (pricing.R
 	}
 
 	out := pricing.RecommendedList{}
-	for _, in := range list {
-		if len(in.Platform) < 1 {
+	for _, f := range list {
+		repo := rmap[f.Region]
+
+		if len(f.Platform) < 1 {
 			continue
 		}
 
-		repo := rmap[in.Region]
 		price := repo.SelectAll().
-			UsageType(in.UsageType).
-			OperatingSystem(pricing.OperatingSystem[in.Platform]).
+			UsageType(f.UsageType).
+			OperatingSystem(pricing.OperatingSystem[f.Platform]).
 			LeaseContractLength("1yr").
 			PurchaseOption("All Upfront").
 			OfferingClass("standard").
@@ -151,7 +152,7 @@ func (list ForecastList) RecommendCompute(repo []*pricing.Repository) (pricing.R
 			continue
 		}
 
-		forecast := in.InstanceNum.ForecastList()
+		forecast := f.InstanceNum.ForecastList()
 		rec, err := repo.Recommend(price[0], forecast)
 		if err != nil {
 			return nil, fmt.Errorf("recommend compute: %v", err)
@@ -176,12 +177,12 @@ func (list ForecastList) RecommendCache(repo []*pricing.Repository) (pricing.Rec
 	}
 
 	out := pricing.RecommendedList{}
-	for _, in := range list {
-		if len(in.CacheEngine) < 1 {
+	for _, f := range list {
+		repo := rmap[f.Region]
+
+		if len(f.CacheEngine) < 1 {
 			continue
 		}
-
-		repo := rmap[in.Region]
 
 		// https://aws.amazon.com/elasticache/reserved-cache-nodes/
 		// For latest generation nodes (M5, R5 onwards),
@@ -190,16 +191,16 @@ func (list ForecastList) RecommendCache(repo []*pricing.Repository) (pricing.Rec
 		// With the All Upfront option,
 		// you pay for the entire Reserved Instance with one upfront payment.
 		price := repo.SelectAll().
-			UsageType(in.UsageType).
+			UsageType(f.UsageType).
+			CacheEngine(f.CacheEngine).
 			LeaseContractLength("1yr").
-			PurchaseOptionOR([]string{"All Upfront", "Heavy Utilization"}).
-			CacheEngine(in.CacheEngine)
+			PurchaseOptionOR([]string{"All Upfront", "Heavy Utilization"})
 
 		if len(price) != 1 {
 			continue
 		}
 
-		forecast := in.InstanceNum.ForecastList()
+		forecast := f.InstanceNum.ForecastList()
 		rec, err := repo.Recommend(price[0], forecast, "minimum")
 		if err != nil {
 			return nil, fmt.Errorf("recommend cache: %v", err)
@@ -224,24 +225,24 @@ func (list ForecastList) RecommendDatabase(repo []*pricing.Repository) (pricing.
 	}
 
 	out := pricing.RecommendedList{}
+	for _, f := range list {
+		repo := rmap[f.Region]
 
-	for _, in := range list {
-		if len(in.DatabaseEngine) < 1 {
+		if len(f.DatabaseEngine) < 1 {
 			continue
 		}
 
-		repo := rmap[in.Region]
 		price := repo.SelectAll().
-			UsageType(in.UsageType).
+			UsageType(f.UsageType).
+			DatabaseEngine(f.DatabaseEngine).
 			LeaseContractLength("1yr").
-			PurchaseOption("All Upfront").
-			DatabaseEngine(in.DatabaseEngine)
+			PurchaseOption("All Upfront")
 
 		if len(price) != 1 {
 			continue
 		}
 
-		forecast := in.InstanceNum.ForecastList()
+		forecast := f.InstanceNum.ForecastList()
 		rec, err := repo.Recommend(price[0], forecast, "minimum")
 		if err != nil {
 			return nil, fmt.Errorf("recommend database: %v", err)
