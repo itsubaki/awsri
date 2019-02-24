@@ -33,16 +33,10 @@ func (repo *Repository) Fetch() error {
 }
 
 func (repo *Repository) FetchWithClient(client *http.Client) error {
-	if err := repo.fetchWithClient(pricing.ComputeURL, client); err != nil {
-		return err
-	}
-
-	if err := repo.fetchWithClient(pricing.DatabaseURL, client); err != nil {
-		return err
-	}
-
-	if err := repo.fetchWithClient(pricing.CacheURL, client); err != nil {
-		return err
+	for _, u := range pricing.URL {
+		if err := repo.fetchWithClient(u, client); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -136,107 +130,6 @@ func (repo *Repository) SelectAll() RecordList {
 	return repo.Internal
 }
 
-func (repo *Repository) NormalizeCompute(record *Record) (*Normalized, error) {
-	defined := []string{
-		"nano",
-		"micro",
-		"small",
-		"medium",
-		"large",
-		"xlarge",
-	}
-
-	instanceType := record.InstanceType
-	familiy := instanceType[:strings.LastIndex(instanceType, ".")]
-
-	tmp := RecordList{}
-	for i := range defined {
-		suspect := fmt.Sprintf("%s.%s", familiy, defined[i])
-		for j := range repo.Internal {
-			if repo.Internal[j].InstanceType == suspect &&
-				strings.LastIndex(repo.Internal[j].UsageType, ".") > 0 {
-				tmp = append(tmp, repo.Internal[j])
-			}
-		}
-		if len(tmp) > 0 {
-			break
-		}
-	}
-
-	if len(tmp) < 1 {
-		return nil, fmt.Errorf("undefined instance type=%s family=%s. defined=%v", instanceType, familiy, defined)
-	}
-
-	usageType := fmt.Sprintf("%s%s",
-		record.UsageType[:strings.LastIndex(record.UsageType, ".")],
-		tmp[0].UsageType[strings.LastIndex(tmp[0].UsageType, "."):],
-	)
-
-	rs := tmp.UsageType(usageType).
-		OperatingSystem(record.OperatingSystem).
-		LeaseContractLength(record.LeaseContractLength).
-		PurchaseOption(record.PurchaseOption).
-		PreInstalled(record.PreInstalled).
-		OfferingClass(record.OfferingClass).
-		Region(record.Region)
-
-	if len(rs) != 1 {
-		return nil, fmt.Errorf("invalid compute result set=%v", rs)
-	}
-
-	return &Normalized{Record: rs[0]}, nil
-}
-
-func (repo *Repository) NormalizeDatabase(record *Record) (*Normalized, error) {
-	defined := []string{
-		"nano",
-		"micro",
-		"small",
-		"medium",
-		"large",
-		"xlarge",
-	}
-
-	instanceType := record.InstanceType
-	familiy := instanceType[:strings.LastIndex(instanceType, ".")]
-
-	tmp := RecordList{}
-	for i := range defined {
-		suspect := fmt.Sprintf("%s.%s", familiy, defined[i])
-		for j := range repo.Internal {
-			if repo.Internal[j].InstanceType == suspect &&
-				repo.Internal[j].DatabaseEngine == record.DatabaseEngine &&
-				strings.LastIndex(repo.Internal[j].UsageType, ".") > 0 {
-				tmp = append(tmp, repo.Internal[j])
-			}
-		}
-		if len(tmp) > 0 {
-			break
-		}
-	}
-
-	if len(tmp) < 1 {
-		return nil, fmt.Errorf("undefined instance type. defined=%v", defined)
-	}
-
-	usageType := fmt.Sprintf("%s%s",
-		record.UsageType[:strings.LastIndex(record.UsageType, ".")],
-		tmp[0].UsageType[strings.LastIndex(tmp[0].UsageType, "."):],
-	)
-
-	rs := tmp.UsageType(usageType).
-		DatabaseEngine(record.DatabaseEngine).
-		LeaseContractLength(record.LeaseContractLength).
-		PurchaseOption(record.PurchaseOption).
-		Region(record.Region)
-
-	if len(rs) != 1 {
-		return nil, fmt.Errorf("invalid database result set=%v", rs)
-	}
-
-	return &Normalized{Record: rs[0]}, nil
-}
-
 func (repo *Repository) Normalize(record *Record) (*Normalized, error) {
 	// https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/apply_ri.html
 	// Instance size flexibility does not apply to Reserved Instances
@@ -268,12 +161,15 @@ func (repo *Repository) Normalize(record *Record) (*Normalized, error) {
 		return &Normalized{Record: record}, nil
 	}
 
-	if record.IsInstance() {
-		return repo.NormalizeCompute(record)
-	}
+	for _, f := range NewNormalizeFunc() {
+		n, err := f(repo, record)
+		if err != nil {
+			return nil, fmt.Errorf("normalize: %v", err)
+		}
 
-	if record.IsDatabase() {
-		return repo.NormalizeDatabase(record)
+		if n != nil {
+			return n, nil
+		}
 	}
 
 	return nil, fmt.Errorf("invalid record=%v", record)
@@ -312,7 +208,7 @@ func (repo *Repository) Recommend(record *Record, forecast ForecastList, strateg
 	out.Normalized.InstanceNum = float64(out.ReservedInstanceNum) * 1.0
 
 	// cache hasnt normalization size factor
-	if record.IsCacheNode() {
+	if record.Cache() {
 		return out, nil
 	}
 

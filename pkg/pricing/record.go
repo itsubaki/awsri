@@ -12,6 +12,42 @@ import (
 
 type RecordList []*Record
 
+func (list RecordList) Compute() RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].Compute() {
+			ret = append(ret, list[i])
+		}
+	}
+
+	return ret
+}
+
+func (list RecordList) Cache() RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].Cache() {
+			ret = append(ret, list[i])
+		}
+	}
+
+	return ret
+}
+
+func (list RecordList) Database() RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if list[i].Database() {
+			ret = append(ret, list[i])
+		}
+	}
+
+	return ret
+}
+
 func (list RecordList) Unique(fieldname string) []string {
 	uniq := make(map[string]bool)
 	for i := range list {
@@ -215,38 +251,37 @@ func (r *Record) ID() string {
 	return fmt.Sprintf("%s.%s", r.SKU, r.OfferTermCode)
 }
 
-func (r *Record) IsInstance() bool {
+func (r *Record) Compute() bool {
 	if len(r.OperatingSystem) > 0 {
 		return true
 	}
 	return false
 }
 
-func (r *Record) IsCacheNode() bool {
+func (r *Record) Cache() bool {
 	if len(r.CacheEngine) > 0 {
 		return true
 	}
 	return false
 }
 
-func (r *Record) IsDatabase() bool {
+func (r *Record) Database() bool {
 	if len(r.DatabaseEngine) > 0 {
 		return true
 	}
 	return false
 }
-
 func (r *Record) OSEngine() string {
-	if r.IsInstance() {
+	if r.Compute() {
 		return r.OperatingSystem
 	}
 
-	if r.IsDatabase() {
-		return r.DatabaseEngine
+	if r.Cache() {
+		return r.CacheEngine
 	}
 
-	if r.IsCacheNode() {
-		return r.CacheEngine
+	if r.Database() {
+		return r.DatabaseEngine
 	}
 
 	return ""
@@ -492,9 +527,10 @@ ondemandNum, reservedNum is Per Year  (LeaseContractLength=1yr)
 ondemandNum, reservedNum is Per 3Year (LeaseContractLength=3yr)
 */
 func (r *Record) GetCost(ondemandNum float64, reservedNum int64) *ReservedAppliedCost {
-	full := r.GetAnnualCost().OnDemand * (ondemandNum + float64(reservedNum))
-	ond := r.GetAnnualCost().OnDemand * ondemandNum
-	res := r.GetAnnualCost().Reserved * float64(reservedNum)
+	annual := r.GetAnnualCost()
+	full := annual.OnDemand * (ondemandNum + float64(reservedNum))
+	ond := annual.OnDemand * ondemandNum
+	res := annual.Reserved * float64(reservedNum)
 
 	out := &ReservedAppliedCost{
 		LeaseContractLength: r.LeaseContractLength,

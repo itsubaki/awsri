@@ -125,7 +125,7 @@ func (f *Forecast) PlatformEngine() string {
 
 type ForecastList []*Forecast
 
-func (list ForecastList) RecommendCompute(repo []*pricing.Repository) (pricing.RecommendedList, error) {
+func (list ForecastList) recommend(repo []*pricing.Repository, query RecommendQuery) (pricing.RecommendedList, error) {
 	rmap := make(map[string]*pricing.Repository)
 	for i := range repo {
 		rmap[repo[i].Region[0]] = repo[i]
@@ -134,20 +134,7 @@ func (list ForecastList) RecommendCompute(repo []*pricing.Repository) (pricing.R
 	out := pricing.RecommendedList{}
 	for _, f := range list {
 		repo := rmap[f.Region]
-
-		if len(f.Platform) < 1 {
-			continue
-		}
-
-		price := repo.SelectAll().
-			UsageType(f.UsageType).
-			OperatingSystem(pricing.OperatingSystem[f.Platform]).
-			LeaseContractLength("1yr").
-			PurchaseOption("All Upfront").
-			OfferingClass("standard").
-			PreInstalled("NA").
-			Tenancy("Shared")
-
+		price := query(repo, f)
 		if len(price) != 1 {
 			continue
 		}
@@ -155,97 +142,7 @@ func (list ForecastList) RecommendCompute(repo []*pricing.Repository) (pricing.R
 		forecast := f.InstanceNum.ForecastList()
 		rec, err := repo.Recommend(price[0], forecast)
 		if err != nil {
-			return nil, fmt.Errorf("recommend compute: %v", err)
-		}
-
-		if rec.ReservedInstanceNum > 0 {
-			out = append(out, rec)
-		}
-	}
-
-	sort.SliceStable(out, func(i, j int) bool {
-		return out[i].Record.UsageType < out[j].Record.UsageType
-	})
-
-	return out, nil
-}
-
-func (list ForecastList) RecommendCache(repo []*pricing.Repository) (pricing.RecommendedList, error) {
-	rmap := make(map[string]*pricing.Repository)
-	for i := range repo {
-		rmap[repo[i].Region[0]] = repo[i]
-	}
-
-	out := pricing.RecommendedList{}
-	for _, f := range list {
-		repo := rmap[f.Region]
-
-		if len(f.CacheEngine) < 1 {
-			continue
-		}
-
-		// https://aws.amazon.com/elasticache/reserved-cache-nodes/
-		// For latest generation nodes (M5, R5 onwards),
-		// you can choose between three payment options
-		// when you purchase a Reserved Instance.
-		// With the All Upfront option,
-		// you pay for the entire Reserved Instance with one upfront payment.
-		price := repo.SelectAll().
-			UsageType(f.UsageType).
-			CacheEngine(f.CacheEngine).
-			LeaseContractLength("1yr").
-			PurchaseOptionOR([]string{"All Upfront", "Heavy Utilization"})
-
-		if len(price) != 1 {
-			continue
-		}
-
-		forecast := f.InstanceNum.ForecastList()
-		rec, err := repo.Recommend(price[0], forecast, "minimum")
-		if err != nil {
-			return nil, fmt.Errorf("recommend cache: %v", err)
-		}
-
-		if rec.ReservedInstanceNum > 0 {
-			out = append(out, rec)
-		}
-	}
-
-	sort.SliceStable(out, func(i, j int) bool {
-		return out[i].Record.UsageType < out[j].Record.UsageType
-	})
-
-	return out, nil
-}
-
-func (list ForecastList) RecommendDatabase(repo []*pricing.Repository) (pricing.RecommendedList, error) {
-	rmap := make(map[string]*pricing.Repository)
-	for i := range repo {
-		rmap[repo[i].Region[0]] = repo[i]
-	}
-
-	out := pricing.RecommendedList{}
-	for _, f := range list {
-		repo := rmap[f.Region]
-
-		if len(f.DatabaseEngine) < 1 {
-			continue
-		}
-
-		price := repo.SelectAll().
-			UsageType(f.UsageType).
-			DatabaseEngine(f.DatabaseEngine).
-			LeaseContractLength("1yr").
-			PurchaseOption("All Upfront")
-
-		if len(price) != 1 {
-			continue
-		}
-
-		forecast := f.InstanceNum.ForecastList()
-		rec, err := repo.Recommend(price[0], forecast, "minimum")
-		if err != nil {
-			return nil, fmt.Errorf("recommend database: %v", err)
+			return nil, fmt.Errorf("recommend(internal): %v", err)
 		}
 
 		if rec.ReservedInstanceNum > 0 {
@@ -261,25 +158,15 @@ func (list ForecastList) RecommendDatabase(repo []*pricing.Repository) (pricing.
 }
 
 func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.RecommendedList, error) {
-	compute, err := list.RecommendCompute(repo)
-	if err != nil {
-		return nil, fmt.Errorf("recommend compute: %v", err)
-	}
-
-	cache, err := list.RecommendCache(repo)
-	if err != nil {
-		return nil, fmt.Errorf("recommend cache: %v", err)
-	}
-
-	database, err := list.RecommendDatabase(repo)
-	if err != nil {
-		return nil, fmt.Errorf("recommend database: %v", err)
-	}
-
 	out := pricing.RecommendedList{}
-	out = append(out, compute...)
-	out = append(out, cache...)
-	out = append(out, database...)
+	for _, q := range NewRecommendQuery() {
+		rec, err := list.recommend(repo, q)
+		if err != nil {
+			return nil, fmt.Errorf("recommend: %v", err)
+		}
+
+		out = append(out, rec...)
+	}
 
 	sort.SliceStable(out, func(i, j int) bool {
 		return out[i].Record.UsageType < out[j].Record.UsageType
@@ -346,6 +233,7 @@ func (list ForecastList) Header() []interface{} {
 		"usage_type",
 		"platform/engine",
 	}
+
 	for _, n := range list[0].InstanceNum {
 		header = append(header, n.Date)
 	}
@@ -446,240 +334,16 @@ func (list CoverageList) Array() [][]interface{} {
 	return out
 }
 
-func GetComputeCoverage(list pricing.NormalizedList, rsv *reserved.Repository) (CoverageList, error) {
-	used := reserved.RecordList{}
-	out := CoverageList{}
-	for i := range list {
-		min := list[i].Record
-		if !min.IsInstance() {
-			continue
-		}
-
-		rs := rsv.SelectAll().
-			InstanceType(min.InstanceType).
-			Region(min.Region).
-			LeaseContractLength(min.LeaseContractLength).
-			OfferingClass(min.OfferingClass).
-			OfferingType(min.PurchaseOption).
-			ProductDescription(min.OSEngine()).
-			Active()
-
-		var current float64
-		if len(rs) == 0 {
-			// not found
-		} else if len(rs) > 0 {
-			current = float64(rs.CountSum())
-			used = append(used, rs...)
-		} else {
-			return nil, fmt.Errorf("invalid compute reservation: %v", rs)
-		}
-
-		out = append(out, &Coverage{
-			UsageType:   min.UsageType,
-			OSEngine:    min.OSEngine(),
-			InstanceNum: list[i].InstanceNum,
-			CurrentRI:   current,
-			Short:       list[i].InstanceNum - current,
-			Coverage:    current / list[i].InstanceNum,
-		})
-	}
-
-	unused := reserved.RecordList{}
-	for _, r := range rsv.SelectAll().Active() {
-		if len(r.InstanceType) < 1 {
-			continue
-		}
-
-		found := false
-		for _, u := range used {
-			if r.Equals(u) {
-				found = true
-			}
-		}
-
-		if !found {
-			unused = append(unused, r)
-		}
-	}
-
-	for _, r := range unused {
-		out = append(out, &Coverage{
-			UsageType:   UsageType(r),
-			OSEngine:    OSEngine(r),
-			InstanceNum: 0,
-			CurrentRI:   float64(r.Count()),
-			Short:       float64(-r.Count()),
-			Coverage:    float64(r.Count()) / 0.0,
-		})
-	}
-
-	return out, nil
-}
-
-func GetCacheCoverage(list pricing.NormalizedList, rsv *reserved.Repository) (CoverageList, error) {
-	used := reserved.RecordList{}
-	out := CoverageList{}
-	for i := range list {
-		min := list[i].Record
-		if !min.IsCacheNode() {
-			continue
-		}
-
-		rs := rsv.SelectAll().
-			CacheNodeType(min.InstanceType).
-			Region(min.Region).
-			LeaseContractLength(min.LeaseContractLength).
-			OfferingType(min.PurchaseOption).
-			ProductDescription(min.OSEngine()).
-			Active()
-
-		var current float64
-		if len(rs) == 0 {
-			// not found
-		} else if len(rs) > 0 {
-			current = float64(rs.CountSum())
-			used = append(used, rs...)
-		} else {
-			return nil, fmt.Errorf("invalid cache reservation: %v", rs)
-		}
-
-		out = append(out, &Coverage{
-			UsageType:   min.UsageType,
-			OSEngine:    min.OSEngine(),
-			InstanceNum: list[i].InstanceNum,
-			CurrentRI:   current,
-			Short:       list[i].InstanceNum - current,
-			Coverage:    current / list[i].InstanceNum,
-		})
-	}
-
-	unused := reserved.RecordList{}
-	for _, r := range rsv.SelectAll().Active() {
-		if len(r.CacheNodeType) < 1 {
-			continue
-		}
-
-		found := false
-		for _, u := range used {
-			if r.Equals(u) {
-				found = true
-			}
-		}
-
-		if !found {
-			unused = append(unused, r)
-		}
-	}
-
-	for _, r := range unused {
-		out = append(out, &Coverage{
-			UsageType:   UsageType(r),
-			OSEngine:    OSEngine(r),
-			InstanceNum: 0,
-			CurrentRI:   float64(r.Count()),
-			Short:       float64(-r.Count()),
-			Coverage:    float64(r.Count()) / 0.0,
-		})
-	}
-
-	return out, nil
-}
-
-func GetDatabaseCoverage(list pricing.NormalizedList, rsv *reserved.Repository) (CoverageList, error) {
-	used := reserved.RecordList{}
-	out := CoverageList{}
-	for i := range list {
-		min := list[i].Record
-		if !min.IsDatabase() {
-			continue
-		}
-
-		maz := false
-		if strings.Contains(min.UsageType, "Multi-AZ") {
-			maz = true
-		}
-
-		rs := rsv.SelectAll().
-			DBInstanceClass(min.InstanceType).
-			Region(min.Region).
-			LeaseContractLength(min.LeaseContractLength).
-			OfferingType(min.PurchaseOption).
-			ProductDescription(min.OSEngine()).
-			MultiAZ(maz).
-			Active()
-
-		var current float64
-		if len(rs) == 0 {
-			// not found
-		} else if len(rs) > 0 {
-			current = float64(rs.CountSum())
-			used = append(used, rs...)
-		} else {
-			return nil, fmt.Errorf("invalid database reservation: %v", rs)
-		}
-
-		out = append(out, &Coverage{
-			UsageType:   min.UsageType,
-			OSEngine:    min.OSEngine(),
-			InstanceNum: list[i].InstanceNum,
-			CurrentRI:   current,
-			Short:       list[i].InstanceNum - current,
-			Coverage:    current / list[i].InstanceNum,
-		})
-	}
-
-	unused := reserved.RecordList{}
-	for _, r := range rsv.SelectAll().Active() {
-		if len(r.DBInstanceClass) < 1 {
-			continue
-		}
-
-		found := false
-		for _, u := range used {
-			if r.Equals(u) {
-				found = true
-			}
-		}
-
-		if !found {
-			unused = append(unused, r)
-		}
-	}
-
-	for _, r := range unused {
-		out = append(out, &Coverage{
-			UsageType:   UsageType(r),
-			OSEngine:    OSEngine(r),
-			InstanceNum: 0,
-			CurrentRI:   float64(r.Count()),
-			Short:       float64(-r.Count()),
-			Coverage:    float64(r.Count()) / 0.0,
-		})
-	}
-
-	return out, nil
-}
-
 func GetCoverage(list pricing.NormalizedList, rsv *reserved.Repository) (CoverageList, error) {
-	compute, err := GetComputeCoverage(list, rsv)
-	if err != nil {
-		return nil, fmt.Errorf("get compute coverage: %v", err)
-	}
-
-	cache, err := GetCacheCoverage(list, rsv)
-	if err != nil {
-		return nil, fmt.Errorf("get cache coverage: %v", err)
-	}
-
-	database, err := GetDatabaseCoverage(list, rsv)
-	if err != nil {
-		return nil, fmt.Errorf("get database coverage: %v", err)
-	}
-
 	out := CoverageList{}
-	out = append(out, compute...)
-	out = append(out, cache...)
-	out = append(out, database...)
+	for _, f := range NewGetCoverageList() {
+		list, err := f(list, rsv)
+		if err != nil {
+			return nil, fmt.Errorf("get coverage: %v", err)
+		}
+
+		out = append(out, list...)
+	}
 
 	return out, nil
 }

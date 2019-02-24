@@ -49,157 +49,46 @@ func New() *CostExp {
 	}
 }
 
-func (c *CostExp) GetComputeUsageQuantity(date *Date) (UsageQuantityList, error) {
-	linkedAccount, err := c.GetLinkedAccount(date)
-	if err != nil {
-		return nil, fmt.Errorf("get linked account: %v", err)
-	}
-
-	usageType, err := c.GetUsageType(date)
-	if err != nil {
-		return nil, fmt.Errorf("get usage type: %v", err)
-	}
-
-	out := UsageQuantityList{}
-	for i := range linkedAccount {
-		computeType := []string{}
-		for i := range usageType {
-			if !strings.Contains(usageType[i], "BoxUsage") {
-				continue
-			}
-			computeType = append(computeType, usageType[i])
-		}
-
-		compute, err := c.getUsageQuantity(&getUsageQuantityInput{
-			AccountID:   linkedAccount[i].AccountID,
-			Description: linkedAccount[i].Description,
-			Dimension:   "PLATFORM",
-			UsageType:   computeType,
-			Period: &costexplorer.DateInterval{
-				Start: &date.Start,
-				End:   &date.End,
-			},
-		})
-
-		if err != nil {
-			return out, fmt.Errorf("get compute usage quantity: %v", err)
-		}
-
-		out = append(out, compute...)
-	}
-
-	return out, nil
-}
-
-func (c *CostExp) GetCacheUsageQuantity(date *Date) (UsageQuantityList, error) {
-	linkedAccount, err := c.GetLinkedAccount(date)
-	if err != nil {
-		return nil, fmt.Errorf("get linked account: %v", err)
-	}
-
-	usageType, err := c.GetUsageType(date)
-	if err != nil {
-		return nil, fmt.Errorf("get usage type: %v", err)
-	}
-
-	out := UsageQuantityList{}
-	for i := range linkedAccount {
-		cacheUsageType := []string{}
-		for i := range usageType {
-			if !strings.Contains(usageType[i], "NodeUsage") {
-				continue
-			}
-			cacheUsageType = append(cacheUsageType, usageType[i])
-		}
-
-		cache, err := c.getUsageQuantity(&getUsageQuantityInput{
-			AccountID:   linkedAccount[i].AccountID,
-			Description: linkedAccount[i].Description,
-			Dimension:   "CACHE_ENGINE",
-			UsageType:   cacheUsageType,
-			Period: &costexplorer.DateInterval{
-				Start: &date.Start,
-				End:   &date.End,
-			},
-		})
-
-		if err != nil {
-			return out, fmt.Errorf("get cache usage quantity: %v", err)
-		}
-
-		out = append(out, cache...)
-	}
-
-	return out, nil
-}
-
-func (c *CostExp) GetDatabaseUsageQuantity(date *Date) (UsageQuantityList, error) {
-	linkedAccount, err := c.GetLinkedAccount(date)
-	if err != nil {
-		return nil, fmt.Errorf("get linked account: %v", err)
-	}
-
-	usageType, err := c.GetUsageType(date)
-	if err != nil {
-		return nil, fmt.Errorf("get usage type: %v", err)
-	}
-
-	out := UsageQuantityList{}
-	for i := range linkedAccount {
-		databaseType := []string{}
-		for i := range usageType {
-			if !strings.Contains(usageType[i], "InstanceUsage") && !strings.Contains(usageType[i], "Multi-AZUsage") {
-				continue
-			}
-			databaseType = append(databaseType, usageType[i])
-		}
-
-		db, err := c.getUsageQuantity(&getUsageQuantityInput{
-			AccountID:   linkedAccount[i].AccountID,
-			Description: linkedAccount[i].Description,
-			Dimension:   "DATABASE_ENGINE",
-			UsageType:   databaseType,
-			Period: &costexplorer.DateInterval{
-				Start: &date.Start,
-				End:   &date.End,
-			},
-		})
-
-		if err != nil {
-			return out, fmt.Errorf("get database usage quantity: %v", err)
-		}
-
-		out = append(out, db...)
-	}
-
-	return out, nil
-}
-
 func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
-	compute, err := c.GetComputeUsageQuantity(date)
+	linkedAccount, err := c.GetLinkedAccount(date)
 	if err != nil {
-		return nil, fmt.Errorf("get compute usage quantity: %v", err)
+		return nil, fmt.Errorf("get linked account: %v", err)
 	}
 
-	cache, err := c.GetCacheUsageQuantity(date)
+	usageType, err := c.GetUsageType(date)
 	if err != nil {
-		return nil, fmt.Errorf("get cache usage quantity: %v", err)
+		return nil, fmt.Errorf("get usage type: %v", err)
 	}
 
-	database, err := c.GetDatabaseUsageQuantity(date)
-	if err != nil {
-		return nil, fmt.Errorf("get database usage quantity: %v", err)
-	}
+	fn := NewGetUsageQuantityInput()
 
 	out := UsageQuantityList{}
-	out = append(out, compute...)
-	out = append(out, cache...)
-	out = append(out, database...)
+	for _, account := range linkedAccount {
+		for _, f := range fn {
+			get := f(usageType)
+			quantity, err := c.getUsageQuantity(&GetUsageQuantityInput{
+				AccountID:   account.AccountID,
+				Description: account.Description,
+				Dimension:   get.Dimension,
+				UsageType:   get.UsageType,
+				Period: &costexplorer.DateInterval{
+					Start: &date.Start,
+					End:   &date.End,
+				},
+			})
+
+			if err != nil {
+				return out, fmt.Errorf("get usage quantity: %v", err)
+			}
+
+			out = append(out, quantity...)
+		}
+	}
 
 	return out, nil
 }
 
-type getUsageQuantityInput struct {
+type GetUsageQuantityInput struct {
 	AccountID   string
 	Description string
 	Dimension   string
@@ -207,7 +96,7 @@ type getUsageQuantityInput struct {
 	Period      *costexplorer.DateInterval
 }
 
-func (c *CostExp) getUsageQuantity(in *getUsageQuantityInput) (UsageQuantityList, error) {
+func (c *CostExp) getUsageQuantity(in *GetUsageQuantityInput) (UsageQuantityList, error) {
 	out := UsageQuantityList{}
 
 	and := []*costexplorer.Expression{}

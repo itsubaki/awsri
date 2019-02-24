@@ -75,7 +75,7 @@ func TestRecommendBoxUsageM44xlarge(t *testing.T) {
 	}
 
 	rec, _ := repo.Recommend(rs[0], forecast)
-	min := rec.NormalizedRecord
+	min := rec.Normalized.Record
 
 	if rs[0].OfferTermCode != min.OfferTermCode {
 		t.Errorf("invalid offer term")
