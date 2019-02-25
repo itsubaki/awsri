@@ -125,7 +125,7 @@ func (f *Forecast) PlatformEngine() string {
 
 type ForecastList []*Forecast
 
-func (list ForecastList) recommend(repo []*pricing.Repository, query RecommendQuery) (pricing.RecommendedList, error) {
+func (list ForecastList) recommend(repo []*pricing.Repository, get GetPricingFunc) (pricing.RecommendedList, error) {
 	rmap := make(map[string]*pricing.Repository)
 	for i := range repo {
 		rmap[repo[i].Region[0]] = repo[i]
@@ -134,7 +134,7 @@ func (list ForecastList) recommend(repo []*pricing.Repository, query RecommendQu
 	out := pricing.RecommendedList{}
 	for _, f := range list {
 		repo := rmap[f.Region]
-		price := query(repo, f)
+		price := get(repo, f)
 		if len(price) != 1 {
 			continue
 		}
@@ -159,8 +159,8 @@ func (list ForecastList) recommend(repo []*pricing.Repository, query RecommendQu
 
 func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.RecommendedList, error) {
 	out := pricing.RecommendedList{}
-	for _, q := range NewRecommendQuery() {
-		rec, err := list.recommend(repo, q)
+	for _, f := range NewGetPricingFuncList() {
+		rec, err := list.recommend(repo, f)
 		if err != nil {
 			return nil, fmt.Errorf("recommend: %v", err)
 		}
@@ -224,6 +224,46 @@ func (list ForecastList) Merge() ForecastList {
 	})
 
 	return out
+}
+
+type GetPricingFunc func(repo *pricing.Repository, f *Forecast) pricing.RecordList
+
+func NewGetPricingFuncList() []GetPricingFunc {
+	return []GetPricingFunc{
+		GetComputePricing,
+		GetCachePricing,
+		GetDatabasePricing,
+	}
+}
+
+func GetComputePricing(repo *pricing.Repository, f *Forecast) pricing.RecordList {
+	return repo.SelectAll().
+		Compute().
+		UsageType(f.UsageType).
+		OperatingSystem(pricing.OperatingSystem[f.Platform]).
+		LeaseContractLength("1yr").
+		PurchaseOption("All Upfront").
+		OfferingClass("standard").
+		PreInstalled("NA").
+		Tenancy("Shared")
+}
+
+func GetCachePricing(repo *pricing.Repository, f *Forecast) pricing.RecordList {
+	return repo.SelectAll().
+		Cache().
+		UsageType(f.UsageType).
+		CacheEngine(f.CacheEngine).
+		LeaseContractLength("1yr").
+		PurchaseOptionOR([]string{"All Upfront", "Heavy Utilization"})
+}
+
+func GetDatabasePricing(repo *pricing.Repository, f *Forecast) pricing.RecordList {
+	return repo.SelectAll().
+		Database().
+		UsageType(f.UsageType).
+		DatabaseEngine(f.DatabaseEngine).
+		LeaseContractLength("1yr").
+		PurchaseOption("All Upfront")
 }
 
 func (list ForecastList) Header() []interface{} {
@@ -334,16 +374,103 @@ func (list CoverageList) Array() [][]interface{} {
 	return out
 }
 
+func GetReserved(rsv *reserved.Repository, r *pricing.Record) reserved.RecordList {
+	if r.Compute() {
+		return rsv.SelectAll().
+			Compute().
+			InstanceType(r.InstanceType).
+			Region(r.Region).
+			LeaseContractLength(r.LeaseContractLength).
+			OfferingClass(r.OfferingClass).
+			OfferingType(r.PurchaseOption).
+			ProductDescription(r.OSEngine()).
+			Active()
+	}
+
+	if r.Cache() {
+		return rsv.SelectAll().
+			CacheNodeType(r.InstanceType).
+			Region(r.Region).
+			LeaseContractLength(r.LeaseContractLength).
+			OfferingType(r.PurchaseOption).
+			ProductDescription(r.OSEngine()).
+			Active()
+	}
+
+	if r.Database() {
+		return rsv.SelectAll().
+			DBInstanceClass(r.InstanceType).
+			Region(r.Region).
+			LeaseContractLength(r.LeaseContractLength).
+			OfferingType(r.PurchaseOption).
+			ProductDescription(r.OSEngine()).
+			MultiAZ(func(usageType string) bool {
+				if strings.Contains(usageType, "Multi-AZ") {
+					return true
+				}
+				return false
+			}(r.UsageType)).
+			Active()
+	}
+
+	panic(fmt.Sprintf("invalid record=%v", r))
+}
+
 func GetCoverage(list pricing.NormalizedList, rsv *reserved.Repository) (CoverageList, error) {
 	out := CoverageList{}
-	for _, f := range NewGetCoverageList() {
-		list, err := f(list, rsv)
-		if err != nil {
-			return nil, fmt.Errorf("get coverage: %v", err)
+	used := reserved.RecordList{}
+
+	for i := range list {
+		rs := GetReserved(rsv, list[i].Record)
+
+		var current float64
+		if len(rs) == 0 {
+			current = 0.0
+		} else if len(rs) > 0 {
+			current = float64(rs.CountSum())
+			used = append(used, rs...)
+		} else {
+			return nil, fmt.Errorf("invalid reservation: %v", rs)
 		}
 
-		out = append(out, list...)
+		out = append(out, &Coverage{
+			UsageType:   list[i].Record.UsageType,
+			OSEngine:    list[i].Record.OSEngine(),
+			InstanceNum: list[i].InstanceNum,
+			CurrentRI:   current,
+			Short:       list[i].InstanceNum - current,
+			Coverage:    current / list[i].InstanceNum,
+		})
 	}
+
+	unused := reserved.RecordList{}
+	for _, r := range rsv.SelectAll().Active() {
+		found := false
+		for _, u := range used {
+			if r.Equals(u) {
+				found = true
+			}
+		}
+
+		if !found {
+			unused = append(unused, r)
+		}
+	}
+
+	for _, r := range unused {
+		out = append(out, &Coverage{
+			UsageType:   UsageType(r),
+			OSEngine:    OSEngine(r),
+			InstanceNum: 0,
+			CurrentRI:   float64(r.Count()),
+			Short:       float64(-r.Count()),
+			Coverage:    float64(r.Count()) / 0.0,
+		})
+	}
+
+	sort.SliceStable(out, func(i, j int) bool {
+		return out[i].UsageType < out[j].UsageType
+	})
 
 	return out, nil
 }

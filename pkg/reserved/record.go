@@ -10,6 +10,42 @@ import (
 
 type RecordList []*Record
 
+func (list RecordList) Compute() RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if len(list[i].InstanceType) > 0 {
+			ret = append(ret, list[i])
+		}
+	}
+
+	return ret
+}
+
+func (list RecordList) Cache() RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if len(list[i].CacheNodeType) > 0 {
+			ret = append(ret, list[i])
+		}
+	}
+
+	return ret
+}
+
+func (list RecordList) Database() RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if len(list[i].DBInstanceClass) > 0 {
+			ret = append(ret, list[i])
+		}
+	}
+
+	return ret
+}
+
 func (list RecordList) CountSum() int64 {
 	var sum int64
 	for i := range list {

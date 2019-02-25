@@ -60,11 +60,9 @@ func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
 		return nil, fmt.Errorf("get usage type: %v", err)
 	}
 
-	fn := NewGetUsageQuantityInput()
-
 	out := UsageQuantityList{}
 	for _, account := range linkedAccount {
-		for _, f := range fn {
+		for _, f := range GetUsageQuantityInputFuncList() {
 			get := f(usageType)
 			quantity, err := c.getUsageQuantity(&GetUsageQuantityInput{
 				AccountID:   account.AccountID,
@@ -86,6 +84,62 @@ func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
 	}
 
 	return out, nil
+}
+
+func GetUsageQuantityInputFuncList() []GetUsageQuantityInputFunc {
+	return []GetUsageQuantityInputFunc{
+		GetComputeUsageQuantityInput,
+		GetCacheUsageQuantityInput,
+		GetDatabaseUsageQuantityInput,
+	}
+}
+
+type GetUsageQuantityInputFunc func(all []string) *GetUsageQuantityInput
+
+func GetComputeUsageQuantityInput(all []string) *GetUsageQuantityInput {
+	usageType := []string{}
+	for i := range all {
+		if !strings.Contains(all[i], "BoxUsage") {
+			continue
+		}
+		usageType = append(usageType, all[i])
+	}
+
+	return &GetUsageQuantityInput{
+		Dimension: "PLATFORM",
+		UsageType: usageType,
+	}
+}
+
+func GetCacheUsageQuantityInput(all []string) *GetUsageQuantityInput {
+	usageType := []string{}
+	for i := range all {
+		if !strings.Contains(all[i], "NodeUsage") {
+			continue
+		}
+		usageType = append(usageType, all[i])
+	}
+
+	return &GetUsageQuantityInput{
+		Dimension: "CACHE_ENGINE",
+		UsageType: usageType,
+	}
+}
+
+func GetDatabaseUsageQuantityInput(all []string) *GetUsageQuantityInput {
+	usageType := []string{}
+	for i := range all {
+		if !strings.Contains(all[i], "InstanceUsage") &&
+			!strings.Contains(all[i], "Multi-AZUsage") {
+			continue
+		}
+		usageType = append(usageType, all[i])
+	}
+
+	return &GetUsageQuantityInput{
+		Dimension: "DATABASE_ENGINE",
+		UsageType: usageType,
+	}
 }
 
 type GetUsageQuantityInput struct {
