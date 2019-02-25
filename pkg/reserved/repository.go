@@ -231,17 +231,6 @@ func (repo *Repository) SelectAll() RecordList {
 	return repo.Internal
 }
 
-func (repo *Repository) FindByInstanceType(tipe string) RecordList {
-	out := RecordList{}
-	for i := range repo.Internal {
-		if repo.Internal[i].InstanceType == tipe {
-			out = append(out, repo.Internal[i])
-		}
-	}
-
-	return out
-}
-
 func Download(region []string, dir string) error {
 	path := fmt.Sprintf("%s/reserved.out", dir)
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
