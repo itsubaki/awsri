@@ -5,6 +5,9 @@ import (
 	"strings"
 )
 
+/*
+GetInstanceHourAndNum returns instance hour and instance num.
+*/
 func GetInstanceHourAndNum(amount, start string) (float64, float64) {
 	hrs, _ := strconv.ParseFloat(amount, 64)
 	month := strings.Split(start, "-")[1]

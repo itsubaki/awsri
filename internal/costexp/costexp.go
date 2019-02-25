@@ -30,6 +30,9 @@ type UsageQuantity struct {
 	InstanceNum    float64 `json:"instance_num"`
 }
 
+/*
+JSON returns json format string.
+*/
 func (u *UsageQuantity) JSON() string {
 	bytea, err := json.Marshal(u)
 	if err != nil {
@@ -43,12 +46,18 @@ type CostExp struct {
 	Client *costexplorer.CostExplorer
 }
 
+/*
+New creates a new instance of the CostExp client.
+*/
 func New() *CostExp {
 	return &CostExp{
 		Client: costexplorer.New(session.Must(session.NewSession())),
 	}
 }
 
+/*
+GetUsageQuantity returns list of usage quantity with date.
+*/
 func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
 	linkedAccount, err := c.GetLinkedAccount(date)
 	if err != nil {
@@ -62,25 +71,40 @@ func (c *CostExp) GetUsageQuantity(date *Date) (UsageQuantityList, error) {
 
 	out := UsageQuantityList{}
 	for _, account := range linkedAccount {
-		for _, f := range GetUsageQuantityInputFuncList() {
-			get := f(usageType)
-			quantity, err := c.getUsageQuantity(&GetUsageQuantityInput{
-				AccountID:   account.AccountID,
-				Description: account.Description,
-				Dimension:   get.Dimension,
-				UsageType:   get.UsageType,
-				Period: &costexplorer.DateInterval{
-					Start: &date.Start,
-					End:   &date.End,
-				},
-			})
-
-			if err != nil {
-				return out, fmt.Errorf("get usage quantity: %v", err)
-			}
-
-			out = append(out, quantity...)
+		quantity, err := c.GetUsageQuantityWith(account, usageType, date)
+		if err != nil {
+			return nil, fmt.Errorf("get usage quantity: %v", err)
 		}
+
+		out = append(out, quantity...)
+	}
+
+	return out, nil
+}
+
+/*
+GetUsageQuantity returns list of usage quantity with account, usage type, date.
+*/
+func (c *CostExp) GetUsageQuantityWith(account LinkedAccount, usageType []string, date *Date) (UsageQuantityList, error) {
+	out := UsageQuantityList{}
+	for _, f := range GetUsageQuantityInputFuncList() {
+		get := f(usageType)
+		quantity, err := c.getUsageQuantity(&GetUsageQuantityInput{
+			AccountID:   account.AccountID,
+			Description: account.Description,
+			Dimension:   get.Dimension,
+			UsageType:   get.UsageType,
+			Period: &costexplorer.DateInterval{
+				Start: &date.Start,
+				End:   &date.End,
+			},
+		})
+
+		if err != nil {
+			return out, fmt.Errorf("get usage quantity with account=%s: %v", account, err)
+		}
+
+		out = append(out, quantity...)
 	}
 
 	return out, nil

@@ -72,6 +72,9 @@ func Action(c *cli.Context) {
 	fmt.Println(output.JSON())
 }
 
+/*
+NewPricingRepository returns list of pricing repository.
+*/
 func NewPricingRepository(region []string, dir string) ([]*pricing.Repository, error) {
 	out := []*pricing.Repository{}
 	for _, r := range region {
@@ -86,6 +89,9 @@ func NewPricingRepository(region []string, dir string) ([]*pricing.Repository, e
 	return out, nil
 }
 
+/*
+NewReservedRepository returns reserved repository.
+*/
 func NewReservedRepository(dir string) (*reserved.Repository, error) {
 	path := fmt.Sprintf("%s/reserved.out", dir)
 	repo, err := reserved.Read(path)

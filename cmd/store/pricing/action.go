@@ -15,13 +15,13 @@ func Action(c *cli.Context) {
 	project := c.String("project")
 	region := c.StringSlice("region")
 
-	if err := Store(project, dir, region); err != nil {
+	if err := store(project, dir, region); err != nil {
 		fmt.Printf("store pricing: %v", err)
 		os.Exit(1)
 	}
 }
 
-func Store(project, dir string, region []string) error {
+func store(project, dir string, region []string) error {
 	ctx := context.Background()
 	ds, err := datastore.NewClient(ctx, project)
 	if err != nil {

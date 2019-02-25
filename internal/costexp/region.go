@@ -26,6 +26,9 @@ var Region = map[string]string{
 	"USW2": "us-west-2",
 }
 
+/*
+Lookup returns UsageType style (APN1) from fullname (ap-northeast-1)
+*/
 func Lookup(fullname string) string {
 	for k, v := range Region {
 		if v == fullname {

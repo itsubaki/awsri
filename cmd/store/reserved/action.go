@@ -14,13 +14,13 @@ func Action(c *cli.Context) {
 	dir := c.GlobalString("dir")
 	project := c.String("project")
 
-	if err := Store(project, dir); err != nil {
+	if err := store(project, dir); err != nil {
 		fmt.Printf("store reserved: %v", err)
 		os.Exit(1)
 	}
 }
 
-func Store(project, dir string) error {
+func store(project, dir string) error {
 	ctx := context.Background()
 	ds, err := datastore.NewClient(ctx, project)
 	if err != nil {
