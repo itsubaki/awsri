@@ -93,11 +93,11 @@ func (list RecordList) Region(region string) RecordList {
 	return ret
 }
 
-func (list RecordList) InstanceType(tipe string) RecordList {
+func (list RecordList) InstanceType(_type string) RecordList {
 	ret := RecordList{}
 
 	for i := range list {
-		if list[i].InstanceType != tipe {
+		if list[i].InstanceType != _type {
 			continue
 		}
 		ret = append(ret, list[i])

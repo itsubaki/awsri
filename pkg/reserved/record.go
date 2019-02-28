@@ -151,11 +151,11 @@ func (list RecordList) DBInstanceClass(class string) RecordList {
 	return ret
 }
 
-func (list RecordList) CacheNodeType(tipe string) RecordList {
+func (list RecordList) CacheNodeType(_type string) RecordList {
 	ret := RecordList{}
 
 	for i := range list {
-		if list[i].CacheNodeType != tipe {
+		if list[i].CacheNodeType != _type {
 			continue
 		}
 		ret = append(ret, list[i])
@@ -164,11 +164,11 @@ func (list RecordList) CacheNodeType(tipe string) RecordList {
 	return ret
 }
 
-func (list RecordList) InstanceType(tipe string) RecordList {
+func (list RecordList) InstanceType(_type string) RecordList {
 	ret := RecordList{}
 
 	for i := range list {
-		if list[i].InstanceType != tipe {
+		if list[i].InstanceType != _type {
 			continue
 		}
 		ret = append(ret, list[i])
@@ -208,11 +208,11 @@ func (list RecordList) LeaseContractLength(length string) RecordList {
 	return ret
 }
 
-func (list RecordList) OfferingType(tipe string) RecordList {
+func (list RecordList) OfferingType(_type string) RecordList {
 	ret := RecordList{}
 
 	for i := range list {
-		if list[i].OfferingType != tipe {
+		if list[i].OfferingType != _type {
 			continue
 		}
 		ret = append(ret, list[i])
