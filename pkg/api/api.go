@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -363,14 +364,14 @@ type Coverage struct {
 type CoverageList []*Coverage
 
 func (list CoverageList) Header() []interface{} {
-	return []interface{}{
-		"usage_type",
-		"os/engine",
-		"instance_num",
-		"current_ri",
-		"short",
-		"coverage",
+	out := []interface{}{}
+
+	ref := reflect.TypeOf(Coverage{})
+	for i := 0; i < ref.NumField(); i++ {
+		out = append(out, ref.Field(i).Tag.Get("json"))
 	}
+
+	return out
 }
 
 func (list CoverageList) Array() [][]interface{} {
