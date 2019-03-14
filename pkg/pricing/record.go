@@ -317,7 +317,73 @@ func (r *Record) BreakevenPointInMonth() int {
 	return breakevenPoint
 }
 
+type Summary struct {
+	FullOnDemandCost    float64 `json:"full_ondemand_cost"`
+	ReservedAppliedCost Cost    `json:"reserved_applied_cost"`
+	ReservedQuantity    float64 `json:"reserved_quantity"`
+	SavingCost          float64 `json:"saving_cost"`
+	DiscountRate        float64 `json:"discount_rate"`
+}
+
+func (s *Summary) Header() []interface{} {
+	header := []interface{}{
+		"full_ondemand_cost",
+		"reserved_applied_cost.ondemand",
+		"reserved_applied_cost.reserved",
+		"reserved_applied_cost.total",
+		"reserved_quantity",
+		"saving_cost",
+		"discount_rate",
+	}
+
+	return header
+}
+
+func (s *Summary) Array() [][]interface{} {
+	out := [][]interface{}{
+		[]interface{}{
+			s.FullOnDemandCost,
+			s.ReservedAppliedCost.OnDemand,
+			s.ReservedAppliedCost.Reserved,
+			s.ReservedAppliedCost.Total,
+			s.ReservedQuantity,
+			s.SavingCost,
+			s.DiscountRate,
+		},
+	}
+
+	return out
+}
+
 type RecommendedList []*Recommended
+
+func (list RecommendedList) Summarize() *Summary {
+	out := &Summary{
+		FullOnDemandCost: 0.0,
+		ReservedAppliedCost: Cost{
+			Total:    0.0,
+			OnDemand: 0.0,
+			Reserved: 0.0,
+		},
+		ReservedQuantity: 0.0,
+		SavingCost:       0.0,
+		DiscountRate:     0.0,
+	}
+
+	for _, r := range list {
+		out.FullOnDemandCost += r.FullOnDemandCost
+		out.ReservedAppliedCost.Total += r.ReservedAppliedCost.Total
+		out.ReservedAppliedCost.OnDemand += r.ReservedAppliedCost.OnDemand
+		out.ReservedAppliedCost.Reserved += r.ReservedAppliedCost.Reserved
+		out.ReservedQuantity += r.ReservedQuantity
+		out.SavingCost += r.SavingCost
+		out.DiscountRate += r.DiscountRate
+	}
+
+	out.DiscountRate = out.DiscountRate / float64(len(list))
+
+	return out
+}
 
 func (list RecommendedList) NormalizedList() NormalizedList {
 	flat := make(map[string]*Normalized)

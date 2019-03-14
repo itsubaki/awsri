@@ -80,6 +80,11 @@ func (output *Output) Array() [][]interface{} {
 	array = append(array, output.Recommended.Header())
 	array = append(array, output.Recommended.Array()...)
 
+	summary := output.Recommended.Summarize()
+	array = append(array, []interface{}{"# cost summary"})
+	array = append(array, summary.Header())
+	array = append(array, summary.Array()...)
+
 	array = append(array, []interface{}{"# coverage"})
 	array = append(array, output.Coverage.Header())
 	array = append(array, output.Coverage.Array()...)
