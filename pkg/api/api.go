@@ -36,7 +36,12 @@ func (output *Output) CSV() string {
 	var buf bytes.Buffer
 	for _, r := range output.Array() {
 		for _, c := range r {
-			buf.WriteString(fmt.Sprintf("%v,", c))
+			switch c.(type) {
+			case float32, float64:
+				buf.WriteString(fmt.Sprintf("%f,", c))
+			default:
+				buf.WriteString(fmt.Sprintf("%v,", c))
+			}
 		}
 		buf.WriteString("\n")
 	}
@@ -48,7 +53,12 @@ func (output *Output) TSV() string {
 	var buf bytes.Buffer
 	for _, r := range output.Array() {
 		for _, c := range r {
-			buf.WriteString(fmt.Sprintf("%v\t", c))
+			switch c.(type) {
+			case float32, float64:
+				buf.WriteString(fmt.Sprintf("%f\t", c))
+			default:
+				buf.WriteString(fmt.Sprintf("%v\t", c))
+			}
 		}
 		buf.WriteString("\n")
 	}
@@ -344,9 +354,9 @@ func (list InstanceNumList) Add(input InstanceNumList) InstanceNumList {
 type Coverage struct {
 	UsageType   string  `json:"usage_type"`
 	OSEngine    string  `json:"os_engine"`
-	InstanceNum float64 `json:"instance_num"`
-	CurrentRI   float64 `json:"current_ri"`
-	Short       float64 `json:"short"`
+	InstanceNum int64   `json:"instance_num"`
+	CurrentRI   int64   `json:"current_ri"`
+	Short       int64   `json:"short"`
 	Coverage    float64 `json:"coverage"`
 }
 
@@ -441,9 +451,9 @@ func GetCoverage(list pricing.NormalizedList, rsv *reserved.Repository) (Coverag
 		out = append(out, &Coverage{
 			UsageType:   list[i].Record.UsageType,
 			OSEngine:    list[i].Record.OSEngine(),
-			InstanceNum: list[i].InstanceNum,
-			CurrentRI:   current,
-			Short:       list[i].InstanceNum - current,
+			InstanceNum: int64(list[i].InstanceNum),
+			CurrentRI:   int64(current),
+			Short:       int64(list[i].InstanceNum - current),
 			Coverage:    current / list[i].InstanceNum,
 		})
 	}
@@ -467,8 +477,8 @@ func GetCoverage(list pricing.NormalizedList, rsv *reserved.Repository) (Coverag
 			UsageType:   UsageType(r),
 			OSEngine:    OSEngine(r),
 			InstanceNum: 0,
-			CurrentRI:   float64(r.Count()),
-			Short:       float64(-r.Count()),
+			CurrentRI:   r.Count(),
+			Short:       0 - r.Count(),
 			Coverage:    float64(r.Count()) / 0.0,
 		})
 	}
