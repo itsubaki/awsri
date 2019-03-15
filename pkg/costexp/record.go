@@ -189,14 +189,21 @@ func (list RecordList) DatabaseEngine(engine string) RecordList {
 	return ret
 }
 
-func (list RecordList) Sort() RecordList {
-	ret := append(RecordList{}, list...)
+func (list RecordList) Sort() {
+	sort.SliceStable(list, func(i, j int) bool { return list[i].UsageType < list[j].UsageType })
+	sort.SliceStable(list, func(i, j int) bool { return list[i].Platform < list[j].Platform })
+	sort.SliceStable(list, func(i, j int) bool { return list[i].CacheEngine < list[j].CacheEngine })
+	sort.SliceStable(list, func(i, j int) bool { return list[i].DatabaseEngine < list[j].DatabaseEngine })
+	sort.SliceStable(list, func(i, j int) bool { return list[i].AccountID < list[j].AccountID })
 
-	sort.SliceStable(ret, func(i, j int) bool { return ret[i].UsageType < ret[j].UsageType })
-	sort.SliceStable(ret, func(i, j int) bool { return ret[i].Platform < ret[j].Platform })
-	sort.SliceStable(ret, func(i, j int) bool { return ret[i].CacheEngine < ret[j].CacheEngine })
-	sort.SliceStable(ret, func(i, j int) bool { return ret[i].DatabaseEngine < ret[j].DatabaseEngine })
-	sort.SliceStable(ret, func(i, j int) bool { return ret[i].AccountID < ret[j].AccountID })
+	// func (list RecordList) Sort() RecordList {
+	//	ret := append(RecordList{}, list...)
 
-	return ret
+	// sort.SliceStable(ret, func(i, j int) bool { return ret[i].UsageType < ret[j].UsageType })
+	// sort.SliceStable(ret, func(i, j int) bool { return ret[i].Platform < ret[j].Platform })
+	// sort.SliceStable(ret, func(i, j int) bool { return ret[i].CacheEngine < ret[j].CacheEngine })
+	// sort.SliceStable(ret, func(i, j int) bool { return ret[i].DatabaseEngine < ret[j].DatabaseEngine })
+	// sort.SliceStable(ret, func(i, j int) bool { return ret[i].AccountID < ret[j].AccountID })
+
+	//	return ret
 }

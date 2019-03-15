@@ -166,10 +166,7 @@ func (list ForecastList) recommend(repo []*pricing.Repository, get GetPricingFun
 		}
 	}
 
-	sort.SliceStable(out, func(i, j int) bool {
-		return out[i].Record.UsageType < out[j].Record.UsageType
-	})
-
+	out.Sort()
 	return out, nil
 }
 
@@ -184,10 +181,7 @@ func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.Recommen
 		out = append(out, rec...)
 	}
 
-	sort.SliceStable(out, func(i, j int) bool {
-		return out[i].Record.UsageType < out[j].Record.UsageType
-	})
-
+	out.Sort()
 	return out, nil
 }
 
@@ -198,6 +192,12 @@ func (list ForecastList) Region() []string {
 	}
 
 	return out
+}
+
+func (list ForecastList) Sort() {
+	sort.SliceStable(list, func(i, j int) bool {
+		return list[i].UsageType < list[j].UsageType
+	})
 }
 
 func (list ForecastList) Merge() ForecastList {
@@ -235,10 +235,7 @@ func (list ForecastList) Merge() ForecastList {
 		})
 	}
 
-	sort.SliceStable(out, func(i, j int) bool {
-		return out[i].UsageType < out[j].UsageType
-	})
-
+	out.Sort()
 	return out
 }
 
@@ -363,6 +360,12 @@ type Coverage struct {
 
 type CoverageList []*Coverage
 
+func (list CoverageList) Sort() {
+	sort.SliceStable(list, func(i, j int) bool {
+		return list[i].UsageType < list[j].UsageType
+	})
+}
+
 func (list CoverageList) Header() []interface{} {
 	out := []interface{}{}
 
@@ -484,10 +487,7 @@ func GetCoverage(list pricing.NormalizedList, rsv *reserved.Repository) (Coverag
 		})
 	}
 
-	sort.SliceStable(out, func(i, j int) bool {
-		return out[i].UsageType < out[j].UsageType
-	})
-
+	out.Sort()
 	return out, nil
 }
 

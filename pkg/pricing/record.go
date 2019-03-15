@@ -357,6 +357,12 @@ func (s *Summary) Array() [][]interface{} {
 
 type RecommendedList []*Recommended
 
+func (list RecommendedList) Sort() {
+	sort.SliceStable(list, func(i, j int) bool {
+		return list[i].Record.UsageType < list[j].Record.UsageType
+	})
+}
+
 func (list RecommendedList) Summarize() *Summary {
 	out := &Summary{
 		FullOnDemandCost: 0.0,
@@ -413,10 +419,7 @@ func (list RecommendedList) NormalizedList() NormalizedList {
 		out = append(out, v)
 	}
 
-	sort.SliceStable(out, func(i, j int) bool {
-		return out[i].Record.UsageType < out[j].Record.UsageType
-	})
-
+	out.Sort()
 	return out
 }
 
@@ -464,6 +467,12 @@ type Normalized struct {
 
 type NormalizedList []*Normalized
 
+func (list NormalizedList) Sort() {
+	sort.SliceStable(list, func(i, j int) bool {
+		return list[i].Record.UsageType < list[j].Record.UsageType
+	})
+}
+
 type Recommended struct {
 	Record                 *Record     `json:"record"`
 	BreakevenPointInMonth  int         `json:"breakevenpoint_in_month"`
@@ -507,6 +516,10 @@ type Forecast struct {
 }
 
 type ForecastList []*Forecast
+
+func (list ForecastList) Sort() {
+	sort.Slice(list, func(i, j int) bool { return list[i].InstanceNum > list[j].InstanceNum })
+}
 
 type ReservedAppliedCost struct {
 	LeaseContractLength string  `json:"lease_contract_length"`
@@ -563,7 +576,7 @@ func (r *Record) GetInstanceNum(forecast ForecastList, strategy ...string) (stri
 	}
 
 	tmp := append(ForecastList{}, forecast...)
-	sort.Slice(tmp, func(i, j int) bool { return tmp[i].InstanceNum > tmp[j].InstanceNum })
+	tmp.Sort()
 
 	// default strategy is breakevenpoint
 	actual := "breakevenpoint"
