@@ -141,7 +141,9 @@ func (f *Forecast) PlatformEngine() string {
 
 type ForecastList []*Forecast
 
-func (list ForecastList) recommend(repo []*pricing.Repository, get GetPricingFunc) (pricing.RecommendedList, error) {
+type GetPricingFunc func(repo *pricing.Repository, f *Forecast) pricing.RecordList
+
+func (list ForecastList) recommend(repo []*pricing.Repository, fnc GetPricingFunc) (pricing.RecommendedList, error) {
 	rmap := make(map[string]*pricing.Repository)
 	for i := range repo {
 		rmap[repo[i].Region[0]] = repo[i]
@@ -150,7 +152,7 @@ func (list ForecastList) recommend(repo []*pricing.Repository, get GetPricingFun
 	out := pricing.RecommendedList{}
 	for _, f := range list {
 		repo := rmap[f.Region]
-		price := get(repo, f)
+		price := fnc(repo, f)
 		if len(price) != 1 {
 			continue
 		}
@@ -170,9 +172,9 @@ func (list ForecastList) recommend(repo []*pricing.Repository, get GetPricingFun
 	return out, nil
 }
 
-func (list ForecastList) Recommend(repo []*pricing.Repository) (pricing.RecommendedList, error) {
+func (list ForecastList) Recommend(repo []*pricing.Repository, fnc []GetPricingFunc) (pricing.RecommendedList, error) {
 	out := pricing.RecommendedList{}
-	for _, f := range NewGetPricingFuncList() {
+	for _, f := range fnc {
 		rec, err := list.recommend(repo, f)
 		if err != nil {
 			return nil, fmt.Errorf("recommend: %v", err)
@@ -237,46 +239,6 @@ func (list ForecastList) Merge() ForecastList {
 
 	out.Sort()
 	return out
-}
-
-type GetPricingFunc func(repo *pricing.Repository, f *Forecast) pricing.RecordList
-
-func NewGetPricingFuncList() []GetPricingFunc {
-	return []GetPricingFunc{
-		GetComputePricing,
-		GetCachePricing,
-		GetDatabasePricing,
-	}
-}
-
-func GetComputePricing(repo *pricing.Repository, f *Forecast) pricing.RecordList {
-	return repo.SelectAll().
-		Compute().
-		UsageType(f.UsageType).
-		OperatingSystem(pricing.OperatingSystem[f.Platform]).
-		LeaseContractLength("1yr").
-		PurchaseOption("All Upfront").
-		OfferingClass("standard").
-		PreInstalled("NA").
-		Tenancy("Shared")
-}
-
-func GetCachePricing(repo *pricing.Repository, f *Forecast) pricing.RecordList {
-	return repo.SelectAll().
-		Cache().
-		UsageType(f.UsageType).
-		CacheEngine(f.CacheEngine).
-		LeaseContractLength("1yr").
-		PurchaseOptionOR([]string{"All Upfront", "Heavy Utilization"})
-}
-
-func GetDatabasePricing(repo *pricing.Repository, f *Forecast) pricing.RecordList {
-	return repo.SelectAll().
-		Database().
-		UsageType(f.UsageType).
-		DatabaseEngine(f.DatabaseEngine).
-		LeaseContractLength("1yr").
-		PurchaseOption("All Upfront")
 }
 
 func (list ForecastList) Header() []interface{} {

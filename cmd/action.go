@@ -33,7 +33,7 @@ func Action(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	rec, err := merged.Recommend(price)
+	rec, err := merged.Recommend(price, NewGetPricingFuncList())
 	if err != nil {
 		fmt.Println(fmt.Errorf("recommend: %v", err))
 		os.Exit(1)
@@ -70,6 +70,44 @@ func Action(c *cli.Context) {
 
 	//  c.String("format") == "json"
 	fmt.Println(output.JSON())
+}
+
+func NewGetPricingFuncList() []api.GetPricingFunc {
+	return []api.GetPricingFunc{
+		GetComputePricing,
+		GetCachePricing,
+		GetDatabasePricing,
+	}
+}
+
+func GetComputePricing(repo *pricing.Repository, f *api.Forecast) pricing.RecordList {
+	return repo.SelectAll().
+		Compute().
+		UsageType(f.UsageType).
+		OperatingSystem(pricing.OperatingSystem[f.Platform]).
+		LeaseContractLength("1yr").
+		PurchaseOption("All Upfront").
+		OfferingClass("standard").
+		PreInstalled("NA").
+		Tenancy("Shared")
+}
+
+func GetCachePricing(repo *pricing.Repository, f *api.Forecast) pricing.RecordList {
+	return repo.SelectAll().
+		Cache().
+		UsageType(f.UsageType).
+		CacheEngine(f.CacheEngine).
+		LeaseContractLength("1yr").
+		PurchaseOptionOR([]string{"All Upfront", "Heavy Utilization"})
+}
+
+func GetDatabasePricing(repo *pricing.Repository, f *api.Forecast) pricing.RecordList {
+	return repo.SelectAll().
+		Database().
+		UsageType(f.UsageType).
+		DatabaseEngine(f.DatabaseEngine).
+		LeaseContractLength("1yr").
+		PurchaseOption("All Upfront")
 }
 
 /*
