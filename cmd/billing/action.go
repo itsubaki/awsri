@@ -27,6 +27,7 @@ func Action(c *cli.Context) {
 		}
 		fmt.Println()
 
+		// CONTENT
 		for _, desc := range repo.Description() {
 			list := repo.SelectAll().Description(desc)
 			fmt.Printf("%s,%s,", list[0].AccountID, list[0].Description)
@@ -43,9 +44,7 @@ func Action(c *cli.Context) {
 		return
 	}
 
-	for _, r := range repo.SelectAll() {
-		fmt.Printf("%#v\n", r)
-	}
+	fmt.Println(repo.SelectAll().JSON())
 }
 
 func NewRepository(dir string, date []*costexp.Date) (*billing.Repository, error) {

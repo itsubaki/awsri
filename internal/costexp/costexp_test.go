@@ -1,9 +1,11 @@
 package costexp
 
 import (
+	"fmt"
 	"os"
 	"testing"
 )
+
 //
 // func TestReservationCoverage(t *testing.T) {
 // 	os.Setenv("AWS_PROFILE", "example")
@@ -43,6 +45,23 @@ import (
 // 		fmt.Println(out)
 // 	}
 // }
+
+func TestBilling(t *testing.T) {
+	os.Setenv("AWS_PROFILE", "example")
+
+	list, err := New().GetCost(&Date{
+		Start: "2018-05-01",
+		End:   "2018-06-01",
+	})
+
+	if err != nil {
+		t.Errorf("get cost: %v", err)
+	}
+
+	for _, r := range list {
+		fmt.Println(r)
+	}
+}
 
 func TestLinkedAccount(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
