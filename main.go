@@ -60,7 +60,8 @@ func New(version string) *cli.App {
 	}
 
 	store := cli.Command{
-		Name: "store",
+		Name:  "store",
+		Usage: "store to google cloud datastore",
 		Subcommands: []cli.Command{
 			{
 				Name:    "pricing",
