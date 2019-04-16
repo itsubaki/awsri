@@ -8,6 +8,7 @@ import (
 
 func TestSerialize(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
+
 	date := []*Date{
 		{Start: "2018-02-01", End: "2018-03-01"},
 		{Start: "2018-03-01", End: "2018-04-01"},

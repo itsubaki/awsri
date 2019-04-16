@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/itsubaki/hermes/cmd"
+	"github.com/itsubaki/hermes/cmd/billing"
 	"github.com/itsubaki/hermes/cmd/initialize"
 	"github.com/itsubaki/hermes/cmd/store/costexp"
 	"github.com/itsubaki/hermes/cmd/store/pricing"
@@ -53,6 +54,19 @@ func New(version string) *cli.App {
 		},
 	}
 
+	billing := cli.Command{
+		Name:   "billing",
+		Action: billing.Action,
+		Usage:  "get aws billing details by account",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:  "format, f",
+				Value: "json",
+				Usage: "json, csv, tsv",
+			},
+		},
+	}
+
 	flags := []cli.Flag{
 		cli.StringFlag{
 			Name: "project, p",
@@ -87,6 +101,7 @@ func New(version string) *cli.App {
 	app.Commands = []cli.Command{
 		init,
 		store,
+		billing,
 	}
 
 	return app

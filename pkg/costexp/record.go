@@ -9,6 +9,39 @@ import (
 	"sort"
 )
 
+type Record struct {
+	AccountID      string  `json:"account_id"`
+	Description    string  `json:"description"`
+	Region         string  `json:"region"`
+	UsageType      string  `json:"usage_type"`
+	Platform       string  `json:"platform,omitempty"`        // compute
+	DatabaseEngine string  `json:"database_engine,omitempty"` // database
+	CacheEngine    string  `json:"cache_engine,omitempty"`    // cache
+	Date           string  `json:"date"`
+	InstanceHour   float64 `json:"instance_hour"`
+	InstanceNum    float64 `json:"instance_num"`
+}
+
+func (r *Record) Hash() string {
+	bytea, err := json.Marshal(r)
+	if err != nil {
+		panic(err)
+	}
+
+	sha := sha256.Sum256(bytea)
+	hash := hex.EncodeToString(sha[:])
+	return hash
+}
+
+func (r *Record) JSON() string {
+	bytea, err := json.Marshal(r)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(bytea)
+}
+
 type RecordList []*Record
 
 func (list RecordList) JSON() string {
@@ -32,39 +65,6 @@ func (list RecordList) Pretty() string {
 	}
 
 	return string(out.Bytes())
-}
-
-type Record struct {
-	AccountID      string  `json:"account_id"`
-	Description    string  `json:"description"`
-	Region         string  `json:"region"`
-	UsageType      string  `json:"usage_type"`
-	Platform       string  `json:"platform,omitempty"`        // compute
-	DatabaseEngine string  `json:"database_engine,omitempty"` // database
-	CacheEngine    string  `json:"cache_engine,omitempty"`    // cache
-	Date           string  `json:"date"`
-	InstanceHour   float64 `json:"instance_hour"`
-	InstanceNum    float64 `json:"instance_num"`
-}
-
-func (u *Record) Hash() string {
-	bytea, err := json.Marshal(u)
-	if err != nil {
-		panic(err)
-	}
-
-	sha := sha256.Sum256(bytea)
-	hash := hex.EncodeToString(sha[:])
-	return hash
-}
-
-func (u *Record) JSON() string {
-	bytea, err := json.Marshal(u)
-	if err != nil {
-		panic(err)
-	}
-
-	return string(bytea)
 }
 
 func (list RecordList) Unique(fieldname string) []string {
@@ -195,15 +195,4 @@ func (list RecordList) Sort() {
 	sort.SliceStable(list, func(i, j int) bool { return list[i].CacheEngine < list[j].CacheEngine })
 	sort.SliceStable(list, func(i, j int) bool { return list[i].DatabaseEngine < list[j].DatabaseEngine })
 	sort.SliceStable(list, func(i, j int) bool { return list[i].AccountID < list[j].AccountID })
-
-	// func (list RecordList) Sort() RecordList {
-	//	ret := append(RecordList{}, list...)
-
-	// sort.SliceStable(ret, func(i, j int) bool { return ret[i].UsageType < ret[j].UsageType })
-	// sort.SliceStable(ret, func(i, j int) bool { return ret[i].Platform < ret[j].Platform })
-	// sort.SliceStable(ret, func(i, j int) bool { return ret[i].CacheEngine < ret[j].CacheEngine })
-	// sort.SliceStable(ret, func(i, j int) bool { return ret[i].DatabaseEngine < ret[j].DatabaseEngine })
-	// sort.SliceStable(ret, func(i, j int) bool { return ret[i].AccountID < ret[j].AccountID })
-
-	//	return ret
 }

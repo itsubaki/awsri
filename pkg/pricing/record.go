@@ -10,6 +10,98 @@ import (
 	"strings"
 )
 
+type Record struct {
+	Version                 string  `json:"version"`                             // common
+	SKU                     string  `json:"sku"`                                 // common
+	OfferTermCode           string  `json:"offer_term_code"`                     // common
+	Region                  string  `json:"region"`                              // common
+	InstanceType            string  `json:"instance_type"`                       // common
+	UsageType               string  `json:"usage_type"`                          // common
+	LeaseContractLength     string  `json:"lease_contract_length"`               // common
+	PurchaseOption          string  `json:"purchase_option"`                     // common
+	OnDemand                float64 `json:"ondemand"`                            // common
+	ReservedQuantity        float64 `json:"reserved_quantity"`                   // common
+	ReservedHrs             float64 `json:"reserved_hrs"`                        // common
+	Tenancy                 string  `json:"tenancy,omitempty"`                   // compute: Shared, Host, Dedicated
+	PreInstalled            string  `json:"pre_installed,omitempty"`             // compute: SQL Web, SQL Ent, SQL Std, NA
+	OperatingSystem         string  `json:"operating_system,omitempty"`          // compute: Windows, Linux, SUSE, RHEL
+	Operation               string  `json:"operation,omitempty"`                 // compute
+	OfferingClass           string  `json:"offering_class,omitempty"`            // compute, database
+	NormalizationSizeFactor string  `json:"normalization_size_factor,omitempty"` // compute, database
+	DatabaseEngine          string  `json:"database_engine,omitempty"`           // database
+	CacheEngine             string  `json:"cache_engine,omitempty"`              // cache
+}
+
+func (r *Record) ID() string {
+	return fmt.Sprintf("%s.%s", r.SKU, r.OfferTermCode)
+}
+
+func (r *Record) Compute() bool {
+	if len(r.OperatingSystem) > 0 {
+		return true
+	}
+	return false
+}
+
+func (r *Record) Cache() bool {
+	if len(r.CacheEngine) > 0 {
+		return true
+	}
+	return false
+}
+
+func (r *Record) Database() bool {
+	if len(r.DatabaseEngine) > 0 {
+		return true
+	}
+	return false
+}
+func (r *Record) OSEngine() string {
+	if r.Compute() {
+		return r.OperatingSystem
+	}
+
+	if r.Cache() {
+		return r.CacheEngine
+	}
+
+	if r.Database() {
+		return r.DatabaseEngine
+	}
+
+	return ""
+}
+
+func (r *Record) JSON() string {
+	bytea, err := json.Marshal(r)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(bytea)
+}
+
+func (r *Record) BreakevenPointInMonth() int {
+	month := 12
+	if r.LeaseContractLength == "3yr" {
+		month = 12 * 3
+	}
+
+	breakevenPoint := 0
+	res := r.ReservedQuantity
+	ond := 0.0
+	for i := 1; i < month+1; i++ {
+		ond = ond + r.OnDemand*24*float64(GetDays(i))
+		res = res + r.ReservedHrs*24*float64(GetDays(i))
+		if ond > res {
+			breakevenPoint = i
+			break
+		}
+	}
+
+	return breakevenPoint
+}
+
 type RecordList []*Record
 
 func (list RecordList) Compute() RecordList {
@@ -223,98 +315,6 @@ func (list RecordList) OfferingClass(class string) RecordList {
 	}
 
 	return ret
-}
-
-type Record struct {
-	Version                 string  `json:"version"`                             // common
-	SKU                     string  `json:"sku"`                                 // common
-	OfferTermCode           string  `json:"offer_term_code"`                     // common
-	Region                  string  `json:"region"`                              // common
-	InstanceType            string  `json:"instance_type"`                       // common
-	UsageType               string  `json:"usage_type"`                          // common
-	LeaseContractLength     string  `json:"lease_contract_length"`               // common
-	PurchaseOption          string  `json:"purchase_option"`                     // common
-	OnDemand                float64 `json:"ondemand"`                            // common
-	ReservedQuantity        float64 `json:"reserved_quantity"`                   // common
-	ReservedHrs             float64 `json:"reserved_hrs"`                        // common
-	Tenancy                 string  `json:"tenancy,omitempty"`                   // compute: Shared, Host, Dedicated
-	PreInstalled            string  `json:"pre_installed,omitempty"`             // compute: SQL Web, SQL Ent, SQL Std, NA
-	OperatingSystem         string  `json:"operating_system,omitempty"`          // compute: Windows, Linux, SUSE, RHEL
-	Operation               string  `json:"operation,omitempty"`                 // compute
-	OfferingClass           string  `json:"offering_class,omitempty"`            // compute, database
-	NormalizationSizeFactor string  `json:"normalization_size_factor,omitempty"` // compute, database
-	DatabaseEngine          string  `json:"database_engine,omitempty"`           // database
-	CacheEngine             string  `json:"cache_engine,omitempty"`              // cache
-}
-
-func (r *Record) ID() string {
-	return fmt.Sprintf("%s.%s", r.SKU, r.OfferTermCode)
-}
-
-func (r *Record) Compute() bool {
-	if len(r.OperatingSystem) > 0 {
-		return true
-	}
-	return false
-}
-
-func (r *Record) Cache() bool {
-	if len(r.CacheEngine) > 0 {
-		return true
-	}
-	return false
-}
-
-func (r *Record) Database() bool {
-	if len(r.DatabaseEngine) > 0 {
-		return true
-	}
-	return false
-}
-func (r *Record) OSEngine() string {
-	if r.Compute() {
-		return r.OperatingSystem
-	}
-
-	if r.Cache() {
-		return r.CacheEngine
-	}
-
-	if r.Database() {
-		return r.DatabaseEngine
-	}
-
-	return ""
-}
-
-func (r *Record) JSON() string {
-	bytea, err := json.Marshal(r)
-	if err != nil {
-		panic(err)
-	}
-
-	return string(bytea)
-}
-
-func (r *Record) BreakevenPointInMonth() int {
-	month := 12
-	if r.LeaseContractLength == "3yr" {
-		month = 12 * 3
-	}
-
-	breakevenPoint := 0
-	res := r.ReservedQuantity
-	ond := 0.0
-	for i := 1; i < month+1; i++ {
-		ond = ond + r.OnDemand*24*float64(GetDays(i))
-		res = res + r.ReservedHrs*24*float64(GetDays(i))
-		if ond > res {
-			breakevenPoint = i
-			break
-		}
-	}
-
-	return breakevenPoint
 }
 
 type Summary struct {

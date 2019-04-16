@@ -8,61 +8,6 @@ import (
 	"time"
 )
 
-type RecordList []*Record
-
-func (list RecordList) Compute() RecordList {
-	ret := RecordList{}
-
-	for i := range list {
-		if len(list[i].InstanceType) > 0 {
-			ret = append(ret, list[i])
-		}
-	}
-
-	return ret
-}
-
-func (list RecordList) Cache() RecordList {
-	ret := RecordList{}
-
-	for i := range list {
-		if len(list[i].CacheNodeType) > 0 {
-			ret = append(ret, list[i])
-		}
-	}
-
-	return ret
-}
-
-func (list RecordList) Database() RecordList {
-	ret := RecordList{}
-
-	for i := range list {
-		if len(list[i].DBInstanceClass) > 0 {
-			ret = append(ret, list[i])
-		}
-	}
-
-	return ret
-}
-
-func (list RecordList) CountSum() int64 {
-	var sum int64
-	for i := range list {
-		sum = sum + list[i].Count()
-	}
-	return sum
-}
-
-func (list RecordList) JSON() string {
-	bytea, err := json.Marshal(list)
-	if err != nil {
-		panic(err)
-	}
-
-	return string(bytea)
-}
-
 type Record struct {
 	ReservedID         string    `json:"reserved_id"`
 	Region             string    `json:"region"`
@@ -123,6 +68,61 @@ func (r *Record) Count() int64 {
 	}
 
 	return 0
+}
+
+type RecordList []*Record
+
+func (list RecordList) Compute() RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if len(list[i].InstanceType) > 0 {
+			ret = append(ret, list[i])
+		}
+	}
+
+	return ret
+}
+
+func (list RecordList) Cache() RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if len(list[i].CacheNodeType) > 0 {
+			ret = append(ret, list[i])
+		}
+	}
+
+	return ret
+}
+
+func (list RecordList) Database() RecordList {
+	ret := RecordList{}
+
+	for i := range list {
+		if len(list[i].DBInstanceClass) > 0 {
+			ret = append(ret, list[i])
+		}
+	}
+
+	return ret
+}
+
+func (list RecordList) CountSum() int64 {
+	var sum int64
+	for i := range list {
+		sum = sum + list[i].Count()
+	}
+	return sum
+}
+
+func (list RecordList) JSON() string {
+	bytea, err := json.Marshal(list)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(bytea)
 }
 
 func (list RecordList) Region(region string) RecordList {

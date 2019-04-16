@@ -1,4 +1,4 @@
-package costexp
+package billing
 
 import (
 	"encoding/json"
@@ -36,26 +36,25 @@ func (repo *Repository) FetchWithClient(client *http.Client) error {
 	c.Client.Config.WithHTTPClient(client)
 
 	for i := range repo.Date {
-		q, err := c.GetUsageQuantity(&costexp.Date{
+		cost, err := c.GetCost(&costexp.Date{
 			Start: repo.Date[i].Start,
 			End:   repo.Date[i].End,
 		})
+
 		if err != nil {
-			return fmt.Errorf("get usage quantity: %v", err)
+			return fmt.Errorf("get cost: %v", err)
 		}
 
-		for _, qq := range q {
+		for _, c := range cost {
 			repo.Internal = append(repo.Internal, &Record{
-				AccountID:      qq.AccountID,
-				Description:    qq.Description,
-				Date:           qq.Date,
-				Region:         qq.Region,
-				UsageType:      qq.UsageType,
-				Platform:       qq.Platform,
-				CacheEngine:    qq.CacheEngine,
-				DatabaseEngine: qq.DatabaseEngine,
-				InstanceHour:   qq.InstanceHour,
-				InstanceNum:    qq.InstanceNum,
+				AccountID:        c.AccountID,
+				Description:      c.Description,
+				Date:             c.Date,
+				AmortizedCost:    c.AmortizedCost,
+				BlendedCost:      c.BlendedCost,
+				UnblendedCost:    c.UnblendedCost,
+				NetAmortizedCost: c.NetAmortizedCost,
+				NetUnblendedCost: c.NetUnblendedCost,
 			})
 		}
 	}
@@ -130,8 +129,23 @@ func (repo *Repository) AccountID() []string {
 	return out
 }
 
+func (repo *Repository) Description() []string {
+	selected := make(map[string]bool)
+	for i := range repo.Internal {
+		selected[repo.Internal[i].Description] = true
+	}
+
+	out := []string{}
+	for k := range selected {
+		out = append(out, k)
+	}
+
+	sort.Slice(out, func(i, j int) bool { return out[i] < out[j] })
+	return out
+}
+
 func Download(dir string) error {
-	path := fmt.Sprintf("%s/costexp", dir)
+	path := fmt.Sprintf("%s/billing", dir)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		os.MkdirAll(path, os.ModePerm)
 	}
@@ -145,11 +159,11 @@ func Download(dir string) error {
 
 		repo := NewRepository([]*Date{date[i]})
 		if err := repo.Fetch(); err != nil {
-			return fmt.Errorf("fetch costexp (date=%s): %v", date[i], err)
+			return fmt.Errorf("fetch billing (date=%s): %v", date[i], err)
 		}
 
 		if err := repo.Write(cache); err != nil {
-			return fmt.Errorf("write costexp (date=%s): %v", date[i], err)
+			return fmt.Errorf("write billing (date=%s): %v", date[i], err)
 		}
 
 		fmt.Printf("write: %v\n", cache)

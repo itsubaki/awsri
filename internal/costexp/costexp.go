@@ -30,6 +30,19 @@ type UsageQuantity struct {
 	InstanceNum    float64 `json:"instance_num"`
 }
 
+type CostList []*Cost
+
+type Cost struct {
+	AccountID        string `json:"account_id"`
+	Description      string `json:"description"`
+	Date             string `json:"date"`
+	AmortizedCost    string `json:"amortized_cost"`
+	BlendedCost      string `json:"blended_cost"`
+	UnblendedCost    string `json:"unblended_cost"`
+	NetAmortizedCost string `json:"net_amortized_cost"`
+	NetUnblendedCost string `json:"net_unblended_cost"`
+}
+
 /*
 JSON returns json format string.
 */
@@ -53,6 +66,57 @@ func New() *CostExp {
 	return &CostExp{
 		Client: costexplorer.New(session.Must(session.NewSession())),
 	}
+}
+
+func (c *CostExp) GetCost(date *Date) (CostList, error) {
+	linkedAccount, err := c.GetLinkedAccount(date)
+	if err != nil {
+		return nil, fmt.Errorf("get linked account: %v", err)
+	}
+
+	out := CostList{}
+	for _, account := range linkedAccount {
+		input := costexplorer.GetCostAndUsageInput{
+			Metrics: []*string{
+				aws.String("AMORTIZED_COST"),
+				aws.String("BLENDED_COST"),
+				aws.String("UNBLENDED_COST"),
+				aws.String("NET_AMORTIZED_COST"),
+				aws.String("NET_UNBLENDED_COST"),
+			},
+			Granularity: aws.String("MONTHLY"),
+			TimePeriod: &costexplorer.DateInterval{
+				Start: aws.String(date.Start),
+				End:   aws.String(date.End),
+			},
+			Filter: &costexplorer.Expression{
+				Dimensions: &costexplorer.DimensionValues{
+					Key:    aws.String("LINKED_ACCOUNT"),
+					Values: []*string{aws.String(account.AccountID)},
+				},
+			},
+		}
+
+		cost, err := c.Client.GetCostAndUsage(&input)
+		if err != nil {
+			return nil, fmt.Errorf("get cost: %v", err)
+		}
+
+		for _, r := range cost.ResultsByTime {
+			out = append(out, &Cost{
+				AccountID:        account.AccountID,
+				Description:      account.Description,
+				Date:             *r.TimePeriod.Start,
+				AmortizedCost:    *r.Total["AmortizedCost"].Amount,
+				BlendedCost:      *r.Total["BlendedCost"].Amount,
+				UnblendedCost:    *r.Total["UnblendedCost"].Amount,
+				NetAmortizedCost: *r.Total["NetAmortizedCost"].Amount,
+				NetUnblendedCost: *r.Total["NetUnblendedCost"].Amount,
+			})
+		}
+	}
+
+	return out, nil
 }
 
 /*

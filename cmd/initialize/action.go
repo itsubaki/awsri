@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/itsubaki/hermes/pkg/billing"
 	"github.com/itsubaki/hermes/pkg/costexp"
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/reserved"
@@ -26,6 +27,11 @@ func Action(c *cli.Context) {
 
 	if err := reserved.Download(region, dir); err != nil {
 		fmt.Printf("write reservation: %v", err)
+		os.Exit(1)
+	}
+
+	if err := billing.Download(dir); err != nil {
+		fmt.Printf("write billing: %v", err)
 		os.Exit(1)
 	}
 }
