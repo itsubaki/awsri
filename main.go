@@ -7,8 +7,9 @@ import (
 	"github.com/itsubaki/hermes/cmd"
 	"github.com/itsubaki/hermes/cmd/billing"
 	"github.com/itsubaki/hermes/cmd/initialize"
+	"github.com/itsubaki/hermes/cmd/pricing"
 	"github.com/itsubaki/hermes/cmd/store/costexp"
-	"github.com/itsubaki/hermes/cmd/store/pricing"
+	storep "github.com/itsubaki/hermes/cmd/store/costexp"
 	"github.com/itsubaki/hermes/cmd/store/reserved"
 	"github.com/urfave/cli"
 )
@@ -67,6 +68,24 @@ func New(version string) *cli.App {
 		},
 	}
 
+	pricing := cli.Command{
+		Name:   "pricing",
+		Action: pricing.Action,
+		Usage:  "get aws pricing",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:  "format, f",
+				Value: "json",
+				Usage: "json",
+			},
+			cli.StringFlag{
+				Name:  "region, r",
+				Value: "ap-northeast-1",
+				Usage: "",
+			},
+		},
+	}
+
 	flags := []cli.Flag{
 		cli.StringFlag{
 			Name: "project, p",
@@ -80,7 +99,7 @@ func New(version string) *cli.App {
 			{
 				Name:    "pricing",
 				Aliases: []string{"p"},
-				Action:  pricing.Action,
+				Action:  storep.Action,
 				Flags:   append(flags, region),
 			},
 			{
@@ -102,6 +121,7 @@ func New(version string) *cli.App {
 		init,
 		store,
 		billing,
+		pricing,
 	}
 
 	return app
