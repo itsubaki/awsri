@@ -1,0 +1,118 @@
+{
+  "forecast": [
+    {
+      "account_id": "123456789012",
+      "alias": "projectA",
+      "region": "ap-northeast-1",
+      "usage_type": "APN1-BoxUsage:c4.2xlarge",
+      "platform": "Linux/UNIX",
+      "instance_num": [
+        {
+          "date": "2019-01",
+          "instance_num": 200
+        },
+        {
+          "date": "2018-02",
+          "instance_num": 150
+        },
+        {
+          "date": "2019-03",
+          "instance_num": 80
+        },
+        {
+          "date": "2019-04",
+          "instance_num": 80
+        },
+        {
+          "date": "2019-05",
+          "instance_num": 150
+        },
+        {
+          "date": "2019-06",
+          "instance_num": 80
+        },
+        {
+          "date": "2019-07",
+          "instance_num": 80
+        },
+        {
+          "date": "2019-08",
+          "instance_num": 150
+        },
+        {
+          "date": "2019-09",
+          "instance_num": 80
+        },
+        {
+          "date": "2019-10",
+          "instance_num": 80
+        },
+        {
+          "date": "2019-11",
+          "instance_num": 80
+        },
+        {
+          "date": "2019-12",
+          "instance_num": 150
+        }
+      ]
+    },
+    {
+      "account_id": "987654321098",
+      "alias": "projectB",
+      "region": "ap-northeast-1",
+      "usage_type": "APN1-BoxUsage:c4.4xlarge",
+      "platform": "Linux/UNIX",
+      "instance_num": [
+        {
+          "date": "2019-01",
+          "instance_num": 100
+        },
+        {
+          "date": "2018-02",
+          "instance_num": 50
+        },
+        {
+          "date": "2019-03",
+          "instance_num": 50
+        },
+        {
+          "date": "2019-04",
+          "instance_num": 50
+        },
+        {
+          "date": "2019-05",
+          "instance_num": 50
+        },
+        {
+          "date": "2019-06",
+          "instance_num": 50
+        },
+        {
+          "date": "2019-07",
+          "instance_num": 50
+        },
+        {
+          "date": "2019-08",
+          "instance_num": 100
+        },
+        {
+          "date": "2019-09",
+          "instance_num": 50
+        },
+        {
+          "date": "2019-10",
+          "instance_num": 50
+        },
+        {
+          "date": "2019-11",
+          "instance_num": 50
+        },
+        {
+          "date": "2019-12",
+          "instance_num": 80
+        }
+      ]
+    }
+  ]
+}
