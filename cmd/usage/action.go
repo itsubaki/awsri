@@ -63,7 +63,7 @@ func Action(c *cli.Context) {
 			tmp[Hash(q)] = append(tmp[Hash(q)], q)
 		}
 
-		fmt.Printf("accountID, description, region, type, os/engine, ")
+		fmt.Printf("accountID, description, region, usage_type, os/engine, ")
 		for i := range date {
 			fmt.Printf("%s, ", date[i].YYYYMM())
 		}
@@ -93,12 +93,6 @@ func Action(c *cli.Context) {
 
 		return
 	}
-}
-
-type Quantity struct {
-	Hash        string
-	Quantity    usage.Quantity
-	InstanceNum []float64
 }
 
 func Hash(q usage.Quantity) string {

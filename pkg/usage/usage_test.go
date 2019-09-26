@@ -9,7 +9,7 @@ import (
 func TestFetchQuantity(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	list, err := Fetch("2018-11-01", "2018-11-02")
+	list, err := Fetch("2018-11-01", "2018-12-01")
 	if err != nil {
 		t.Errorf("get usage quantity: %v", err)
 	}
