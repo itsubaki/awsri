@@ -137,7 +137,6 @@ $ AWS_PROFILE=example hermes pricing | jq .
 ]
 ```
 
-
 ```
 $ AWS_PROFILE=example hermes usage
 [

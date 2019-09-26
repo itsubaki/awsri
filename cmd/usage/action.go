@@ -1,6 +1,8 @@
 package usage
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -56,6 +58,66 @@ func Action(c *cli.Context) {
 	}
 
 	if format == "csv" {
+		tmp := make(map[string][]usage.Quantity)
+		for _, q := range quantity {
+			tmp[Hash(q)] = append(tmp[Hash(q)], q)
+		}
+
+		fmt.Printf("accountID, description, region, type, os/engine, ")
+		for i := range date {
+			fmt.Printf("%s, ", date[i].YYYYMM())
+		}
+		fmt.Println()
+
+		for _, v := range tmp {
+			fmt.Printf("%s, %s, ", v[0].AccountID, v[0].Description)
+			fmt.Printf("%s, %s, ", v[0].Region, v[0].UsageType)
+			fmt.Printf("%s, ", fmt.Sprintf("%s%s%s", v[0].Platform, v[0].CacheEngine, v[0].DatabaseEngine))
+
+			for i := range date {
+				found := false
+				for _, q := range v {
+					if date[i].YYYYMM() == q.Date {
+						fmt.Printf("%.3f, ", q.InstanceNum)
+						found = true
+						break
+					}
+				}
+
+				if !found {
+					fmt.Printf("0.0, ")
+				}
+			}
+			fmt.Println()
+		}
+
 		return
 	}
+}
+
+type Quantity struct {
+	Hash        string
+	Quantity    usage.Quantity
+	InstanceNum []float64
+}
+
+func Hash(q usage.Quantity) string {
+	tmp := usage.Quantity{
+		AccountID:      q.AccountID,
+		Description:    q.Description,
+		Region:         q.Region,
+		UsageType:      q.UsageType,
+		Platform:       q.Platform,
+		DatabaseEngine: q.DatabaseEngine,
+		CacheEngine:    q.CacheEngine,
+	}
+
+	val, err := json.Marshal(tmp)
+	if err != nil {
+		panic(err)
+	}
+
+	sha := sha256.Sum256(val)
+	hash := hex.EncodeToString(sha[:])
+	return hash
 }
