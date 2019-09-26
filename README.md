@@ -53,7 +53,7 @@ $ go get github.com/itsubaki/hermes
 ## API Example
 
 ```go
-p, err := pricing.Fetch(Redshift, "ap-northeast-1")
+p, err := pricing.Fetch(pricing.Redshift, "ap-northeast-1")
 if err != nil {
 	fmt.Printf("fetch pricing: %v", err)
 }
@@ -138,7 +138,7 @@ $ AWS_PROFILE=example hermes pricing | jq .
 ```
 
 ```
-$ AWS_PROFILE=example hermes usage
+$ AWS_PROFILE=example hermes usage | jq .
 [
   {
     "account_id": "123456789012",
