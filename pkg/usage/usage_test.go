@@ -19,6 +19,6 @@ func TestFetchQuantity(t *testing.T) {
 	}
 
 	for i := range list {
-		fmt.Printf("%v\n", list[i])
+		fmt.Printf("%#v\n", list[i])
 	}
 }
