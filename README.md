@@ -50,19 +50,107 @@ aws_secret_access_key = ****************************************
 $ go get github.com/itsubaki/hermes
 ```
 
-## Example
+## API Example
+
+```go
+p, err := pricing.Fetch(Redshift, "ap-northeast-1")
+if err != nil {
+	fmt.Printf("fetch pricing: %v", err)
+}
+
+for _, v := range p {
+	fmt.Printf("%#v\n", v)
+}
+
+```
+
+```go
+u, err := usage.Fetch("2019-08-01", "2019-09-01")
+if err != nil {
+    fmt.Printf("fetch usage: %v", err)
+    os.Exit(1)
+}
+
+for i := range u {
+	fmt.Printf("%#v\n", u[i])
+}
+
+[
+  {
+    "account_id": "123456789012",
+    "description": "example",
+    "region": "us-west-2",
+    "usage_type": "USW2-NodeUsage:cache.t2.small",
+    "cache_engine": "Redis",
+    "date": "2019-08",
+    "instance_hour": 101,
+    "instance_num": 0.135752688172043
+  }
+  ...
+]
+```
+
+## CommandLine Example
 
 ```
 $ AWS_PROFILE=example hermes fetch
 write: /var/tmp/hermes/pricing/ap-northeast-1.out
 write: /var/tmp/hermes/pricing/us-west-2.out
+write: /var/tmp/hermes/usage/2019-08.out
+write: /var/tmp/hermes/usage/2019-07.out
+write: /var/tmp/hermes/usage/2019-06.out
+write: /var/tmp/hermes/usage/2019-04.out
+write: /var/tmp/hermes/usage/2019-03.out
+write: /var/tmp/hermes/usage/2019-02.out
+write: /var/tmp/hermes/usage/2019-01.out
+write: /var/tmp/hermes/usage/2018-12.out
+write: /var/tmp/hermes/usage/2018-11.out
+write: /var/tmp/hermes/usage/2018-10.out
+write: /var/tmp/hermes/usage/2018-09.out
 ```
 
 ```
-$ AWS_PROFILE=example hermes pricing
+$ AWS_PROFILE=example hermes pricing | jq .
+[ 
+  {
+    "Version": "20190730012138",
+    "SKU": "PDMPNVN5SPA5HWHH",
+    "OfferTermCode": "6QCMYABX3D",
+    "Region": "ap-northeast-1",
+    "InstanceType": "ds1.8xlarge",
+    "UsageType": "APN1-Node:dw.hs1.8xlarge",
+    "LeaseContractLength": "1yr",
+    "PurchaseOption": "All Upfront",
+    "OnDemand": 9.52,
+    "ReservedQuantity": 49020,
+    "ReservedHrs": 0,
+    "Tenancy": "",
+    "PreInstalled": "",
+    "OperatingSystem": "",
+    "Operation": "RunComputeNode:0001",
+    "CacheEngine": "",
+    "DatabaseEngine": "",
+    "OfferingClass": "standard",
+    "NormalizationSizeFactor": ""
+  }
+  ...
+]
 ```
 
 
 ```
 $ AWS_PROFILE=example hermes usage
+[
+  {
+    "account_id": "123456789012",
+    "description": "example",
+    "region": "us-west-2",
+    "usage_type": "USW2-NodeUsage:cache.t2.small",
+    "cache_engine": "Redis",
+    "date": "2019-08",
+    "instance_hour": 101,
+    "instance_num": 0.135752688172043
+  }
+  ...
+]
 ```

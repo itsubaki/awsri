@@ -282,7 +282,7 @@ func fetchLinkedAccount(start, end string) ([]Account, error) {
 	c := costexplorer.New(session.Must(session.NewSession()))
 	val, err := c.GetDimensionValues(&input)
 	if err != nil {
-		return []Account{}, fmt.Errorf("get dimension value: %v", err)
+		return []Account{}, fmt.Errorf("get dimension values: %v", err)
 	}
 
 	out := make([]Account, 0)

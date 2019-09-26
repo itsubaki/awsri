@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/itsubaki/hermes/cmd/fetch"
 	"github.com/itsubaki/hermes/cmd/pricing"
+	"github.com/itsubaki/hermes/cmd/usage"
+
+	"github.com/itsubaki/hermes/cmd/fetch"
 	"github.com/urfave/cli"
 )
 
@@ -51,8 +53,8 @@ func New(version string) *cli.App {
 	pricing := cli.Command{
 		Name:    "pricing",
 		Aliases: []string{"p"},
-		Usage:   "output aws pricing",
 		Action:  pricing.Action,
+		Usage:   "output aws pricing",
 		Flags: []cli.Flag{
 			region,
 			format,
@@ -62,6 +64,7 @@ func New(version string) *cli.App {
 	usage := cli.Command{
 		Name:    "usage",
 		Aliases: []string{"u"},
+		Action:  usage.Action,
 		Usage:   "output aws instance hour usage",
 		Flags: []cli.Flag{
 			region,

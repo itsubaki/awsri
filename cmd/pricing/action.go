@@ -59,7 +59,7 @@ func Action(c *cli.Context) {
 	if format == "csv" {
 		for _, p := range price {
 			fmt.Printf(
-				"%s, %s, %s, %s, %s, %s, %s, %s, %.3f, %.3f, %.3f\n",
+				"%s, %s, %s, %s, %s, %s, %s, %s, %s, %.3f, %.3f, %.3f\n",
 				p.Version,
 				p.Region,
 				p.InstanceType,
@@ -68,6 +68,7 @@ func Action(c *cli.Context) {
 				p.OperatingSystem,
 				p.CacheEngine,
 				p.DatabaseEngine,
+				p.OfferingClass,
 				p.OnDemand,
 				p.ReservedQuantity,
 				p.ReservedHrs,
