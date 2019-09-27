@@ -95,7 +95,16 @@ func TestRecommend(t *testing.T) {
 		fmt.Printf("%#v\n", r)
 	}
 
-	normalized := Normalize(recommended, price)
+	normalized := make([]usage.Quantity, 0)
+	for _, r := range recommended {
+		n, err := Normalize(r, price)
+		if err != nil {
+			t.Errorf("recommend: %v", err)
+		}
+
+		normalized = append(normalized, n)
+	}
+
 	for _, r := range normalized {
 		fmt.Printf("%#v\n", r)
 	}

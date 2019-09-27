@@ -25,12 +25,12 @@ import (
 // Windows with SQL Server Enterprise,
 // Windows with SQL Server Web,
 // RHEL, and SLES.
-func Normalize(quantity usage.Quantity, price []pricing.Price) []usage.Quantity {
+func Normalize(quantity usage.Quantity, price []pricing.Price) (usage.Quantity, error) {
 	// usage.Quantity -> pricing.Price
 	// flexibility ok?
 	// find base size
 	// calc power of
 	// instance num x power
 
-	return []usage.Quantity{}
+	return usage.Quantity{}, nil
 }
