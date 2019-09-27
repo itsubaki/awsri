@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-func TestFetchRedshift(t *testing.T) {
-	p, err := Fetch(Redshift, "ap-northeast-1")
+func TestFetch(t *testing.T) {
+	p, err := Fetch(Compute, "ap-northeast-1")
 	if err != nil {
 		t.Error(err)
 	}

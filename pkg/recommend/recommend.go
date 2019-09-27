@@ -4,51 +4,31 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/usage"
 )
 
-var BREAKEVENPOINT = 8
-
-func Recommend(quantity []usage.Quantity) ([]usage.Quantity, error) {
-	merged := make(map[string]usage.Quantity)
-	for _, q := range quantity {
-		hash := Hash(fmt.Sprintf(
-			"%s%s%s%s%s",
-			q.UsageType,
-			q.Platform,
-			q.CacheEngine,
-			q.DatabaseEngine,
-			q.Date,
-		))
-
-		merged[hash] = usage.Quantity{
-			Region:         q.Region,
-			UsageType:      q.UsageType,
-			Platform:       q.Platform,
-			DatabaseEngine: q.DatabaseEngine,
-			CacheEngine:    q.CacheEngine,
-			Date:           q.Date,
-			InstanceHour:   merged[hash].InstanceHour + q.InstanceHour,
-			InstanceNum:    merged[hash].InstanceNum + q.InstanceNum,
-		}
-	}
-
-	sorted := make(map[string][]usage.Quantity)
-	for _, q := range merged {
-		hash := Hash(fmt.Sprintf(
-			"%s%s%s%s",
-			q.UsageType,
-			q.Platform,
-			q.CacheEngine,
-			q.DatabaseEngine,
-		))
-
-		sorted[hash] = append(sorted[hash], q)
-	}
-
+func Recommend(monthly map[string][]usage.Quantity, price pricing.Price) (usage.Quantity, error) {
 	out := make([]usage.Quantity, 0)
-	for _, q := range sorted {
-		if len(q) < BREAKEVENPOINT {
+	for _, q := range monthly {
+		if q[0].UsageType != price.UsageType {
+			continue
+		}
+
+		if len(q[0].Platform) > 0 && OperatingSystem[q[0].Platform] != price.OperatingSystem {
+			continue
+		}
+
+		if len(q[0].CacheEngine) > 0 && q[0].CacheEngine != price.CacheEngine {
+			continue
+		}
+
+		if len(q[0].DatabaseEngine) > 0 && q[0].DatabaseEngine != price.DatabaseEngine {
+			continue
+		}
+
+		point := price.BreakEvenPoint()
+		if len(q) < point {
 			continue
 		}
 
@@ -65,16 +45,18 @@ func Recommend(quantity []usage.Quantity) ([]usage.Quantity, error) {
 			Platform:       q[0].Platform,
 			DatabaseEngine: q[0].DatabaseEngine,
 			CacheEngine:    q[0].CacheEngine,
-			InstanceHour:   hrs[BREAKEVENPOINT-1],
-			InstanceNum:    num[BREAKEVENPOINT-1],
+			InstanceHour:   hrs[point-1],
+			InstanceNum:    num[point-1],
 		})
 	}
 
-	sort.SliceStable(out, func(i, j int) bool { return out[i].Region < out[j].Region })
-	sort.SliceStable(out, func(i, j int) bool { return out[i].UsageType < out[j].UsageType })
-	sort.SliceStable(out, func(i, j int) bool { return out[i].Platform < out[j].Platform })
-	sort.SliceStable(out, func(i, j int) bool { return out[i].CacheEngine < out[j].CacheEngine })
-	sort.SliceStable(out, func(i, j int) bool { return out[i].DatabaseEngine < out[j].DatabaseEngine })
+	if len(out) > 1 {
+		return usage.Quantity{}, fmt.Errorf("duplicated result. usage=%#v", out)
+	}
 
-	return out, nil
+	if len(out) == 0 {
+		return usage.Quantity{}, fmt.Errorf("usage not found. price=%v", price)
+	}
+
+	return out[0], nil
 }
