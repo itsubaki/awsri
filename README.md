@@ -110,6 +110,90 @@ for i := range u {
 ...
 ```
 
+```go
+price := []pricing.Price{
+  pricing.Price{
+  	Region:                  "ap-northeast-1",
+  	UsageType:               "APN1-BoxUsage:c4.large",
+  	Tenancy:                 "Shared",
+  	PreInstalled:            "NA",
+  	OperatingSystem:         "Linux",
+  	OfferingClass:           "standard",
+  	LeaseContractLength:     "1yr",
+  	PurchaseOption:          "All Upfront",
+  	OnDemand:                0.126,
+  	ReservedQuantity:        738,
+  	ReservedHrs:             0,
+  	NormalizationSizeFactor: "4",
+  },
+  pricing.Price{
+  	Region:                  "ap-northeast-1",
+  	UsageType:               "APN1-BoxUsage:c4.xlarge",
+  	Tenancy:                 "Shared",
+  	PreInstalled:            "NA",
+  	OperatingSystem:         "Linux",
+  	OfferingClass:           "standard",
+  	LeaseContractLength:     "1yr",
+  	PurchaseOption:          "All Upfront",
+  	OnDemand:                0.126 * 2,
+  	ReservedQuantity:        738 * 2,
+  	ReservedHrs:             0,
+  	NormalizationSizeFactor: "8",
+  },
+  pricing.Price{
+  	Region:                  "ap-northeast-1",
+  	UsageType:               "APN1-BoxUsage:c4.2xlarge",
+  	Tenancy:                 "Shared",
+  	PreInstalled:            "NA",
+  	OperatingSystem:         "Linux",
+  	OfferingClass:           "standard",
+  	LeaseContractLength:     "1yr",
+  	PurchaseOption:          "All Upfront",
+  	OnDemand:                0.126 * 4,
+  	ReservedQuantity:        738 * 4,
+  	ReservedHrs:             0,
+  	NormalizationSizeFactor: "16",
+  },
+ }
+
+monthly := MonthlyUsage(quantity)
+recommended := make([]usage.Quantity, 0)
+for _, p := range price {
+  res, err := Recommend(monthly, p)
+  if err != nil {
+  	t.Errorf("recommend: %v", err)
+  }
+
+  recommended = append(recommended, res)
+}
+
+for _, r := range recommended {
+  fmt.Printf("%#v\n", r)
+}
+
+normalized := make([]usage.Quantity, 0)
+for _, r := range recommended {
+  n, err := Normalize(r, price)
+  if err != nil {
+  	t.Errorf("recommend: %v", err)
+  }
+
+  normalized = append(normalized, n)
+}
+
+for _, r := range normalized {
+  fmt.Printf("%#v\n", r)
+}
+
+usage.Quantity{UsageType:"APN1-BoxUsage:c4.large",   Platform:"Linux/UNIX", InstanceHour:72914.707223,       InstanceNum:98.0036387405914}
+usage.Quantity{UsageType:"APN1-BoxUsage:c4.xlarge",  Platform:"Linux/UNIX", InstanceHour:39836.842499,       InstanceNum:55.32894791527778}
+usage.Quantity{UsageType:"APN1-BoxUsage:c4.2xlarge", Platform:"Linux/UNIX", InstanceHour:480369.89635399997, InstanceNum:656.8305510524193}
+
+usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:72914.707223,           InstanceNum:98.0036387405914}
+usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:79673.684998,           InstanceNum:110.65789583055556}
+usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:1.9214795854159999e+06, InstanceNum:2627.3222042096772}
+```
+
 ## CommandLine Example
 
 ```
