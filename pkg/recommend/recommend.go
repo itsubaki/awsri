@@ -10,22 +10,23 @@ import (
 )
 
 func Recommend(quantity []usage.Quantity) ([]usage.Quantity, error) {
-	tmp := make(map[string]map[string]map[string]float64)
+	merged := make(map[string]usage.Quantity)
 	for _, q := range quantity {
-		if _, ok := tmp[q.UsageType]; !ok {
-			tmp[q.UsageType] = make(map[string]map[string]float64)
+		hash := Hash(fmt.Sprintf("%s%s%s%s%s", q.UsageType, q.Platform, q.CacheEngine, q.DatabaseEngine, q.Date))
+		merged[hash] = usage.Quantity{
+			Region:         q.Region,
+			UsageType:      q.UsageType,
+			Platform:       q.Platform,
+			DatabaseEngine: q.DatabaseEngine,
+			CacheEngine:    q.CacheEngine,
+			Date:           q.Date,
+			InstanceHour:   merged[hash].InstanceHour + q.InstanceHour,
+			InstanceNum:    merged[hash].InstanceNum + q.InstanceNum,
 		}
-
-		engine := fmt.Sprintf("%s%s%s", q.Platform, q.CacheEngine, q.DatabaseEngine)
-		if _, ok := tmp[q.UsageType][engine]; !ok {
-			tmp[q.UsageType][engine] = make(map[string]float64)
-		}
-
-		tmp[q.UsageType][engine][q.Date] = tmp[q.UsageType][engine][q.Date] + q.InstanceNum
 	}
 
-	for k, v := range tmp {
-		fmt.Printf("%v: %v\n", k, v)
+	for _, v := range merged {
+		fmt.Printf("%#v\n", v)
 	}
 
 	return []usage.Quantity{}, nil
