@@ -163,7 +163,7 @@ for _, p := range price {
     if err != nil {
         t.Errorf("recommend: %v", err)
     }
-
+    
     recommended = append(recommended, res)
 }
 
@@ -177,7 +177,7 @@ for _, r := range recommended {
     if err != nil {
         t.Errorf("recommend: %v", err)
     }
- 
+
     normalized = append(normalized, n)
 }
 
