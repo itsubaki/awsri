@@ -62,6 +62,28 @@ for _, v := range p {
 	fmt.Printf("%#v\n", v)
 }
 
+{
+  "Version": "20190730012138", 
+  "SKU": "PDMPNVN5SPA5HWHH",
+  "OfferTermCode": "6QCMYABX3D",
+  "Region": "ap-northeast-1",
+  "InstanceType": "ds1.8xlarge",
+  "UsageType": "APN1-Node:dw.hs1.8xlarge",
+  "LeaseContractLength": "1yr",
+  "PurchaseOption": "All Upfront",
+  "OnDemand": 9.52,
+  "ReservedQuantity": 49020,
+  "ReservedHrs": 0,
+  "Tenancy": "",
+  "PreInstalled": "",
+  "OperatingSystem": "",
+  "Operation": "RunComputeNode:0001",
+  "CacheEngine": "", 
+  "DatabaseEngine": "",
+  "OfferingClass": "standard",
+  "NormalizationSizeFactor": ""
+}
+...
 ```
 
 ```go
@@ -75,19 +97,17 @@ for i := range u {
 	fmt.Printf("%#v\n", u[i])
 }
 
-[
-  {
-    "account_id": "123456789012",
-    "description": "example",
-    "region": "us-west-2",
-    "usage_type": "USW2-NodeUsage:cache.t2.small",
-    "cache_engine": "Redis",
-    "date": "2019-08",
-    "instance_hour": 101,
-    "instance_num": 0.135752688172043
-  }
-  ...
-]
+{
+  "account_id": "123456789012", 
+  "description": "example",
+  "region": "us-west-2",
+  "usage_type": "USW2-NodeUsage:cache.t2.small",
+  "cache_engine": "Redis",
+  "date": "2019-08",
+  "instance_hour": 101,
+  "instance_num": 0.135752688172043
+}
+...
 ```
 
 ## CommandLine Example
