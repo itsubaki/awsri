@@ -17,6 +17,6 @@ var OperatingSystem = map[string]string{
 	"Windows with SQL Standard":   "Windows", // PreInstalled: SQL Standard
 	"Windows with SQL Web":        "Windows", // PreInstalled: SQL Web
 	"Windows with SQL Enterprise": "Windows", // PreInstalled: SQL Enterprise
-	"Windows (BYOL)":              "",        // awsprice not found
-	"NoOperatingSystem":           "",        // awsprice not found
+	"Windows (BYOL)":              "",        // pricing not found
+	"NoOperatingSystem":           "",        // pricing not found
 }
