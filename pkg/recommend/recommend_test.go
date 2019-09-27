@@ -14,6 +14,7 @@ import (
 func TestRecommend(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
+	// TestData
 	quantity := make([]usage.Quantity, 0)
 	date := usage.Last12Months()
 	for i := range date {
@@ -35,7 +36,7 @@ func TestRecommend(t *testing.T) {
 		quantity = append(quantity, q...)
 	}
 
-	monthly := MonthlyUsage(quantity)
+	// TestData
 	price := []pricing.Price{
 		pricing.Price{
 			Region:                  "ap-northeast-1",
@@ -81,6 +82,8 @@ func TestRecommend(t *testing.T) {
 		},
 	}
 
+	// Test
+	monthly := MonthlyUsage(quantity)
 	recommended := make([]usage.Quantity, 0)
 	for _, p := range price {
 		res, err := Recommend(monthly, p)
@@ -91,6 +94,7 @@ func TestRecommend(t *testing.T) {
 		recommended = append(recommended, res)
 	}
 
+	fmt.Println("[recmmended]--------------")
 	for _, r := range recommended {
 		fmt.Printf("%#v\n", r)
 	}
@@ -105,7 +109,51 @@ func TestRecommend(t *testing.T) {
 		normalized = append(normalized, n)
 	}
 
+	fmt.Println("[normalized]--------------")
 	for _, r := range normalized {
+		fmt.Printf("%#v\n", r)
+	}
+
+	merged := make(map[string]usage.Quantity)
+	for i := range normalized {
+		hash := Hash(
+			fmt.Sprintf(
+				"%s%s%s%s",
+				normalized[i].UsageType,
+				normalized[i].Platform,
+				normalized[i].CacheEngine,
+				normalized[i].DatabaseEngine,
+			),
+		)
+
+		v, ok := merged[hash]
+		if !ok {
+			merged[hash] = usage.Quantity{
+				Region:         normalized[i].Region,
+				UsageType:      normalized[i].UsageType,
+				Platform:       normalized[i].Platform,
+				DatabaseEngine: normalized[i].DatabaseEngine,
+				CacheEngine:    normalized[i].CacheEngine,
+				InstanceHour:   normalized[i].InstanceHour,
+				InstanceNum:    normalized[i].InstanceNum,
+			}
+
+			continue
+		}
+
+		merged[hash] = usage.Quantity{
+			Region:         normalized[i].Region,
+			UsageType:      normalized[i].UsageType,
+			Platform:       normalized[i].Platform,
+			DatabaseEngine: normalized[i].DatabaseEngine,
+			CacheEngine:    normalized[i].CacheEngine,
+			InstanceHour:   normalized[i].InstanceHour + v.InstanceHour,
+			InstanceNum:    normalized[i].InstanceNum + v.InstanceNum,
+		}
+	}
+
+	fmt.Println("[merged]--------------")
+	for _, r := range merged {
 		fmt.Printf("%#v\n", r)
 	}
 }

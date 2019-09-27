@@ -43,7 +43,7 @@ func Normalize(q usage.Quantity, price []pricing.Price) (usage.Quantity, error) 
 		return usage.Quantity{}, err
 	}
 
-	basis, err := FindBasis(p[0], price)
+	basis, err := FindMinSize(p[0], price)
 	if err != nil {
 		return usage.Quantity{}, fmt.Errorf("find bases: %v", err)
 	}
@@ -64,7 +64,7 @@ func Normalize(q usage.Quantity, price []pricing.Price) (usage.Quantity, error) 
 	}, nil
 }
 
-func FindBasis(target pricing.Price, price []pricing.Price) (pricing.Price, error) {
+func FindMinSize(target pricing.Price, price []pricing.Price) (pricing.Price, error) {
 	tmp := make(map[string]pricing.Price)
 	for i := range price {
 		hash := Hash(
