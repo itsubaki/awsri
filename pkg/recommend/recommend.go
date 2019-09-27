@@ -52,16 +52,11 @@ func Recommend(quantity []usage.Quantity) ([]usage.Quantity, error) {
 			continue
 		}
 
-		hrs := make([]float64, 0)
+		hrs, num := make([]float64, 0), make([]float64, 0)
 		for _, v := range q {
-			hrs = append(hrs, v.InstanceHour)
+			hrs, num = append(hrs, v.InstanceHour), append(num, v.InstanceNum)
 		}
 		sort.Float64s(hrs)
-
-		num := make([]float64, 0)
-		for _, v := range q {
-			num = append(num, v.InstanceNum)
-		}
 		sort.Float64s(num)
 
 		out = append(out, usage.Quantity{

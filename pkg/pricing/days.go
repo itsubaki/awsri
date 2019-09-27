@@ -1,4 +1,4 @@
-package recommend
+package pricing
 
 var Days = map[int]int{
 	1:  31,
