@@ -36,7 +36,7 @@ func Normalize(q usage.Quantity, price []pricing.Price) (usage.Quantity, error) 
 	}
 
 	if len(p) > 1 {
-		panic(fmt.Sprintf("duplicated pricing. quantity=%#v, pricing=%#v", q, price))
+		return usage.Quantity{}, fmt.Errorf("duplicated pricing. quantity=%#v", q)
 	}
 
 	if err := HaveFlexibility(p[0]); err != nil {
@@ -45,7 +45,7 @@ func Normalize(q usage.Quantity, price []pricing.Price) (usage.Quantity, error) 
 
 	basis, err := FindMinSize(p[0], price)
 	if err != nil {
-		return usage.Quantity{}, fmt.Errorf("find bases: %v", err)
+		return usage.Quantity{}, fmt.Errorf("find minimum size: %v", err)
 	}
 
 	f0, _ := strconv.Atoi(p[0].NormalizationSizeFactor)
