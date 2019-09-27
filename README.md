@@ -159,30 +159,30 @@ price := []pricing.Price{
 monthly := MonthlyUsage(quantity)
 recommended := make([]usage.Quantity, 0)
 for _, p := range price {
-  res, err := Recommend(monthly, p)
-  if err != nil {
-  	t.Errorf("recommend: %v", err)
-  }
+    res, err := Recommend(monthly, p)
+    if err != nil {
+        t.Errorf("recommend: %v", err)
+    }
 
-  recommended = append(recommended, res)
+    recommended = append(recommended, res)
 }
 
 for _, r := range recommended {
-  fmt.Printf("%#v\n", r)
+    fmt.Printf("%#v\n", r)
 }
 
 normalized := make([]usage.Quantity, 0)
 for _, r := range recommended {
-  n, err := Normalize(r, price)
-  if err != nil {
-  	t.Errorf("recommend: %v", err)
-  }
-
-  normalized = append(normalized, n)
+    n, err := Normalize(r, price)
+    if err != nil {
+        t.Errorf("recommend: %v", err)
+    }
+ 
+    normalized = append(normalized, n)
 }
 
 for _, r := range normalized {
-  fmt.Printf("%#v\n", r)
+    fmt.Printf("%#v\n", r)
 }
 
 usage.Quantity{UsageType:"APN1-BoxUsage:c4.large",   Platform:"Linux/UNIX", InstanceHour:72914.707223,       InstanceNum:98.0036387405914}
