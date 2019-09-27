@@ -1,6 +1,7 @@
 package pricing
 
 var Days = map[int]int{
+	0:  31, //12
 	1:  31,
 	2:  28,
 	3:  31,
@@ -12,5 +13,4 @@ var Days = map[int]int{
 	9:  30,
 	10: 31,
 	11: 30,
-	12: 31,
 }
