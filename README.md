@@ -53,149 +53,84 @@ $ go get github.com/itsubaki/hermes
 ## API Example
 
 ```go
-p, err := pricing.Fetch(pricing.Redshift, "ap-northeast-1")
-if err != nil {
-    fmt.Printf("fetch pricing: %v", err)
-}
 
-for _, v := range p {
-    fmt.Printf("%#v\n", v)
-}
+func TestRecommend(t *testing.T) {
+	price := []pricing.Price{
+		pricing.Price{
+			Region:                  "ap-northeast-1",
+			UsageType:               "APN1-BoxUsage:c4.large",
+			Tenancy:                 "Shared",
+			PreInstalled:            "NA",
+			OperatingSystem:         "Linux",
+			OfferingClass:           "standard",
+			LeaseContractLength:     "1yr",
+			PurchaseOption:          "All Upfront",
+			OnDemand:                0.126,
+			ReservedQuantity:        738,
+			ReservedHrs:             0,
+			NormalizationSizeFactor: "4",
+		},
+		pricing.Price{
+			Region:                  "ap-northeast-1",
+			UsageType:               "APN1-BoxUsage:c4.xlarge",
+			Tenancy:                 "Shared",
+			PreInstalled:            "NA",
+			OperatingSystem:         "Linux",
+			OfferingClass:           "standard",
+			LeaseContractLength:     "1yr",
+			PurchaseOption:          "All Upfront",
+			OnDemand:                0.126 * 2,
+			ReservedQuantity:        738 * 2,
+			ReservedHrs:             0,
+			NormalizationSizeFactor: "8",
+		},
+		pricing.Price{
+			Region:                  "ap-northeast-1",
+			UsageType:               "APN1-BoxUsage:c4.2xlarge",
+			Tenancy:                 "Shared",
+			PreInstalled:            "NA",
+			OperatingSystem:         "Linux",
+			OfferingClass:           "standard",
+			LeaseContractLength:     "1yr",
+			PurchaseOption:          "All Upfront",
+			OnDemand:                0.126 * 4,
+			ReservedQuantity:        738 * 4,
+			ReservedHrs:             0,
+			NormalizationSizeFactor: "16",
+		},
+	}
 
-{
-  "Version": "20190730012138", 
-  "SKU": "PDMPNVN5SPA5HWHH",
-  "OfferTermCode": "6QCMYABX3D",
-  "Region": "ap-northeast-1",
-  "InstanceType": "ds1.8xlarge",
-  "UsageType": "APN1-Node:dw.hs1.8xlarge",
-  "LeaseContractLength": "1yr",
-  "PurchaseOption": "All Upfront",
-  "OnDemand": 9.52,
-  "ReservedQuantity": 49020,
-  "ReservedHrs": 0,
-  "Tenancy": "",
-  "PreInstalled": "",
-  "OperatingSystem": "",
-  "Operation": "RunComputeNode:0001",
-  "CacheEngine": "", 
-  "DatabaseEngine": "",
-  "OfferingClass": "standard",
-  "NormalizationSizeFactor": ""
+	quantity, err := usage.Deserialize("/var/tmp/hermes", usage.Last12Months())
+	if err != nil {
+		t.Errorf("usage deserialize: %v", err)
+	}
+
+	res, err := Recommend(quantity, price)
+	if err != nil {
+		t.Errorf("recommend: %v", err)
+	}
+
+	plist, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
+	if err != nil {
+		t.Errorf("desirialize: %v", err)
+	}
+
+	normalized, err := Normalize(res, plist)
+	if err != nil {
+		t.Errorf("normalized: %v", err)
+	}
+
+	for _, q := range Merge(normalized) {
+		fmt.Printf("%#v\n", q)
+	}
 }
-...
 ```
 
-```go
-u, err := usage.Fetch("2019-08-01", "2019-09-01")
-if err != nil {
-    fmt.Printf("fetch usage: %v", err)
-    os.Exit(1)
-}
-
-for i := range u {
-    fmt.Printf("%#v\n", u[i])
-}
-
-{
-  "account_id": "123456789012", 
-  "description": "example",
-  "region": "us-west-2",
-  "usage_type": "USW2-NodeUsage:cache.t2.small",
-  "cache_engine": "Redis",
-  "date": "2019-08",
-  "instance_hour": 101,
-  "instance_num": 0.135752688172043
-}
-...
 ```
-
-```go
-price := []pricing.Price{
-  pricing.Price{
-  	Region:                  "ap-northeast-1",
-  	UsageType:               "APN1-BoxUsage:c4.large",
-  	Tenancy:                 "Shared",
-  	PreInstalled:            "NA",
-  	OperatingSystem:         "Linux",
-  	OfferingClass:           "standard",
-  	LeaseContractLength:     "1yr",
-  	PurchaseOption:          "All Upfront",
-  	OnDemand:                0.126,
-  	ReservedQuantity:        738,
-  	ReservedHrs:             0,
-  	NormalizationSizeFactor: "4",
-  },
-  pricing.Price{
-  	Region:                  "ap-northeast-1",
-  	UsageType:               "APN1-BoxUsage:c4.xlarge",
-  	Tenancy:                 "Shared",
-  	PreInstalled:            "NA",
-  	OperatingSystem:         "Linux",
-  	OfferingClass:           "standard",
-  	LeaseContractLength:     "1yr",
-  	PurchaseOption:          "All Upfront",
-  	OnDemand:                0.126 * 2,
-  	ReservedQuantity:        738 * 2,
-  	ReservedHrs:             0,
-  	NormalizationSizeFactor: "8",
-  },
-  pricing.Price{
-  	Region:                  "ap-northeast-1",
-  	UsageType:               "APN1-BoxUsage:c4.2xlarge",
-  	Tenancy:                 "Shared",
-  	PreInstalled:            "NA",
-  	OperatingSystem:         "Linux",
-  	OfferingClass:           "standard",
-  	LeaseContractLength:     "1yr",
-  	PurchaseOption:          "All Upfront",
-  	OnDemand:                0.126 * 4,
-  	ReservedQuantity:        738 * 4,
-  	ReservedHrs:             0,
-  	NormalizationSizeFactor: "16",
-  },
- }
-
-recommended, err := Recommend(quantity, price)
-if err != nil {
-    t.Errorf("recommended: %v", err)
-}
-
-for _, r := range recommended {
-    fmt.Printf("%#v\n", r)
-}
-
-normalized := make([]usage.Quantity, 0)
-for _, r := range recommended {
-    n, err := Normalize(r, price)
-    if err != nil {
-        t.Errorf("normalized: %v", err)
-    }
-
-    normalized = append(normalized, n)
-}
-
-for _, r := range normalized {
-    fmt.Printf("%#v\n", r)
-}
-
-merged := Merge(normalized)
-for _, m := range merged {
-    fmt.Printf("%#v\n", r)
-}
-
-// recommended
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.large",   Platform:"Linux/UNIX", InstanceHour:72914.707223, InstanceNum:98.0036387405914}
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.xlarge",  Platform:"Linux/UNIX", InstanceHour:39836.842499, InstanceNum:55.32894791527778}
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.2xlarge", Platform:"Linux/UNIX", InstanceHour:480369.89635, InstanceNum:656.8305510524193}
-
-// normalized
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:72914.707223,   InstanceNum:98.0036387405914}
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:79673.684998,   InstanceNum:110.65789583055556}
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:1921479.58542,  InstanceNum:2627.3222042096772}
-
-// merged
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:2074067.97764,  InstanceNum:2835.98373878}
+=== RUN   TestRecommend
+usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceNum:3109.6292957806454}
+--- PASS: TestRecommend (0.94s)
+PASS
 ```
 
 ## CommandLine Example
