@@ -32,16 +32,16 @@ func FindMinimumSize(target pricing.Price, price []pricing.Price) (pricing.Price
 			continue
 		}
 
-		family0 := v.UsageType[:strings.LastIndex(v.UsageType, ".")]
-		family1 := target.UsageType[:strings.LastIndex(target.UsageType, ".")]
-		if family0 != family1 {
+		f0 := v.UsageType[:strings.LastIndex(v.UsageType, ".")]
+		f1 := target.UsageType[:strings.LastIndex(target.UsageType, ".")]
+		if f0 != f1 {
 			// instance family is unmatched.
 			continue
 		}
 
-		f0, _ := strconv.Atoi(v.NormalizationSizeFactor)
-		f1, _ := strconv.Atoi(price[i].NormalizationSizeFactor)
-		if f0 > f1 {
+		s0, _ := strconv.Atoi(v.NormalizationSizeFactor)
+		s1, _ := strconv.Atoi(price[i].NormalizationSizeFactor)
+		if s0 > s1 {
 			// tmp[m4.2xlarge] = m4.large
 			// tmp[m4.4xlarge] = m4.large
 			tmp[hash] = price[i]
