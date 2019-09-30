@@ -35,6 +35,7 @@ func TestRecommend(t *testing.T) {
 
 		quantity = append(quantity, q...)
 	}
+	monthly := MonthlyUsage(quantity)
 
 	price := []pricing.Price{
 		pricing.Price{
@@ -107,15 +108,11 @@ func TestRecommend(t *testing.T) {
 		},
 	}
 
-	monthly := MonthlyUsage(quantity)
-
 	// Test
-	fmt.Println("[recommended]--------------")
 	recommended := make([]usage.Quantity, 0)
 	for _, p := range price {
 		res, err := Recommend(monthly, p)
 		if err != nil {
-			// t.Errorf("recommend: %v", err)
 			continue
 		}
 
@@ -123,83 +120,6 @@ func TestRecommend(t *testing.T) {
 	}
 
 	for _, r := range recommended {
-		fmt.Printf("%#v\n", r)
-	}
-
-	fmt.Println("[normalized]--------------")
-	file := fmt.Sprintf("/var/tmp/hermes/pricing/%s.out", "ap-northeast-1")
-	if _, err := os.Stat(file); os.IsNotExist(err) {
-		fmt.Printf("file not found: %v", file)
-		os.Exit(1)
-	}
-
-	read, err := ioutil.ReadFile(file)
-	if err != nil {
-		fmt.Printf("read %s: %v", file, err)
-		os.Exit(1)
-	}
-
-	var plist []pricing.Price
-	if err := json.Unmarshal(read, &plist); err != nil {
-		fmt.Printf("unmarshal: %v", err)
-		os.Exit(1)
-	}
-
-	normalized := make([]usage.Quantity, 0)
-	for _, r := range recommended {
-		n, err := Normalize(r, plist)
-		if err != nil {
-			t.Errorf("normalized: %v", err)
-			panic("")
-		}
-
-		normalized = append(normalized, n)
-	}
-
-	for _, r := range normalized {
-		fmt.Printf("%#v\n", r)
-	}
-
-	fmt.Println("[merged]--------------")
-	merged := make(map[string]usage.Quantity)
-	for i := range normalized {
-		hash := Hash(
-			fmt.Sprintf(
-				"%s%s%s%s",
-				normalized[i].UsageType,
-				normalized[i].Platform,
-				normalized[i].CacheEngine,
-				normalized[i].DatabaseEngine,
-			),
-		)
-
-		v, ok := merged[hash]
-		if !ok {
-			merged[hash] = usage.Quantity{
-				Region:         normalized[i].Region,
-				UsageType:      normalized[i].UsageType,
-				Platform:       normalized[i].Platform,
-				DatabaseEngine: normalized[i].DatabaseEngine,
-				CacheEngine:    normalized[i].CacheEngine,
-				InstanceHour:   normalized[i].InstanceHour,
-				InstanceNum:    normalized[i].InstanceNum,
-			}
-
-			continue
-		}
-
-		merged[hash] = usage.Quantity{
-			Region:         normalized[i].Region,
-			UsageType:      normalized[i].UsageType,
-			Platform:       normalized[i].Platform,
-			DatabaseEngine: normalized[i].DatabaseEngine,
-			CacheEngine:    normalized[i].CacheEngine,
-			InstanceHour:   normalized[i].InstanceHour + v.InstanceHour,
-			InstanceNum:    normalized[i].InstanceNum + v.InstanceNum,
-		}
-	}
-
-	for _, r := range merged {
 		fmt.Printf("%#v\n", r)
 	}
 }

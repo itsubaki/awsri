@@ -1,32 +1,16 @@
 package recommend
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
 )
 
 func TestFindMinSize(t *testing.T) {
-	file := fmt.Sprintf("/var/tmp/hermes/pricing/%s.out", "ap-northeast-1")
-	if _, err := os.Stat(file); os.IsNotExist(err) {
-		fmt.Printf("file not found: %v", file)
-		os.Exit(1)
-	}
-
-	read, err := ioutil.ReadFile(file)
+	price, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
 	if err != nil {
-		fmt.Printf("read %s: %v", file, err)
-		os.Exit(1)
-	}
-
-	var plist []pricing.Price
-	if err := json.Unmarshal(read, &plist); err != nil {
-		fmt.Printf("unmarshal: %v", err)
-		os.Exit(1)
+		t.Errorf("desirialize: %v", err)
 	}
 
 	target := []pricing.Price{
@@ -101,7 +85,7 @@ func TestFindMinSize(t *testing.T) {
 	}
 
 	for _, tt := range target {
-		min, err := FindMinSize(tt, plist)
+		min, err := FindMinimumSize(tt, price)
 		if err != nil {
 			t.Errorf("find min size: %v", err)
 		}

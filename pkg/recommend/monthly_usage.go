@@ -2,6 +2,7 @@ package recommend
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/itsubaki/hermes/pkg/usage"
 )
@@ -30,7 +31,7 @@ func MonthlyUsage(quantity []usage.Quantity) map[string][]usage.Quantity {
 		}
 	}
 
-	sorted := make(map[string][]usage.Quantity)
+	monthly := make(map[string][]usage.Quantity)
 	for _, q := range merged {
 		hash := Hash(fmt.Sprintf(
 			"%s%s%s%s",
@@ -40,8 +41,12 @@ func MonthlyUsage(quantity []usage.Quantity) map[string][]usage.Quantity {
 			q.DatabaseEngine,
 		))
 
-		sorted[hash] = append(sorted[hash], q)
+		monthly[hash] = append(monthly[hash], q)
 	}
 
-	return sorted
+	for k := range monthly {
+		sort.Slice(monthly[k], func(i, j int) bool { return monthly[k][i].Date < monthly[k][j].Date })
+	}
+
+	return monthly
 }

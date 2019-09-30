@@ -2,7 +2,6 @@ package recommend
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 
@@ -29,37 +28,30 @@ func Normalize(q usage.Quantity, price []pricing.Price) (usage.Quantity, error) 
 			continue
 		}
 
+		if !HasFlexibility(price[i]) {
+			continue
+		}
+
 		p = append(p, price[i])
 	}
 
 	if len(p) < 1 {
-		return usage.Quantity{}, fmt.Errorf("pricing not found. quantity=%#v", q)
-	}
-
-	if len(p) > 1 {
-		for _, pp := range p {
-			log.Printf("%#v\n", pp)
-		}
-
-		return usage.Quantity{}, fmt.Errorf("duplicated pricing. quantity=%#v", q)
-	}
-
-	if !HasFlexibility(p[0]) {
+		// candidate not found.
 		return q, nil
 	}
 
-	basis, err := FindMinSize(p[0], price)
+	min, err := FindMinimumSize(p[0], price)
 	if err != nil {
 		return usage.Quantity{}, fmt.Errorf("find minimum size: %v", err)
 	}
 
 	f0, _ := strconv.Atoi(p[0].NormalizationSizeFactor)
-	f1, _ := strconv.Atoi(basis.NormalizationSizeFactor)
+	f1, _ := strconv.Atoi(min.NormalizationSizeFactor)
 	pow := float64(f0) / float64(f1)
 
 	return usage.Quantity{
 		Region:         q.Region,
-		UsageType:      basis.UsageType,
+		UsageType:      min.UsageType,
 		Platform:       q.Platform,
 		DatabaseEngine: q.DatabaseEngine,
 		CacheEngine:    q.CacheEngine,

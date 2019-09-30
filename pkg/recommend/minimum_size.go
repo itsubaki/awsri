@@ -8,22 +8,22 @@ import (
 	"github.com/itsubaki/hermes/pkg/pricing"
 )
 
-func FindMinSize(target pricing.Price, plist []pricing.Price) (pricing.Price, error) {
+func FindMinimumSize(target pricing.Price, price []pricing.Price) (pricing.Price, error) {
 	tmp := make(map[string]pricing.Price)
-	for i := range plist {
+	for i := range price {
 		hash := Hash(
 			fmt.Sprintf(
 				"%s%s%s%s",
-				strings.Split(plist[i].UsageType, ".")[0],
-				plist[i].OperatingSystem,
-				plist[i].CacheEngine,
-				plist[i].DatabaseEngine,
+				strings.Split(price[i].UsageType, ".")[0],
+				price[i].OperatingSystem,
+				price[i].CacheEngine,
+				price[i].DatabaseEngine,
 			),
 		)
 
 		v, ok := tmp[hash]
 		if !ok {
-			tmp[hash] = plist[i]
+			tmp[hash] = price[i]
 			continue
 		}
 
@@ -36,16 +36,15 @@ func FindMinSize(target pricing.Price, plist []pricing.Price) (pricing.Price, er
 		family1 := target.UsageType[:strings.LastIndex(target.UsageType, ".")]
 		if family0 != family1 {
 			// instance family is unmatched.
-			// ex. m4.xlarge and m5.large
 			continue
 		}
 
 		f0, _ := strconv.Atoi(v.NormalizationSizeFactor)
-		f1, _ := strconv.Atoi(plist[i].NormalizationSizeFactor)
+		f1, _ := strconv.Atoi(price[i].NormalizationSizeFactor)
 		if f0 > f1 {
 			// tmp[m4.2xlarge] = m4.large
 			// tmp[m4.4xlarge] = m4.large
-			tmp[hash] = plist[i]
+			tmp[hash] = price[i]
 		}
 	}
 
