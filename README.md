@@ -163,6 +163,7 @@ for _, p := range price {
         if err != nil {
             continue
         }
+
         recommended = append(recommended, res)
     }
 }
