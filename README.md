@@ -191,17 +191,17 @@ for _, m := range merged {
 }
 
 // recommended
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.large",   Platform:"Linux/UNIX", InstanceHour:72914.707223,       InstanceNum:98.0036387405914}
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.xlarge",  Platform:"Linux/UNIX", InstanceHour:39836.842499,       InstanceNum:55.32894791527778}
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.2xlarge", Platform:"Linux/UNIX", InstanceHour:480369.89635399997, InstanceNum:656.8305510524193}
+usage.Quantity{UsageType:"APN1-BoxUsage:c4.large",   Platform:"Linux/UNIX", InstanceHour:72914.707223, InstanceNum:98.0036387405914}
+usage.Quantity{UsageType:"APN1-BoxUsage:c4.xlarge",  Platform:"Linux/UNIX", InstanceHour:39836.842499, InstanceNum:55.32894791527778}
+usage.Quantity{UsageType:"APN1-BoxUsage:c4.2xlarge", Platform:"Linux/UNIX", InstanceHour:480369.89635, InstanceNum:656.8305510524193}
 
 // normalized
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:72914.707223,           InstanceNum:98.0036387405914}
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:79673.684998,           InstanceNum:110.65789583055556}
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:1.9214795854159999e+06, InstanceNum:2627.3222042096772}
+usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:72914.707223,   InstanceNum:98.0036387405914}
+usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:79673.684998,   InstanceNum:110.65789583055556}
+usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:1921479.58542,  InstanceNum:2627.3222042096772}
 
 // merged
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:2074067.97764,           InstanceNum:2835.98373878}
+usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceHour:2074067.97764,  InstanceNum:2835.98373878}
 ```
 
 ## CommandLine Example
