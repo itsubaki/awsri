@@ -2,6 +2,7 @@ package recommend
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -9,7 +10,26 @@ import (
 	"github.com/itsubaki/hermes/pkg/usage"
 )
 
-func Normalize(q usage.Quantity, price []pricing.Price) (usage.Quantity, error) {
+func Normalize(quantity []usage.Quantity, price []pricing.Price) ([]usage.Quantity, error) {
+	out := make([]usage.Quantity, 0)
+	for _, q := range quantity {
+		n, err := normalize(q, price)
+		if err != nil {
+			return []usage.Quantity{}, err
+		}
+
+		out = append(out, n)
+	}
+
+	sort.SliceStable(out, func(i, j int) bool { return out[i].UsageType < out[j].UsageType })
+	sort.SliceStable(out, func(i, j int) bool { return out[i].Platform < out[j].Platform })
+	sort.SliceStable(out, func(i, j int) bool { return out[i].CacheEngine < out[j].CacheEngine })
+	sort.SliceStable(out, func(i, j int) bool { return out[i].DatabaseEngine < out[j].DatabaseEngine })
+
+	return out, nil
+}
+
+func normalize(q usage.Quantity, price []pricing.Price) (usage.Quantity, error) {
 	p := make([]pricing.Price, 0)
 	for i := range price {
 		if q.UsageType != price[i].UsageType {

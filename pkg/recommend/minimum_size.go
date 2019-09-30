@@ -27,7 +27,7 @@ func FindMinimumSize(target pricing.Price, price []pricing.Price) (pricing.Price
 			continue
 		}
 
-		if strings.LastIndex(v.UsageType, ".") < 1 {
+		if strings.LastIndex(v.UsageType, ".") < 1 || strings.LastIndex(target.UsageType, ".") < 1 {
 			// instance family is not defined.
 			continue
 		}

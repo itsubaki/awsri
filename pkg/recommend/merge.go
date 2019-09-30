@@ -2,11 +2,12 @@ package recommend
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/itsubaki/hermes/pkg/usage"
 )
 
-func Merge(quantity []usage.Quantity) map[string]usage.Quantity {
+func Merge(quantity []usage.Quantity) []usage.Quantity {
 	merged := make(map[string]usage.Quantity)
 	for i := range quantity {
 		hash := Hash(
@@ -45,5 +46,15 @@ func Merge(quantity []usage.Quantity) map[string]usage.Quantity {
 		}
 	}
 
-	return merged
+	out := make([]usage.Quantity, 0)
+	for k := range merged {
+		out = append(out, merged[k])
+	}
+
+	sort.SliceStable(out, func(i, j int) bool { return out[i].UsageType < out[j].UsageType })
+	sort.SliceStable(out, func(i, j int) bool { return out[i].Platform < out[j].Platform })
+	sort.SliceStable(out, func(i, j int) bool { return out[i].CacheEngine < out[j].CacheEngine })
+	sort.SliceStable(out, func(i, j int) bool { return out[i].DatabaseEngine < out[j].DatabaseEngine })
+
+	return out
 }

@@ -21,6 +21,11 @@ func Recommend(quantity []usage.Quantity, price []pricing.Price) ([]usage.Quanti
 		}
 	}
 
+	sort.SliceStable(out, func(i, j int) bool { return out[i].UsageType < out[j].UsageType })
+	sort.SliceStable(out, func(i, j int) bool { return out[i].Platform < out[j].Platform })
+	sort.SliceStable(out, func(i, j int) bool { return out[i].CacheEngine < out[j].CacheEngine })
+	sort.SliceStable(out, func(i, j int) bool { return out[i].DatabaseEngine < out[j].DatabaseEngine })
+
 	return out, nil
 }
 

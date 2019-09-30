@@ -22,20 +22,20 @@ func TestNormalize(t *testing.T) {
 		InstanceNum:  719.9063503208333,
 	}
 
-	q, err := Normalize(quantity, price)
+	q, err := Normalize([]usage.Quantity{quantity}, price)
 	if err != nil {
 		t.Errorf("normalize: %v", err)
 	}
 
-	if q.UsageType != "APN1-BoxUsage:c4.large" {
+	if q[0].UsageType != "APN1-BoxUsage:c4.large" {
 		t.Errorf("%v", q)
 	}
 
-	if q.InstanceHour != quantity.InstanceHour*4 {
+	if q[0].InstanceHour != quantity.InstanceHour*4 {
 		t.Errorf("%v", q)
 	}
 
-	if q.InstanceNum != quantity.InstanceNum*4 {
+	if q[0].InstanceNum != quantity.InstanceNum*4 {
 		t.Errorf("%v", q)
 	}
 }
