@@ -55,11 +55,11 @@ $ go get github.com/itsubaki/hermes
 ```go
 p, err := pricing.Fetch(pricing.Redshift, "ap-northeast-1")
 if err != nil {
-	fmt.Printf("fetch pricing: %v", err)
+    fmt.Printf("fetch pricing: %v", err)
 }
 
 for _, v := range p {
-	fmt.Printf("%#v\n", v)
+    fmt.Printf("%#v\n", v)
 }
 
 {
@@ -94,7 +94,7 @@ if err != nil {
 }
 
 for i := range u {
-	fmt.Printf("%#v\n", u[i])
+    fmt.Printf("%#v\n", u[i])
 }
 
 {
