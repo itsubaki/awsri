@@ -158,14 +158,13 @@ price := []pricing.Price{
 
 recommended := make([]usage.Quantity, 0)
 for _, p := range price {
-	for _, m := range monthly {
-		res, err := Recommend(m, p)
-		if err != nil {
-			continue
-		}
-
-		recommended = append(recommended, res)
-	}
+    for _, m := range monthly {
+        res, err := Recommend(m, p)
+        if err != nil {
+            continue
+        }
+        recommended = append(recommended, res)
+    }
 }
 
 for _, r := range recommended {
