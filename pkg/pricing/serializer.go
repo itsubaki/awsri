@@ -8,7 +8,26 @@ import (
 	"sort"
 )
 
-func Serialize(dir, region string) error {
+func Serialize(dir, region string, price []Price) error {
+	path := fmt.Sprintf("%s/pricing", dir)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.MkdirAll(path, os.ModePerm)
+	}
+
+	file := fmt.Sprintf("%s/%s.out", path, region)
+	if _, err := os.Stat(file); !os.IsNotExist(err) {
+		return nil
+	}
+
+	bytes, err := json.Marshal(price)
+	if err != nil {
+		return fmt.Errorf("marshal: %v", err)
+	}
+
+	if err := ioutil.WriteFile(file, bytes, os.ModePerm); err != nil {
+		return fmt.Errorf("write file: %v", err)
+	}
+
 	return nil
 }
 

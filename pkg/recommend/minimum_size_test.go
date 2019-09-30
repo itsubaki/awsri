@@ -7,7 +7,7 @@ import (
 	"github.com/itsubaki/hermes/pkg/pricing"
 )
 
-func TestFindMinSize(t *testing.T) {
+func TestFindMinimumSize(t *testing.T) {
 	price, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
 	if err != nil {
 		t.Errorf("desirialize: %v", err)

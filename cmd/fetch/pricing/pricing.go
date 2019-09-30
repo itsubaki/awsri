@@ -1,9 +1,7 @@
 package pricing
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
@@ -41,14 +39,8 @@ func Action(c *cli.Context) {
 			price = append(price, list...)
 		}
 
-		bytes, err := json.Marshal(price)
-		if err != nil {
-			fmt.Printf("marshal: %v", err)
-			os.Exit(1)
-		}
-
-		if err := ioutil.WriteFile(file, bytes, os.ModePerm); err != nil {
-			fmt.Errorf("write file: %v", err)
+		if err := pricing.Serialize(dir, r, price); err != nil {
+			fmt.Printf("serialize: %v\n", err)
 			os.Exit(1)
 		}
 
