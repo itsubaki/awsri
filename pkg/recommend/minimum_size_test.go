@@ -87,7 +87,11 @@ func TestFindMinimumSize(t *testing.T) {
 	for _, tt := range target {
 		min, err := FindMinimumSize(tt, price)
 		if err != nil {
-			t.Errorf("find min size: %v", err)
+			t.Errorf("find minimum size: %v", err)
+		}
+
+		if min.UsageType != "APN1-BoxUsage:c4.large" && min.UsageType != "APN1-NodeUsage:cache.m5.12xlarge" {
+			t.Errorf("usage type: %v", min.UsageType)
 		}
 
 		fmt.Printf("%#v\n", min)

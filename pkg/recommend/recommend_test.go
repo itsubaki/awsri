@@ -14,7 +14,6 @@ import (
 func TestRecommend(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	// TestData
 	quantity := make([]usage.Quantity, 0)
 	date := usage.Last12Months()
 	for i := range date {
@@ -108,7 +107,6 @@ func TestRecommend(t *testing.T) {
 		},
 	}
 
-	// Test
 	recommended := make([]usage.Quantity, 0)
 	for _, p := range price {
 		res, err := Recommend(monthly, p)
