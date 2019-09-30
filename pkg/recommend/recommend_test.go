@@ -107,8 +107,10 @@ func TestRecommend(t *testing.T) {
 		},
 	}
 
-	// Test
 	monthly := MonthlyUsage(quantity)
+
+	// Test
+	fmt.Println("[recommended]--------------")
 	recommended := make([]usage.Quantity, 0)
 	for _, p := range price {
 		res, err := Recommend(monthly, p)
@@ -120,14 +122,32 @@ func TestRecommend(t *testing.T) {
 		recommended = append(recommended, res)
 	}
 
-	fmt.Println("[recommended]--------------")
 	for _, r := range recommended {
 		fmt.Printf("%#v\n", r)
 	}
 
+	fmt.Println("[normalized]--------------")
+	file := fmt.Sprintf("/var/tmp/hermes/pricing/%s.out", "ap-northeast-1")
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		fmt.Printf("file not found: %v", file)
+		os.Exit(1)
+	}
+
+	read, err := ioutil.ReadFile(file)
+	if err != nil {
+		fmt.Printf("read %s: %v", file, err)
+		os.Exit(1)
+	}
+
+	var plist []pricing.Price
+	if err := json.Unmarshal(read, &plist); err != nil {
+		fmt.Printf("unmarshal: %v", err)
+		os.Exit(1)
+	}
+
 	normalized := make([]usage.Quantity, 0)
 	for _, r := range recommended {
-		n, err := Normalize(r, price)
+		n, err := Normalize(r, plist)
 		if err != nil {
 			t.Errorf("normalized: %v", err)
 			panic("")
@@ -136,11 +156,11 @@ func TestRecommend(t *testing.T) {
 		normalized = append(normalized, n)
 	}
 
-	fmt.Println("[normalized]--------------")
 	for _, r := range normalized {
 		fmt.Printf("%#v\n", r)
 	}
 
+	fmt.Println("[merged]--------------")
 	merged := make(map[string]usage.Quantity)
 	for i := range normalized {
 		hash := Hash(
@@ -179,7 +199,6 @@ func TestRecommend(t *testing.T) {
 		}
 	}
 
-	fmt.Println("[merged]--------------")
 	for _, r := range merged {
 		fmt.Printf("%#v\n", r)
 	}

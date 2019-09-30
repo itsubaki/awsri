@@ -2,6 +2,7 @@ package recommend
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -36,11 +37,15 @@ func Normalize(q usage.Quantity, price []pricing.Price) (usage.Quantity, error) 
 	}
 
 	if len(p) > 1 {
+		for _, pp := range p {
+			log.Printf("%#v\n", pp)
+		}
+
 		return usage.Quantity{}, fmt.Errorf("duplicated pricing. quantity=%#v", q)
 	}
 
-	if err := HaveFlexibility(p[0]); err != nil {
-		return usage.Quantity{}, err
+	if !HasFlexibility(p[0]) {
+		return q, nil
 	}
 
 	basis, err := FindMinSize(p[0], price)
@@ -64,50 +69,6 @@ func Normalize(q usage.Quantity, price []pricing.Price) (usage.Quantity, error) 
 	}, nil
 }
 
-func FindMinSize(target pricing.Price, price []pricing.Price) (pricing.Price, error) {
-	tmp := make(map[string]pricing.Price)
-	for i := range price {
-		hash := Hash(
-			fmt.Sprintf(
-				"%s%s%s%s",
-				strings.Split(price[i].UsageType, ".")[0],
-				price[i].OperatingSystem,
-				price[i].CacheEngine,
-				price[i].DatabaseEngine,
-			),
-		)
-
-		v, ok := tmp[hash]
-		if !ok {
-			tmp[hash] = price[i]
-			continue
-		}
-
-		f0, _ := strconv.Atoi(v.NormalizationSizeFactor)
-		f1, _ := strconv.Atoi(price[i].NormalizationSizeFactor)
-		if f0 > f1 {
-			tmp[hash] = price[i]
-		}
-	}
-
-	hash := Hash(
-		fmt.Sprintf(
-			"%s%s%s%s",
-			strings.Split(target.UsageType, ".")[0],
-			target.OperatingSystem,
-			target.CacheEngine,
-			target.DatabaseEngine,
-		),
-	)
-
-	v, ok := tmp[hash]
-	if !ok {
-		return pricing.Price{}, fmt.Errorf("pricing not found. target=%#v", target)
-	}
-
-	return v, nil
-}
-
 // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/apply_ri.html
 // Instance size flexibility does not apply to Reserved Instances
 // that are purchased for a specific Availability Zone,
@@ -128,26 +89,26 @@ func FindMinSize(target pricing.Price, price []pricing.Price) (pricing.Price, er
 // Windows with SQL Server Enterprise,
 // Windows with SQL Server Web,
 // RHEL, and SLES.
-func HaveFlexibility(p pricing.Price) error {
+func HasFlexibility(p pricing.Price) bool {
 	if strings.Contains(p.OperatingSystem, "Windows") {
-		return fmt.Errorf("operating system=%s don't have instance size flexibility", p.OperatingSystem)
+		return false
 	}
 
 	if strings.Contains(p.OperatingSystem, "Red Hat Enterprise Linux") {
-		return fmt.Errorf("operating system=%s don't have instance size flexibility", p.OperatingSystem)
+		return false
 	}
 
 	if strings.Contains(p.OperatingSystem, "SUSE Linux") {
-		return fmt.Errorf("operating system=%s don't have instance size flexibility", p.OperatingSystem)
+		return false
 	}
 
 	if strings.Contains(p.Tenancy, "dedicated") {
-		return fmt.Errorf("tenancy=%s don't have instance size flexibility", p.Tenancy)
+		return false
 	}
 
 	if strings.Contains(p.InstanceType, "cache") {
-		return fmt.Errorf("instance type=%s don't have instance size flexibility", p.InstanceType)
+		return false
 	}
 
-	return nil
+	return true
 }
