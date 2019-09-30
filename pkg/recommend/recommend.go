@@ -8,7 +8,23 @@ import (
 	"github.com/itsubaki/hermes/pkg/usage"
 )
 
-func Recommend(monthly []usage.Quantity, price pricing.Price) (usage.Quantity, error) {
+func Recommend(quantity []usage.Quantity, price []pricing.Price) ([]usage.Quantity, error) {
+	out := make([]usage.Quantity, 0)
+	for _, m := range MonthlyUsage(quantity) {
+		for _, p := range price {
+			res, err := recommend(m, p)
+			if err != nil {
+				continue
+			}
+
+			out = append(out, res)
+		}
+	}
+
+	return out, nil
+}
+
+func recommend(monthly []usage.Quantity, price pricing.Price) (usage.Quantity, error) {
 	p := price.BreakEvenPoint()
 	if len(monthly) < p {
 		return usage.Quantity{}, fmt.Errorf("dont exceed the break-even point %v < %v", len(monthly), p)

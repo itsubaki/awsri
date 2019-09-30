@@ -1,9 +1,7 @@
 package recommend
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -14,27 +12,10 @@ import (
 func TestRecommend(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	quantity := make([]usage.Quantity, 0)
-	date := usage.Last12Months()
-	for i := range date {
-		file := fmt.Sprintf("/var/tmp/hermes/usage/%s.out", date[i].YYYYMM())
-		if _, err := os.Stat(file); os.IsNotExist(err) {
-			t.Errorf("file not found: %v", file)
-		}
-
-		read, err := ioutil.ReadFile(file)
-		if err != nil {
-			t.Errorf("read %s: %v", file, err)
-		}
-
-		var q []usage.Quantity
-		if err := json.Unmarshal(read, &q); err != nil {
-			t.Errorf("unmarshal: %v", err)
-		}
-
-		quantity = append(quantity, q...)
+	quantity, err := usage.Deserialize("/var/tmp/hermes", usage.Last12Months())
+	if err != nil {
+		t.Errorf("usage deserialize: %v", err)
 	}
-	monthly := MonthlyUsage(quantity)
 
 	price := []pricing.Price{
 		pricing.Price{
@@ -107,19 +88,12 @@ func TestRecommend(t *testing.T) {
 		},
 	}
 
-	recommended := make([]usage.Quantity, 0)
-	for _, p := range price {
-		for _, m := range monthly {
-			res, err := Recommend(m, p)
-			if err != nil {
-				continue
-			}
-
-			recommended = append(recommended, res)
-		}
+	res, err := Recommend(quantity, price)
+	if err != nil {
+		t.Errorf("recommend: %v", err)
 	}
 
-	for _, r := range recommended {
+	for _, r := range res {
 		fmt.Printf("%#v\n", r)
 	}
 }
