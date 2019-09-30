@@ -8,55 +8,42 @@ import (
 	"github.com/itsubaki/hermes/pkg/usage"
 )
 
-func Recommend(monthly map[string][]usage.Quantity, price pricing.Price) (usage.Quantity, error) {
-	out := make([]usage.Quantity, 0)
-	for _, q := range monthly {
-		if q[0].UsageType != price.UsageType {
-			continue
-		}
-
-		if len(q[0].Platform) > 0 && OperatingSystem[q[0].Platform] != price.OperatingSystem {
-			continue
-		}
-
-		if len(q[0].CacheEngine) > 0 && q[0].CacheEngine != price.CacheEngine {
-			continue
-		}
-
-		if len(q[0].DatabaseEngine) > 0 && q[0].DatabaseEngine != price.DatabaseEngine {
-			continue
-		}
-
-		point := price.BreakEvenPoint()
-		if len(q) < point {
-			continue
-		}
-
-		hrs, num := make([]float64, 0), make([]float64, 0)
-		for _, v := range q {
-			hrs, num = append(hrs, v.InstanceHour), append(num, v.InstanceNum)
-		}
-		sort.Float64s(hrs)
-		sort.Float64s(num)
-
-		out = append(out, usage.Quantity{
-			Region:         q[0].Region,
-			UsageType:      q[0].UsageType,
-			Platform:       q[0].Platform,
-			DatabaseEngine: q[0].DatabaseEngine,
-			CacheEngine:    q[0].CacheEngine,
-			InstanceHour:   hrs[point-1],
-			InstanceNum:    num[point-1],
-		})
+func Recommend(monthly []usage.Quantity, price pricing.Price) (usage.Quantity, error) {
+	p := price.BreakEvenPoint()
+	if len(monthly) < p {
+		return usage.Quantity{}, fmt.Errorf("dont exceed the break-even point %v < %v", len(monthly), p)
 	}
 
-	if len(out) > 1 {
-		return usage.Quantity{}, fmt.Errorf("duplicated result. usage=%#v", out)
+	if monthly[0].UsageType != price.UsageType {
+		return usage.Quantity{}, fmt.Errorf("usage type is unmatched")
 	}
 
-	if len(out) == 0 {
-		return usage.Quantity{}, fmt.Errorf("usage not found. price=%v", price)
+	if len(monthly[0].Platform) > 0 && OperatingSystem[monthly[0].Platform] != price.OperatingSystem {
+		return usage.Quantity{}, fmt.Errorf("platform is unmatched")
 	}
 
-	return out[0], nil
+	if len(monthly[0].CacheEngine) > 0 && monthly[0].CacheEngine != price.CacheEngine {
+		return usage.Quantity{}, fmt.Errorf("cache engine is unmatched")
+	}
+
+	if len(monthly[0].DatabaseEngine) > 0 && monthly[0].DatabaseEngine != price.DatabaseEngine {
+		return usage.Quantity{}, fmt.Errorf("database engine is unmatched")
+	}
+
+	hrs, num := make([]float64, 0), make([]float64, 0)
+	for _, v := range monthly {
+		hrs, num = append(hrs, v.InstanceHour), append(num, v.InstanceNum)
+	}
+	sort.Float64s(hrs)
+	sort.Float64s(num)
+
+	return usage.Quantity{
+		Region:         monthly[0].Region,
+		UsageType:      monthly[0].UsageType,
+		Platform:       monthly[0].Platform,
+		DatabaseEngine: monthly[0].DatabaseEngine,
+		CacheEngine:    monthly[0].CacheEngine,
+		InstanceHour:   hrs[p-1],
+		InstanceNum:    num[p-1],
+	}, nil
 }
