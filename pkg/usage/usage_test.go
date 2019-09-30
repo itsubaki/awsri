@@ -6,10 +6,11 @@ import (
 	"testing"
 )
 
-func TestFetchQuantity(t *testing.T) {
+func TestFetch(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	list, err := Fetch("2018-11-01", "2018-12-01")
+	m := Last12Months()[0]
+	list, err := Fetch(m.Start, m.End)
 	if err != nil {
 		t.Errorf("get usage quantity: %v", err)
 	}
