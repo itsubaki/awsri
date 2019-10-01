@@ -60,9 +60,28 @@ func TestRecommend(t *testing.T) {
 		t.Errorf("usage deserialize: %v", err)
 	}
 
-	res, err := Recommend(quantity, price)
+	apn1 := make([]usage.Quantity, 0)
+	for i := range quantity {
+		if quantity[i].Region != "ap-northeast-1" {
+			continue
+		}
+
+		apn1 = append(apn1, quantity[i])
+	}
+
+	fmt.Println("quantity-----------")
+	for _, r := range apn1 {
+		fmt.Printf("%#v\n", r)
+	}
+
+	res, err := Recommend(apn1, price)
 	if err != nil {
 		t.Errorf("recommend: %v", err)
+	}
+
+	fmt.Println("recommend-----------")
+	for _, r := range res {
+		fmt.Printf("%#v\n", r)
 	}
 
 	plist, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
@@ -75,6 +94,12 @@ func TestRecommend(t *testing.T) {
 		t.Errorf("normalized: %v", err)
 	}
 
+	fmt.Println("normalize-----------")
+	for _, r := range normalized {
+		fmt.Printf("%#v\n", r)
+	}
+
+	fmt.Println("merge-----------")
 	for _, q := range Merge(normalized) {
 		fmt.Printf("%#v\n", q)
 	}
