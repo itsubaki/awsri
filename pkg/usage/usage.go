@@ -41,7 +41,7 @@ type GetQuantityInput struct {
 	End         string
 }
 
-func (q Quantity) Hash() string {
+func (q Quantity) HashWithOutDate() string {
 	s := fmt.Sprintf(
 		"%s%s%s%s",
 		q.UsageType,
@@ -61,7 +61,7 @@ func (q Quantity) Hash() string {
 	return hash
 }
 
-func (q Quantity) HashWithDate() string {
+func (q Quantity) Hash() string {
 	s := fmt.Sprintf(
 		"%s%s%s%s%s",
 		q.UsageType,

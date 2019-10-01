@@ -9,7 +9,7 @@ import (
 func MonthlyUsage(quantity []usage.Quantity) map[string][]usage.Quantity {
 	merged := make(map[string]usage.Quantity)
 	for _, q := range quantity {
-		hash := q.HashWithDate()
+		hash := q.Hash()
 		merged[hash] = usage.Quantity{
 			Region:         q.Region,
 			UsageType:      q.UsageType,
@@ -24,7 +24,7 @@ func MonthlyUsage(quantity []usage.Quantity) map[string][]usage.Quantity {
 
 	monthly := make(map[string][]usage.Quantity)
 	for _, q := range merged {
-		hash := q.Hash()
+		hash := q.HashWithOutDate()
 		monthly[hash] = append(monthly[hash], q)
 	}
 
