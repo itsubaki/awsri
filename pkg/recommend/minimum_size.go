@@ -8,22 +8,27 @@ import (
 	"github.com/itsubaki/hermes/pkg/pricing"
 )
 
-func FindMinimumSize(target pricing.Price, price []pricing.Price) (pricing.Price, error) {
+func FindMinimumSize(target pricing.Price, price []pricing.Price) pricing.Price {
 	tmp := make(map[string]pricing.Price)
 	for i := range price {
-		hash := Hash(
+		h := Hash(
 			fmt.Sprintf(
-				"%s%s%s%s",
+				"%s%s%s%s%s%s%s%s%s",
 				strings.Split(price[i].UsageType, ".")[0],
+				price[i].LeaseContractLength,
+				price[i].PurchaseOption,
+				price[i].Tenancy,
+				price[i].PreInstalled,
 				price[i].OperatingSystem,
 				price[i].CacheEngine,
 				price[i].DatabaseEngine,
+				price[i].OfferingClass,
 			),
 		)
 
-		v, ok := tmp[hash]
+		v, ok := tmp[h]
 		if !ok {
-			tmp[hash] = price[i]
+			tmp[h] = price[i]
 			continue
 		}
 
@@ -44,24 +49,29 @@ func FindMinimumSize(target pricing.Price, price []pricing.Price) (pricing.Price
 		if s0 > s1 {
 			// tmp[m4.2xlarge] = m4.large
 			// tmp[m4.4xlarge] = m4.large
-			tmp[hash] = price[i]
+			tmp[h] = price[i]
 		}
 	}
 
-	hash := Hash(
+	h := Hash(
 		fmt.Sprintf(
-			"%s%s%s%s",
+			"%s%s%s%s%s%s%s%s%s",
 			strings.Split(target.UsageType, ".")[0],
+			target.LeaseContractLength,
+			target.PurchaseOption,
+			target.Tenancy,
+			target.PreInstalled,
 			target.OperatingSystem,
 			target.CacheEngine,
 			target.DatabaseEngine,
+			target.OfferingClass,
 		),
 	)
 
-	v, ok := tmp[hash]
+	v, ok := tmp[h]
 	if !ok {
-		return pricing.Price{}, fmt.Errorf("pricing not found. target=%#v", target)
+		return target
 	}
 
-	return v, nil
+	return v
 }

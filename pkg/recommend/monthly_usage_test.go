@@ -38,7 +38,6 @@ func TestMonthlyUsage(t *testing.T) {
 		for _, m := range q {
 			fmt.Printf("%v, ", m.Date)
 		}
-
 		fmt.Println()
 	}
 }

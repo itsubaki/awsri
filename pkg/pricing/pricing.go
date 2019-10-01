@@ -100,6 +100,19 @@ type Price struct {
 	NormalizationSizeFactor string  // compute, database
 }
 
+func (p Price) String() string {
+	return p.JSON()
+}
+
+func (p Price) JSON() string {
+	bytes, err := json.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(bytes)
+}
+
 func (p Price) DiscountRate() float64 {
 	month := 12
 	if p.LeaseContractLength == "3yr" {

@@ -1,6 +1,7 @@
 package usage
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -17,14 +18,14 @@ type Account struct {
 }
 
 type Quantity struct {
-	AccountID      string  `json:"account_id"`
-	Description    string  `json:"description"`
-	Region         string  `json:"region"`
+	AccountID      string  `json:"account_id,omitempty"`
+	Description    string  `json:"description,omitempty"`
+	Region         string  `json:"region,omitempty"`
 	UsageType      string  `json:"usage_type"`
 	Platform       string  `json:"platform,omitempty"`
 	DatabaseEngine string  `json:"database_engine,omitempty"`
 	CacheEngine    string  `json:"cache_engine,omitempty"`
-	Date           string  `json:"date"`
+	Date           string  `json:"date,omitempty"`
 	InstanceHour   float64 `json:"instance_hour"`
 	InstanceNum    float64 `json:"instance_num"`
 }
@@ -36,6 +37,19 @@ type GetQuantityInput struct {
 	UsageType   []string
 	Start       string
 	End         string
+}
+
+func (q Quantity) String() string {
+	return q.JSON()
+}
+
+func (q Quantity) JSON() string {
+	bytes, err := json.Marshal(q)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(bytes)
 }
 
 type FetchFunc func(start, end string, account Account, usageType []string) ([]Quantity, error)
