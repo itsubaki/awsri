@@ -8,9 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws/session"
-
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/costexplorer"
 )
 
@@ -25,8 +24,8 @@ type Quantity struct {
 	Region         string  `json:"region,omitempty"`
 	UsageType      string  `json:"usage_type"`
 	Platform       string  `json:"platform,omitempty"`
-	DatabaseEngine string  `json:"database_engine,omitempty"`
 	CacheEngine    string  `json:"cache_engine,omitempty"`
+	DatabaseEngine string  `json:"database_engine,omitempty"`
 	Date           string  `json:"date,omitempty"`
 	InstanceHour   float64 `json:"instance_hour"`
 	InstanceNum    float64 `json:"instance_num"`

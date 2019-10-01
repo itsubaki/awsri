@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/itsubaki/hermes/cmd/fetch"
 	"github.com/itsubaki/hermes/cmd/pricing"
 	"github.com/itsubaki/hermes/cmd/usage"
-
-	"github.com/itsubaki/hermes/cmd/fetch"
 	"github.com/urfave/cli"
 )
 
@@ -69,6 +68,18 @@ func New(version string) *cli.App {
 		Flags: []cli.Flag{
 			region,
 			format,
+		},
+		Subcommands: []cli.Command{
+			{
+				Name:    "normalize",
+				Aliases: []string{"n"},
+				Usage:   "output normalized aws instance hour usage",
+			},
+			{
+				Name:    "merge",
+				Aliases: []string{"m"},
+				Usage:   "output merged aws instance hour usage",
+			},
 		},
 	}
 
