@@ -100,6 +100,24 @@ type Price struct {
 	NormalizationSizeFactor string  // compute, database
 }
 
+func (p Price) DiscountRate() float64 {
+	month := 12
+	if p.LeaseContractLength == "3yr" {
+		month = 12 * 3
+	}
+
+	ond, res := 0.0, p.ReservedQuantity
+	for i := 1; i < month+1; i++ {
+		ond, res = ond+p.OnDemand*24*float64(Days[i%12]), res+p.ReservedHrs*24*float64(Days[i%12])
+	}
+
+	if ond == 0.0 {
+		return 0.0
+	}
+
+	return (ond - res) / ond
+}
+
 func (p Price) BreakEvenPoint() int {
 	month := 12
 	if p.LeaseContractLength == "3yr" {
