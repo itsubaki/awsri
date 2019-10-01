@@ -92,8 +92,8 @@ type Price struct {
 	ReservedHrs             float64 // common
 	Tenancy                 string  // compute: Shared, Host, Dedicated
 	PreInstalled            string  // compute: SQL Web, SQL Ent, SQL Std, NA
-	OperatingSystem         string  // compute: Windows, Linux, SUSE, RHEL
 	Operation               string  // compute
+	OperatingSystem         string  // compute: Windows, Linux, SUSE, RHEL
 	CacheEngine             string  // cache
 	DatabaseEngine          string  // database
 	OfferingClass           string  // compute, database
