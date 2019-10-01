@@ -1,6 +1,8 @@
 package pricing
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -98,6 +100,30 @@ type Price struct {
 	DatabaseEngine          string  // database
 	OfferingClass           string  // compute, database
 	NormalizationSizeFactor string  // compute, database
+}
+
+func (p Price) Hash() string {
+	s := fmt.Sprintf(
+		"%s%s%s%s%s%s%s%s%s",
+		strings.Split(p.UsageType, ".")[0],
+		p.LeaseContractLength,
+		p.PurchaseOption,
+		p.Tenancy,
+		p.PreInstalled,
+		p.OperatingSystem,
+		p.CacheEngine,
+		p.DatabaseEngine,
+		p.OfferingClass,
+	)
+
+	val, err := json.Marshal(s)
+	if err != nil {
+		panic(err)
+	}
+
+	sha := sha256.Sum256(val)
+	hash := hex.EncodeToString(sha[:])
+	return hash
 }
 
 func (p Price) String() string {

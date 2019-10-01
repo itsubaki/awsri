@@ -1,4 +1,4 @@
-package recommend
+package hermes
 
 import (
 	"testing"

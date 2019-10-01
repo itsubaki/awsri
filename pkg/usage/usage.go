@@ -1,6 +1,8 @@
 package usage
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -37,6 +39,47 @@ type GetQuantityInput struct {
 	UsageType   []string
 	Start       string
 	End         string
+}
+
+func (q Quantity) Hash() string {
+	s := fmt.Sprintf(
+		"%s%s%s%s",
+		q.UsageType,
+		q.Platform,
+		q.CacheEngine,
+		q.DatabaseEngine,
+	)
+
+	val, err := json.Marshal(s)
+	if err != nil {
+		panic(err)
+	}
+
+	sha := sha256.Sum256(val)
+	hash := hex.EncodeToString(sha[:])
+
+	return hash
+}
+
+func (q Quantity) HashWithDate() string {
+	s := fmt.Sprintf(
+		"%s%s%s%s%s",
+		q.UsageType,
+		q.Platform,
+		q.CacheEngine,
+		q.DatabaseEngine,
+		q.Date,
+	)
+
+	val, err := json.Marshal(s)
+	if err != nil {
+		panic(err)
+	}
+
+	sha := sha256.Sum256(val)
+	hash := hex.EncodeToString(sha[:])
+
+	return hash
 }
 
 func (q Quantity) String() string {

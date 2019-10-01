@@ -1,4 +1,4 @@
-package recommend
+package hermes
 
 import (
 	"strconv"
@@ -13,7 +13,7 @@ func Normalize(q usage.Quantity, p pricing.Price, plist []pricing.Price) (usage.
 		return q, p, nil
 	}
 
-	min := FindMinimumSize(p, plist)
+	min := MinimumSize(p, plist)
 	f0, _ := strconv.Atoi(p.NormalizationSizeFactor)
 	f1, _ := strconv.Atoi(min.NormalizationSizeFactor)
 	pow := float64(f0) / float64(f1)

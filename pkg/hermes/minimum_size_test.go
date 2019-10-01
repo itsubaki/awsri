@@ -1,4 +1,4 @@
-package recommend
+package hermes
 
 import (
 	"fmt"
@@ -53,7 +53,7 @@ func TestFindMinimumSize(t *testing.T) {
 	}
 
 	for _, tt := range target {
-		m := FindMinimumSize(tt, price)
+		m := MinimumSize(tt, price)
 		if m.UsageType != "APN1-BoxUsage:c4.large" {
 			t.Errorf("usage type: %v", m.UsageType)
 		}

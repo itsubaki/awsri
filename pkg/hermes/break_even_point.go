@@ -1,4 +1,4 @@
-package recommend
+package hermes
 
 import (
 	"fmt"
@@ -12,22 +12,6 @@ func BreakEvenPoint(monthly []usage.Quantity, price pricing.Price) (usage.Quanti
 	p := price.BreakEvenPoint()
 	if len(monthly) < p {
 		return usage.Quantity{}, price, fmt.Errorf("dont exceed the break-even point %v < %v", len(monthly), p)
-	}
-
-	if monthly[0].UsageType != price.UsageType {
-		return usage.Quantity{}, price, fmt.Errorf("usage type is unmatched")
-	}
-
-	if len(monthly[0].Platform) > 0 && OperatingSystem[monthly[0].Platform] != price.OperatingSystem {
-		return usage.Quantity{}, price, fmt.Errorf("platform is unmatched")
-	}
-
-	if len(monthly[0].CacheEngine) > 0 && monthly[0].CacheEngine != price.CacheEngine {
-		return usage.Quantity{}, price, fmt.Errorf("cache engine is unmatched")
-	}
-
-	if len(monthly[0].DatabaseEngine) > 0 && monthly[0].DatabaseEngine != price.DatabaseEngine {
-		return usage.Quantity{}, price, fmt.Errorf("database engine is unmatched")
 	}
 
 	hrs, num := make([]float64, 0), make([]float64, 0)

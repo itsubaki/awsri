@@ -1,30 +1,16 @@
-package recommend
+package hermes
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
 )
 
-func FindMinimumSize(target pricing.Price, price []pricing.Price) pricing.Price {
+func MinimumSize(target pricing.Price, price []pricing.Price) pricing.Price {
 	tmp := make(map[string]pricing.Price)
 	for i := range price {
-		h := Hash(
-			fmt.Sprintf(
-				"%s%s%s%s%s%s%s%s%s",
-				strings.Split(price[i].UsageType, ".")[0],
-				price[i].LeaseContractLength,
-				price[i].PurchaseOption,
-				price[i].Tenancy,
-				price[i].PreInstalled,
-				price[i].OperatingSystem,
-				price[i].CacheEngine,
-				price[i].DatabaseEngine,
-				price[i].OfferingClass,
-			),
-		)
+		h := price[i].Hash()
 
 		v, ok := tmp[h]
 		if !ok {
@@ -53,21 +39,7 @@ func FindMinimumSize(target pricing.Price, price []pricing.Price) pricing.Price 
 		}
 	}
 
-	h := Hash(
-		fmt.Sprintf(
-			"%s%s%s%s%s%s%s%s%s",
-			strings.Split(target.UsageType, ".")[0],
-			target.LeaseContractLength,
-			target.PurchaseOption,
-			target.Tenancy,
-			target.PreInstalled,
-			target.OperatingSystem,
-			target.CacheEngine,
-			target.DatabaseEngine,
-			target.OfferingClass,
-		),
-	)
-
+	h := target.Hash()
 	v, ok := tmp[h]
 	if !ok {
 		return target
