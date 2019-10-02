@@ -33,8 +33,16 @@ func Normalize(quantity []usage.Quantity, mini map[string]pricing.Tuple) []usage
 			continue
 		}
 
-		s0, _ := strconv.ParseFloat(v.Minimum.NormalizationSizeFactor, 64)
-		s1, _ := strconv.ParseFloat(v.Price.NormalizationSizeFactor, 64)
+		s0, err := strconv.ParseFloat(v.Minimum.NormalizationSizeFactor, 64)
+		if err != nil {
+			panic(fmt.Sprintf("invalid normalization size factor: %v", err))
+		}
+
+		s1, err := strconv.ParseFloat(v.Price.NormalizationSizeFactor, 64)
+		if err != nil {
+			panic(fmt.Sprintf("invalid normalization size factor: %v", err))
+		}
+
 		scale := s1 / s0
 
 		n = append(n, usage.Quantity{

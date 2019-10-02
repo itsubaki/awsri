@@ -39,8 +39,16 @@ func Family(plist []Price) map[string]Price {
 			continue
 		}
 
-		s0, _ := strconv.ParseFloat(v.NormalizationSizeFactor, 64)
-		s1, _ := strconv.ParseFloat(plist[i].NormalizationSizeFactor, 64)
+		s0, err := strconv.ParseFloat(v.NormalizationSizeFactor, 64)
+		if err != nil {
+			panic(fmt.Sprintf("invalid normalization size factor: %v", err))
+		}
+
+		s1, err := strconv.ParseFloat(plist[i].NormalizationSizeFactor, 64)
+		if err != nil {
+			panic(fmt.Sprintf("invalid normalization size factor: %v", err))
+		}
+
 		if s0 > s1 {
 			mmap[hash] = plist[i]
 		}
