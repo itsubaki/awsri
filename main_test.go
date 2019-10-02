@@ -44,7 +44,7 @@ func TestPackage2(t *testing.T) {
 			continue
 		}
 
-		if v.NormalizationSizeFactor == "" || plist[i].NormalizationSizeFactor == "" {
+		if len(v.NormalizationSizeFactor) < 1 {
 			continue
 		}
 
@@ -75,11 +75,7 @@ func TestPackage2(t *testing.T) {
 		hash := fmt.Sprintf(
 			"%s%s%s%s",
 			plist[i].UsageType,
-			fmt.Sprintf("%s%s%s",
-				plist[i].OperatingSystem,
-				plist[i].CacheEngine,
-				plist[i].DatabaseEngine,
-			),
+			plist[i].OperatingSystem,
 			plist[i].CacheEngine,
 			plist[i].DatabaseEngine,
 		)
@@ -132,11 +128,7 @@ func TestPackage2(t *testing.T) {
 		hash := fmt.Sprintf(
 			"%s%s%s%s",
 			forecast[i].UsageType,
-			fmt.Sprintf("%s%s%s",
-				hermes.OperatingSystem[forecast[i].Platform],
-				forecast[i].CacheEngine,
-				forecast[i].DatabaseEngine,
-			),
+			hermes.OperatingSystem[forecast[i].Platform],
 			forecast[i].CacheEngine,
 			forecast[i].DatabaseEngine,
 		)
@@ -147,7 +139,7 @@ func TestPackage2(t *testing.T) {
 			continue
 		}
 
-		if v.Minimum.NormalizationSizeFactor == "" || v.Price.NormalizationSizeFactor == "" {
+		if len(v.Minimum.NormalizationSizeFactor) < 1 {
 			continue
 		}
 
