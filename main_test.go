@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -193,9 +194,46 @@ func TestPackage2(t *testing.T) {
 		}
 	}
 
-	for _, n := range merged {
-		fmt.Println(n)
+	for _, m := range merged {
+		fmt.Println(m)
 	}
+
+	monthly := make(map[string][]usage.Quantity)
+	for i := range merged {
+		hash := merged[i].HashWithOutDate()
+		monthly[hash] = append(monthly[hash], merged[i])
+	}
+
+	for k := range monthly {
+		sort.Slice(monthly[k], func(i, j int) bool { return monthly[k][i].Date < monthly[k][j].Date })
+	}
+
+	for _, m := range monthly {
+		fmt.Println(m)
+	}
+
+	price := pricing.Price{
+		Region:                  "ap-northeast-1",
+		UsageType:               "APN1-BoxUsage:c4.large",
+		Tenancy:                 "Shared",
+		PreInstalled:            "NA",
+		OperatingSystem:         "Linux",
+		OfferingClass:           "standard",
+		LeaseContractLength:     "1yr",
+		PurchaseOption:          "All Upfront",
+		OnDemand:                0.126,
+		ReservedQuantity:        738,
+		ReservedHrs:             0,
+		NormalizationSizeFactor: "4",
+	}
+
+	hash := hermes.Hash(fmt.Sprintf("%s%s", price.UsageType, "Linux/UNIX"))
+	q, p, err := hermes.BreakEvenPoint(monthly[hash], price)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	fmt.Printf("%s -> %.0f\n", p, q.InstanceNum)
 }
 
 func TestPackage(t *testing.T) {

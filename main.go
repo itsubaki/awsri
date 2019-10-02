@@ -68,17 +68,17 @@ func New(version string) *cli.App {
 		Flags: []cli.Flag{
 			region,
 			format,
-		},
-		Subcommands: []cli.Command{
-			{
-				Name:    "normalize",
-				Aliases: []string{"n"},
-				Usage:   "output normalized aws instance hour usage",
+			cli.BoolFlag{
+				Name:  "normalize",
+				Usage: "output normalized aws instance hour usage",
 			},
-			{
-				Name:    "merge",
-				Aliases: []string{"m"},
-				Usage:   "output merged aws instance hour usage",
+			cli.BoolFlag{
+				Name:  "merge",
+				Usage: "output merged aws instance hour usage",
+			},
+			cli.BoolFlag{
+				Name:  "monthly",
+				Usage: "output monthly aws instance hour usage",
 			},
 		},
 	}

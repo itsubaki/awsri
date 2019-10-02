@@ -2,6 +2,7 @@ package hermes
 
 import (
 	"fmt"
+	"math"
 	"sort"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
@@ -27,7 +28,6 @@ func BreakEvenPoint(monthly []usage.Quantity, price pricing.Price) (usage.Quanti
 		Platform:       monthly[0].Platform,
 		DatabaseEngine: monthly[0].DatabaseEngine,
 		CacheEngine:    monthly[0].CacheEngine,
-		InstanceHour:   hrs[p-1],
-		InstanceNum:    num[p-1],
+		InstanceNum:    math.Floor(num[p-1]),
 	}, price, nil
 }

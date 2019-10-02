@@ -27,7 +27,7 @@ type Quantity struct {
 	CacheEngine    string  `json:"cache_engine,omitempty"`
 	DatabaseEngine string  `json:"database_engine,omitempty"`
 	Date           string  `json:"date,omitempty"`
-	InstanceHour   float64 `json:"instance_hour"`
+	InstanceHour   float64 `json:"instance_hour,omitempty"`
 	InstanceNum    float64 `json:"instance_num"`
 }
 
