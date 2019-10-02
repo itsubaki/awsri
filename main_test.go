@@ -9,10 +9,6 @@ import (
 	"github.com/itsubaki/hermes/pkg/usage"
 )
 
-// usage forecast by aws account
-// normalize usage forecast by date
-// merge normalized usage forecast by date
-// break-even point with purchase option
 func TestPackage(t *testing.T) {
 	// price list
 	plist, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
