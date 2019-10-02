@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/itsubaki/hermes/pkg/hermes"
+	"github.com/itsubaki/hermes/pkg/pricing"
+
 	"github.com/itsubaki/hermes/pkg/usage"
 	"github.com/urfave/cli"
 )
@@ -12,12 +15,39 @@ import (
 func Action(c *cli.Context) {
 	dir := c.GlobalString("dir")
 	format := c.String("format")
-	date := usage.Last12Months()
+	normalize := c.Bool("normalize")
+	merge := c.Bool("merge")
+	monthly := c.Bool("monthly")
 
+	date := usage.Last12Months()
 	quantity, err := usage.Deserialize(dir, date)
 	if err != nil {
-		fmt.Errorf("deserialize: %v", err)
+		fmt.Errorf("deserialize usage: %v", err)
 		os.Exit(1)
+	}
+
+	if normalize {
+		plist, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
+		if err != nil {
+			fmt.Errorf("desirialize pricing: %v", err)
+		}
+
+		family := pricing.Family(plist)
+		mini := pricing.Minimum(family, plist)
+
+		quantity = hermes.Normalize(quantity, mini)
+	}
+
+	if merge {
+		quantity = usage.Merge(quantity)
+	}
+
+	if monthly {
+		month := usage.Monthly(quantity)
+		quantity = make([]usage.Quantity, 0)
+		for i := range month {
+			quantity = append(quantity, month[i]...)
+		}
 	}
 
 	if format == "json" {

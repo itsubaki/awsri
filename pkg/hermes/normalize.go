@@ -38,15 +38,16 @@ func Normalize(quantity []usage.Quantity, mini map[string]pricing.Tuple) []usage
 		scale := s1 / s0
 
 		n = append(n, usage.Quantity{
-			AccountID:    quantity[i].AccountID,
-			Description:  quantity[i].Description,
-			Region:       quantity[i].Region,
-			UsageType:    v.Minimum.UsageType,
-			Platform:     quantity[i].Platform,
-			CacheEngine:  quantity[i].CacheEngine,
-			Date:         quantity[i].Date,
-			InstanceHour: quantity[i].InstanceHour * scale,
-			InstanceNum:  quantity[i].InstanceNum * scale,
+			AccountID:      quantity[i].AccountID,
+			Description:    quantity[i].Description,
+			Region:         quantity[i].Region,
+			UsageType:      v.Minimum.UsageType,
+			Platform:       quantity[i].Platform,
+			CacheEngine:    quantity[i].CacheEngine,
+			DatabaseEngine: quantity[i].DatabaseEngine,
+			Date:           quantity[i].Date,
+			InstanceHour:   quantity[i].InstanceHour * scale,
+			InstanceNum:    quantity[i].InstanceNum * scale,
 		})
 	}
 
