@@ -5,32 +5,21 @@ func Group(n []Quantity) []Quantity {
 	for i := range n {
 		v, ok := merged[n[i].Hash()]
 		if !ok {
-			merged[n[i].Hash()] = Quantity{
-				AccountID:      n[i].AccountID,
-				Description:    n[i].Description,
-				Region:         n[i].Region,
-				UsageType:      n[i].UsageType,
-				Platform:       n[i].Platform,
-				CacheEngine:    n[i].CacheEngine,
-				DatabaseEngine: n[i].DatabaseEngine,
-				Date:           n[i].Date,
-				InstanceHour:   n[i].InstanceHour,
-				InstanceNum:    n[i].InstanceNum,
-			}
+			merged[n[i].Hash()] = n[i]
 			continue
 		}
 
 		merged[n[i].Hash()] = Quantity{
-			AccountID:      v.AccountID,
-			Description:    v.Description,
-			Region:         v.Region,
-			UsageType:      v.UsageType,
-			Platform:       v.Platform,
-			CacheEngine:    v.CacheEngine,
-			DatabaseEngine: v.DatabaseEngine,
-			Date:           v.Date,
-			InstanceHour:   v.InstanceHour + n[i].InstanceHour,
-			InstanceNum:    v.InstanceNum + n[i].InstanceNum,
+			AccountID:      n[i].AccountID,
+			Description:    n[i].Description,
+			Region:         n[i].Region,
+			UsageType:      n[i].UsageType,
+			Platform:       n[i].Platform,
+			CacheEngine:    n[i].CacheEngine,
+			DatabaseEngine: n[i].DatabaseEngine,
+			Date:           n[i].Date,
+			InstanceHour:   n[i].InstanceHour + v.InstanceHour,
+			InstanceNum:    n[i].InstanceNum + v.InstanceNum,
 		}
 	}
 

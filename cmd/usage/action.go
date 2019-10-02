@@ -65,6 +65,7 @@ func Action(c *cli.Context) {
 		}
 		fmt.Println()
 
+		quantity = usage.Group(quantity)
 		month := usage.Monthly(quantity)
 		for _, v := range month {
 			fmt.Printf("%s, %s, ", v[0].AccountID, v[0].Description)
