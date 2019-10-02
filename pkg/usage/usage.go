@@ -42,7 +42,8 @@ type GetQuantityInput struct {
 
 func (q Quantity) HashWithOutDate() string {
 	s := fmt.Sprintf(
-		"%s%s%s%s",
+		"%s%s%s%s%s",
+		q.AccountID,
 		q.UsageType,
 		q.Platform,
 		q.CacheEngine,
@@ -62,7 +63,8 @@ func (q Quantity) HashWithOutDate() string {
 
 func (q Quantity) Hash() string {
 	s := fmt.Sprintf(
-		"%s%s%s%s%s",
+		"%s%s%s%s%s%s",
+		q.AccountID,
 		q.UsageType,
 		q.Platform,
 		q.CacheEngine,

@@ -92,12 +92,12 @@ func New(version string) *cli.App {
 				Usage: "output normalized aws instance hour usage",
 			},
 			cli.BoolFlag{
-				Name:  "merge, m",
-				Usage: "output merged aws instance hour usage",
+				Name:  "group, g",
+				Usage: "output aws instance hour usage group by aws account id",
 			},
 			cli.BoolFlag{
-				Name:  "monthly, mm",
-				Usage: "output monthly aws instance hour usage",
+				Name:  "merge, m",
+				Usage: "output merged aws instance hour usage",
 			},
 		},
 	}

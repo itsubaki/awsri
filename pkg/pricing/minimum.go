@@ -26,14 +26,30 @@ func Minimum(family map[string]Price, plist []Price) map[string]Tuple {
 			continue
 		}
 
-		mhash := fmt.Sprintf(
-			"%s%s%s%s",
+		fhash := fmt.Sprintf(
+			"%s%s%s%s%s%s%s%s%s%s%s%s",
 			plist[i].UsageType[:strings.LastIndex(plist[i].UsageType, ".")],
 			plist[i].OperatingSystem,
 			plist[i].CacheEngine,
 			plist[i].DatabaseEngine,
+			plist[i].Operation,
+			plist[i].PreInstalled,
+			plist[i].Region,
+			plist[i].OfferingClass,
+			plist[i].Tenancy,
+			plist[i].PurchaseOption,
+			plist[i].LeaseContractLength,
+			plist[i].Version,
 		)
-		smap[hash] = Tuple{plist[i], family[mhash]}
+
+		smap[hash] = Tuple{plist[i], family[fhash]}
+	}
+
+	// validation
+	for _, v := range smap {
+		if v.Price.OfferTermCode != v.Minimum.OfferTermCode {
+			panic("invalid OfferTermCode")
+		}
 	}
 
 	return smap

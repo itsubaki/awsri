@@ -17,8 +17,8 @@ func Action(c *cli.Context) {
 	dir := c.GlobalString("dir")
 	format := c.String("format")
 	normalize := c.Bool("normalize")
+	group := c.Bool("group")
 	merge := c.Bool("merge")
-	monthly := c.Bool("monthly")
 
 	date := usage.Last12Months()
 	quantity, err := usage.Deserialize(dir, date)
@@ -39,16 +39,12 @@ func Action(c *cli.Context) {
 		quantity = hermes.Normalize(quantity, mini)
 	}
 
-	if merge {
-		quantity = usage.Merge(quantity)
+	if group {
+		quantity = usage.Group(quantity)
 	}
 
-	if monthly {
-		month := usage.Monthly(quantity)
-		quantity = make([]usage.Quantity, 0)
-		for i := range month {
-			quantity = append(quantity, month[i]...)
-		}
+	if merge {
+		quantity = usage.Merge(quantity)
 	}
 
 	if format == "json" {
@@ -63,26 +59,23 @@ func Action(c *cli.Context) {
 	}
 
 	if format == "csv" {
-		tmp := make(map[string][]usage.Quantity)
-		for _, q := range quantity {
-			tmp[Hash(q)] = append(tmp[Hash(q)], q)
-		}
-
 		fmt.Printf("accountID, description, region, usage_type, os/engine, ")
 		for i := range date {
 			fmt.Printf("%s, ", date[i].YYYYMM())
 		}
 		fmt.Println()
 
-		for _, v := range tmp {
+		quantity = usage.Group(quantity)
+		month := usage.Monthly(quantity)
+		for _, v := range month {
 			fmt.Printf("%s, %s, ", v[0].AccountID, v[0].Description)
 			fmt.Printf("%s, %s, ", v[0].Region, v[0].UsageType)
 			fmt.Printf("%s, ", fmt.Sprintf("%s%s%s", v[0].Platform, v[0].CacheEngine, v[0].DatabaseEngine))
 
-			for i := range date {
+			for _, d := range date {
 				found := false
 				for _, q := range v {
-					if date[i].YYYYMM() == q.Date {
+					if d.YYYYMM() == q.Date {
 						fmt.Printf("%.3f, ", q.InstanceNum)
 						found = true
 						break
@@ -95,7 +88,44 @@ func Action(c *cli.Context) {
 			}
 			fmt.Println()
 		}
-
-		return
 	}
+
+	//
+	//if format == "csv" {
+	//	tmp := make(map[string][]usage.Quantity)
+	//	for _, q := range quantity {
+	//		hash := q.HashWithOutDate()
+	//		tmp[hash] = append(tmp[hash], q)
+	//	}
+	//
+	//	fmt.Printf("accountID, description, region, usage_type, os/engine, ")
+	//	for i := range date {
+	//		fmt.Printf("%s, ", date[i].YYYYMM())
+	//	}
+	//	fmt.Println()
+	//
+	//	for _, v := range tmp {
+	//		fmt.Printf("%s, %s, ", v[0].AccountID, v[0].Description)
+	//		fmt.Printf("%s, %s, ", v[0].Region, v[0].UsageType)
+	//		fmt.Printf("%s, ", fmt.Sprintf("%s%s%s", v[0].Platform, v[0].CacheEngine, v[0].DatabaseEngine))
+	//
+	//		for i := range date {
+	//			found := false
+	//			for _, q := range v {
+	//				if date[i].YYYYMM() == q.Date {
+	//					fmt.Printf("%.3f, ", q.InstanceNum)
+	//					found = true
+	//					break
+	//				}
+	//			}
+	//
+	//			if !found {
+	//				fmt.Printf("0.0, ")
+	//			}
+	//		}
+	//		fmt.Println()
+	//	}
+	//
+	//	return
+	//}
 }

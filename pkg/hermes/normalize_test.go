@@ -2,6 +2,7 @@ package hermes
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
@@ -9,39 +10,58 @@ import (
 )
 
 func TestNormalize(t *testing.T) {
-	// price list
 	plist, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
 	if err != nil {
-		t.Errorf("desirialize: %v", err)
+		t.Errorf("desirialize pricing: %v", err)
 	}
 
 	family := pricing.Family(plist)
 	mini := pricing.Minimum(family, plist)
 
+	for k, v := range mini {
+		if !strings.Contains(k, "BoxUsage:c4") {
+			continue
+		}
+		if !strings.Contains(k, "Linux") {
+			continue
+		}
+
+		fmt.Printf("%s %s %s\n", k, v.Price.NormalizationSizeFactor, v.Minimum.NormalizationSizeFactor)
+	}
+
 	forecast := []usage.Quantity{
+		{
+			Region:       "ap-northeast-1",
+			UsageType:    "APN1-BoxUsage:c4.large",
+			Platform:     "Linux/UNIX",
+			InstanceHour: 1,
+			InstanceNum:  1,
+		},
+		{
+			Region:       "ap-northeast-1",
+			UsageType:    "APN1-BoxUsage:c4.xlarge",
+			Platform:     "Linux/UNIX",
+			InstanceHour: 3,
+			InstanceNum:  3,
+		},
 		{
 			Region:       "ap-northeast-1",
 			UsageType:    "APN1-BoxUsage:c4.2xlarge",
 			Platform:     "Linux/UNIX",
-			InstanceHour: 518332.57223100006,
-			InstanceNum:  719.9063503208333,
+			InstanceHour: 5,
+			InstanceNum:  5,
+		},
+		{
+			Region:       "ap-northeast-1",
+			UsageType:    "APN1-BoxUsage:c4.4xlarge",
+			Platform:     "Linux/UNIX",
+			InstanceHour: 7,
+			InstanceNum:  7,
 		},
 	}
 
 	n := Normalize(forecast, mini)
 	for _, nn := range n {
 		fmt.Println(nn)
-	}
-
-	if n[0].InstanceHour != forecast[0].InstanceHour*4 {
-		t.Errorf("%v", n[0])
-	}
-
-	if n[0].InstanceNum != forecast[0].InstanceNum*4 {
-		t.Errorf("%v", n[0])
-	}
-
-	if n[0].UsageType != "APN1-BoxUsage:c4.large" {
-		t.Errorf("%v", n[0])
 	}
 }
