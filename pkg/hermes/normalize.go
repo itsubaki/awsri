@@ -1,9 +1,6 @@
 package hermes
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -60,18 +57,6 @@ func Normalize(quantity []usage.Quantity, mini map[string]pricing.Tuple) []usage
 	}
 
 	return n
-}
-
-func Hash(str string) string {
-	val, err := json.Marshal(str)
-	if err != nil {
-		panic(err)
-	}
-
-	sha := sha256.Sum256(val)
-	hash := hex.EncodeToString(sha[:])
-
-	return hash
 }
 
 // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/apply_ri.html

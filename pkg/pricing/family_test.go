@@ -21,10 +21,6 @@ func TestFamily(t *testing.T) {
 			continue
 		}
 
-		if v.NormalizationSizeFactor != "8" {
-			continue
-		}
-
 		fmt.Printf("%s %s\n", k, v)
 	}
 }

@@ -19,14 +19,14 @@ func Merge(n []Quantity) []Quantity {
 		}
 
 		merged[n[i].Hash()] = Quantity{
-			Region:         v.Region,
-			UsageType:      v.UsageType,
-			Platform:       v.Platform,
-			CacheEngine:    v.CacheEngine,
-			DatabaseEngine: v.DatabaseEngine,
-			Date:           v.Date,
-			InstanceHour:   v.InstanceHour + n[i].InstanceHour,
-			InstanceNum:    v.InstanceNum + n[i].InstanceNum,
+			Region:         n[i].Region,
+			UsageType:      n[i].UsageType,
+			Platform:       n[i].Platform,
+			CacheEngine:    n[i].CacheEngine,
+			DatabaseEngine: n[i].DatabaseEngine,
+			Date:           n[i].Date,
+			InstanceHour:   n[i].InstanceHour + v.InstanceHour,
+			InstanceNum:    n[i].InstanceNum + v.InstanceNum,
 		}
 	}
 
