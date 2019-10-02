@@ -32,7 +32,7 @@ func Action(c *cli.Context) {
 	}
 
 	if format == "csv" {
-		fmt.Println("discount_rate, break-even_point, version, region, instance_type, usage_type, lease_contract_length, purchase_option, os, cache_engine, database_engine, tenancy, pre_installed, operation, offering_class, on_demand, reserved_quantity, reserved_hours, normalization_factor")
+		fmt.Println("discount_rate, break_even_point(month), version, region, instance_type, usage_type, lease_contract_length, purchase_option, os, cache_engine, database_engine, tenancy, pre_installed, operation, offering_class, on_demand, reserved_quantity, reserved_hours, normalization_factor")
 		for _, p := range price {
 			fmt.Printf(
 				"%.2f, %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %.3f, %.3f, %.3f, %s\n",

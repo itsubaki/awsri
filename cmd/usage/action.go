@@ -13,6 +13,7 @@ import (
 )
 
 func Action(c *cli.Context) {
+	region := c.StringSlice("region")
 	dir := c.GlobalString("dir")
 	format := c.String("format")
 	normalize := c.Bool("normalize")
@@ -27,7 +28,7 @@ func Action(c *cli.Context) {
 	}
 
 	if normalize {
-		plist, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
+		plist, err := pricing.Deserialize("/var/tmp/hermes", region)
 		if err != nil {
 			fmt.Errorf("desirialize pricing: %v", err)
 		}
