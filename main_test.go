@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"sort"
 	"strconv"
-	"strings"
 	"testing"
 
 	"github.com/itsubaki/hermes/pkg/hermes"
@@ -24,39 +22,8 @@ func TestPackage2(t *testing.T) {
 	}
 
 	// family -> minimum price
-	mmap := make(map[string]pricing.Price)
-	for i := range plist {
-		if strings.LastIndex(plist[i].UsageType, ".") < 0 {
-			continue
-		}
-
-		hash := fmt.Sprintf(
-			"%s%s%s%s",
-			plist[i].UsageType[:strings.LastIndex(plist[i].UsageType, ".")],
-			plist[i].OperatingSystem,
-			plist[i].CacheEngine,
-			plist[i].DatabaseEngine,
-		)
-
-		v, ok := mmap[hash]
-		if !ok {
-			mmap[hash] = plist[i]
-			continue
-		}
-
-		if len(v.NormalizationSizeFactor) < 1 {
-			continue
-		}
-
-		s0, _ := strconv.ParseFloat(v.NormalizationSizeFactor, 64)
-		s1, _ := strconv.ParseFloat(plist[i].NormalizationSizeFactor, 64)
-
-		if s0 > s1 {
-			mmap[hash] = plist[i]
-		}
-	}
-
-	for _, v := range mmap {
+	family := pricing.Family(plist)
+	for _, v := range family {
 		fmt.Printf(
 			"%s, %s, %s\n",
 			v.UsageType,
@@ -65,37 +32,8 @@ func TestPackage2(t *testing.T) {
 		)
 	}
 
-	type Tuple struct {
-		Price   pricing.Price
-		Minimum pricing.Price
-	}
-
-	smap := make(map[string]Tuple)
-	for i := range plist {
-		hash := fmt.Sprintf(
-			"%s%s%s%s",
-			plist[i].UsageType,
-			plist[i].OperatingSystem,
-			plist[i].CacheEngine,
-			plist[i].DatabaseEngine,
-		)
-
-		if strings.LastIndex(plist[i].UsageType, ".") < 0 {
-			smap[hash] = Tuple{plist[i], plist[i]}
-			continue
-		}
-
-		mhash := fmt.Sprintf(
-			"%s%s%s%s",
-			plist[i].UsageType[:strings.LastIndex(plist[i].UsageType, ".")],
-			plist[i].OperatingSystem,
-			plist[i].CacheEngine,
-			plist[i].DatabaseEngine,
-		)
-		smap[hash] = Tuple{plist[i], mmap[mhash]}
-	}
-
-	for _, v := range smap {
+	mini := pricing.Minimum(family, plist)
+	for _, v := range mini {
 		fmt.Printf(
 			"%s, %s, %s -> %s, %s, %s\n",
 			v.Price.UsageType,
@@ -133,7 +71,7 @@ func TestPackage2(t *testing.T) {
 			forecast[i].DatabaseEngine,
 		)
 
-		v, ok := smap[hash]
+		v, ok := mini[hash]
 		if !ok {
 			n = append(n, forecast[i])
 			continue
@@ -164,49 +102,12 @@ func TestPackage2(t *testing.T) {
 		fmt.Println(nn)
 	}
 
-	merged := make(map[string]usage.Quantity)
-	for i := range n {
-		v, ok := merged[n[i].Hash()]
-		if !ok {
-			merged[n[i].Hash()] = usage.Quantity{
-				Region:         n[i].Region,
-				UsageType:      n[i].UsageType,
-				Platform:       n[i].Platform,
-				CacheEngine:    n[i].CacheEngine,
-				DatabaseEngine: n[i].DatabaseEngine,
-				Date:           n[i].Date,
-				InstanceHour:   n[i].InstanceHour,
-				InstanceNum:    n[i].InstanceNum,
-			}
-			continue
-		}
-
-		merged[n[i].Hash()] = usage.Quantity{
-			Region:         v.Region,
-			UsageType:      v.UsageType,
-			Platform:       v.Platform,
-			CacheEngine:    v.CacheEngine,
-			DatabaseEngine: v.DatabaseEngine,
-			Date:           v.Date,
-			InstanceHour:   v.InstanceHour + n[i].InstanceHour,
-			InstanceNum:    v.InstanceNum + n[i].InstanceNum,
-		}
-	}
-
+	merged := usage.Merge(n)
 	for _, m := range merged {
 		fmt.Println(m)
 	}
 
-	monthly := make(map[string][]usage.Quantity)
-	for i := range merged {
-		hash := merged[i].HashWithOutDate()
-		monthly[hash] = append(monthly[hash], merged[i])
-	}
-
-	for k := range monthly {
-		sort.Slice(monthly[k], func(i, j int) bool { return monthly[k][i].Date < monthly[k][j].Date })
-	}
-
+	monthly := usage.Monthly(merged)
 	for _, m := range monthly {
 		fmt.Println(m)
 	}
