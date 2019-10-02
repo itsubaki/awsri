@@ -29,6 +29,14 @@ func New(version string) *cli.App {
 		Name: "region, r",
 		Value: &cli.StringSlice{
 			"ap-northeast-1",
+			"ap-northeast-2",
+			"ap-northeast-3",
+			"ap-southeast-1",
+			"ap-southeast-2",
+			"eu-west-1",
+			"us-east-1",
+			"us-east-2",
+			"us-west-1",
 			"us-west-2",
 		},
 	}
@@ -69,15 +77,15 @@ func New(version string) *cli.App {
 			region,
 			format,
 			cli.BoolFlag{
-				Name:  "normalize",
+				Name:  "normalize, n",
 				Usage: "output normalized aws instance hour usage",
 			},
 			cli.BoolFlag{
-				Name:  "merge",
+				Name:  "merge, m",
 				Usage: "output merged aws instance hour usage",
 			},
 			cli.BoolFlag{
-				Name:  "monthly",
+				Name:  "monthly, mm",
 				Usage: "output monthly aws instance hour usage",
 			},
 		},
