@@ -1,6 +1,10 @@
 package hermes
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -8,26 +12,57 @@ import (
 	"github.com/itsubaki/hermes/pkg/usage"
 )
 
-func Normalize(q usage.Quantity, p pricing.Price, plist []pricing.Price) (usage.Quantity, pricing.Price, error) {
-	if !HasFlexibility(p) {
-		return q, p, nil
+func Normalize(quantity []usage.Quantity, mini map[string]pricing.Tuple) []usage.Quantity {
+	n := make([]usage.Quantity, 0)
+	for i := range quantity {
+		hash := fmt.Sprintf(
+			"%s%s%s%s",
+			quantity[i].UsageType,
+			OperatingSystem[quantity[i].Platform],
+			quantity[i].CacheEngine,
+			quantity[i].DatabaseEngine,
+		)
+
+		v, ok := mini[hash]
+		if !ok {
+			n = append(n, quantity[i])
+			continue
+		}
+
+		if len(v.Minimum.NormalizationSizeFactor) < 1 {
+			continue
+		}
+
+		s0, _ := strconv.ParseFloat(v.Minimum.NormalizationSizeFactor, 64)
+		s1, _ := strconv.ParseFloat(v.Price.NormalizationSizeFactor, 64)
+		scale := s1 / s0
+
+		n = append(n, usage.Quantity{
+			AccountID:    quantity[i].AccountID,
+			Description:  quantity[i].Description,
+			Region:       quantity[i].Region,
+			UsageType:    v.Minimum.UsageType,
+			Platform:     quantity[i].Platform,
+			CacheEngine:  quantity[i].CacheEngine,
+			Date:         quantity[i].Date,
+			InstanceHour: quantity[i].InstanceHour * scale,
+			InstanceNum:  quantity[i].InstanceNum * scale,
+		})
 	}
 
-	min := MinimumSize(p, plist)
-	f0, _ := strconv.Atoi(p.NormalizationSizeFactor)
-	f1, _ := strconv.Atoi(min.NormalizationSizeFactor)
-	pow := float64(f0) / float64(f1)
+	return n
+}
 
-	return usage.Quantity{
-		Region:         q.Region,
-		UsageType:      min.UsageType,
-		Platform:       q.Platform,
-		DatabaseEngine: q.DatabaseEngine,
-		CacheEngine:    q.CacheEngine,
-		Date:           q.Date,
-		InstanceHour:   q.InstanceHour * pow,
-		InstanceNum:    q.InstanceNum * pow,
-	}, min, nil
+func Hash(str string) string {
+	val, err := json.Marshal(str)
+	if err != nil {
+		panic(err)
+	}
+
+	sha := sha256.Sum256(val)
+	hash := hex.EncodeToString(sha[:])
+
+	return hash
 }
 
 // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/apply_ri.html

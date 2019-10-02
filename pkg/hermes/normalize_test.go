@@ -1,6 +1,7 @@
 package hermes
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
@@ -8,52 +9,39 @@ import (
 )
 
 func TestNormalize(t *testing.T) {
+	// price list
 	plist, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
 	if err != nil {
 		t.Errorf("desirialize: %v", err)
 	}
 
-	p := pricing.Price{
-		Region:                  "ap-northeast-1",
-		UsageType:               "APN1-BoxUsage:c4.2xlarge",
-		Tenancy:                 "Shared",
-		PreInstalled:            "NA",
-		OperatingSystem:         "Linux",
-		OfferingClass:           "standard",
-		LeaseContractLength:     "1yr",
-		PurchaseOption:          "All Upfront",
-		OnDemand:                0.126 * 4,
-		ReservedQuantity:        738 * 4,
-		ReservedHrs:             0 * 4,
-		NormalizationSizeFactor: "16",
+	family := pricing.Family(plist)
+	mini := pricing.Minimum(family, plist)
+
+	forecast := []usage.Quantity{
+		{
+			Region:       "ap-northeast-1",
+			UsageType:    "APN1-BoxUsage:c4.2xlarge",
+			Platform:     "Linux/UNIX",
+			InstanceHour: 518332.57223100006,
+			InstanceNum:  719.9063503208333,
+		},
 	}
 
-	quantity := usage.Quantity{
-		Region:       "ap-northeast-1",
-		UsageType:    "APN1-BoxUsage:c4.2xlarge",
-		Platform:     "Linux/UNIX",
-		InstanceHour: 518332.57223100006,
-		InstanceNum:  719.9063503208333,
+	n := Normalize(forecast, mini)
+	for _, nn := range n {
+		fmt.Println(nn)
 	}
 
-	q, m, err := Normalize(quantity, p, plist)
-	if err != nil {
-		t.Errorf("normalize: %v", err)
+	if n[0].InstanceHour != forecast[0].InstanceHour*4 {
+		t.Errorf("%v", n[0])
 	}
 
-	if q.UsageType != "APN1-BoxUsage:c4.large" {
-		t.Errorf("%v", q)
+	if n[0].InstanceNum != forecast[0].InstanceNum*4 {
+		t.Errorf("%v", n[0])
 	}
 
-	if q.InstanceHour != quantity.InstanceHour*4 {
-		t.Errorf("%v", q)
-	}
-
-	if q.InstanceNum != quantity.InstanceNum*4 {
-		t.Errorf("%v", q)
-	}
-
-	if m.UsageType != "APN1-BoxUsage:c4.large" {
-		t.Errorf("%v", m)
+	if n[0].UsageType != "APN1-BoxUsage:c4.large" {
+		t.Errorf("%v", n[0])
 	}
 }
