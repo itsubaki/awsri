@@ -27,7 +27,6 @@ func TestPackage2(t *testing.T) {
 	mmap := make(map[string]pricing.Price)
 	for i := range plist {
 		if strings.LastIndex(plist[i].UsageType, ".") < 0 {
-			mmap[hash] = plist[i]
 			continue
 		}
 
