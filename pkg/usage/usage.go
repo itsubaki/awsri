@@ -40,7 +40,7 @@ type GetQuantityInput struct {
 	End         string
 }
 
-func (q Quantity) HashWithOutDate() string {
+func (q Quantity) HashWithoutDate() string {
 	s := fmt.Sprintf(
 		"%s%s%s%s%s",
 		q.AccountID,
@@ -48,6 +48,26 @@ func (q Quantity) HashWithOutDate() string {
 		q.Platform,
 		q.CacheEngine,
 		q.DatabaseEngine,
+	)
+
+	val, err := json.Marshal(s)
+	if err != nil {
+		panic(err)
+	}
+
+	sha := sha256.Sum256(val)
+	hash := hex.EncodeToString(sha[:])
+
+	return hash
+}
+func (q Quantity) HashWihtoutAccountID() string {
+	s := fmt.Sprintf(
+		"%s%s%s%s%s",
+		q.UsageType,
+		q.Platform,
+		q.CacheEngine,
+		q.DatabaseEngine,
+		q.Date,
 	)
 
 	val, err := json.Marshal(s)

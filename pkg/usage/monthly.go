@@ -5,7 +5,7 @@ import "sort"
 func Monthly(quantity []Quantity) map[string][]Quantity {
 	monthly := make(map[string][]Quantity)
 	for i := range quantity {
-		hash := quantity[i].HashWithOutDate()
+		hash := quantity[i].HashWithoutDate()
 		monthly[hash] = append(monthly[hash], quantity[i])
 	}
 

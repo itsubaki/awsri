@@ -1,6 +1,6 @@
 package usage
 
-func Group(n []Quantity) []Quantity {
+func Merge(n []Quantity) []Quantity {
 	merged := make(map[string]Quantity)
 	for i := range n {
 		v, ok := merged[n[i].Hash()]

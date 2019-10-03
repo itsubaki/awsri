@@ -1,11 +1,11 @@
 package usage
 
-func Merge(n []Quantity) []Quantity {
+func MergeOverall(n []Quantity) []Quantity {
 	merged := make(map[string]Quantity)
 	for i := range n {
-		v, ok := merged[n[i].Hash()]
+		v, ok := merged[n[i].HashWihtoutAccountID()]
 		if !ok {
-			merged[n[i].Hash()] = Quantity{
+			merged[n[i].HashWihtoutAccountID()] = Quantity{
 				Region:         n[i].Region,
 				UsageType:      n[i].UsageType,
 				Platform:       n[i].Platform,
@@ -18,7 +18,7 @@ func Merge(n []Quantity) []Quantity {
 			continue
 		}
 
-		merged[n[i].Hash()] = Quantity{
+		merged[n[i].HashWihtoutAccountID()] = Quantity{
 			Region:         n[i].Region,
 			UsageType:      n[i].UsageType,
 			Platform:       n[i].Platform,
