@@ -1,10 +1,9 @@
 package usage
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -40,69 +39,6 @@ type GetQuantityInput struct {
 	End         string
 }
 
-func (q Quantity) HashWithoutDate() string {
-	s := fmt.Sprintf(
-		"%s%s%s%s%s",
-		q.AccountID,
-		q.UsageType,
-		q.Platform,
-		q.CacheEngine,
-		q.DatabaseEngine,
-	)
-
-	val, err := json.Marshal(s)
-	if err != nil {
-		panic(err)
-	}
-
-	sha := sha256.Sum256(val)
-	hash := hex.EncodeToString(sha[:])
-
-	return hash
-}
-func (q Quantity) HashWihtoutAccountID() string {
-	s := fmt.Sprintf(
-		"%s%s%s%s%s",
-		q.UsageType,
-		q.Platform,
-		q.CacheEngine,
-		q.DatabaseEngine,
-		q.Date,
-	)
-
-	val, err := json.Marshal(s)
-	if err != nil {
-		panic(err)
-	}
-
-	sha := sha256.Sum256(val)
-	hash := hex.EncodeToString(sha[:])
-
-	return hash
-}
-
-func (q Quantity) Hash() string {
-	s := fmt.Sprintf(
-		"%s%s%s%s%s%s",
-		q.AccountID,
-		q.UsageType,
-		q.Platform,
-		q.CacheEngine,
-		q.DatabaseEngine,
-		q.Date,
-	)
-
-	val, err := json.Marshal(s)
-	if err != nil {
-		panic(err)
-	}
-
-	sha := sha256.Sum256(val)
-	hash := hex.EncodeToString(sha[:])
-
-	return hash
-}
-
 func (q Quantity) String() string {
 	return q.JSON()
 }
@@ -114,6 +50,15 @@ func (q Quantity) JSON() string {
 	}
 
 	return string(bytes)
+}
+
+func Sort(quantity []Quantity) {
+	sort.SliceStable(quantity, func(i, j int) bool { return quantity[i].Date < quantity[j].Date })
+	sort.SliceStable(quantity, func(i, j int) bool { return quantity[i].DatabaseEngine < quantity[j].DatabaseEngine })
+	sort.SliceStable(quantity, func(i, j int) bool { return quantity[i].CacheEngine < quantity[j].CacheEngine })
+	sort.SliceStable(quantity, func(i, j int) bool { return quantity[i].Platform < quantity[j].Platform })
+	sort.SliceStable(quantity, func(i, j int) bool { return quantity[i].UsageType < quantity[j].UsageType })
+	sort.SliceStable(quantity, func(i, j int) bool { return quantity[i].AccountID < quantity[j].AccountID })
 }
 
 type FetchFunc func(start, end string, account Account, usageType []string) ([]Quantity, error)

@@ -1,25 +1,37 @@
 package usage
 
-func Merge(n []Quantity) []Quantity {
+import "fmt"
+
+func Merge(q []Quantity) []Quantity {
 	merged := make(map[string]Quantity)
-	for i := range n {
-		v, ok := merged[n[i].Hash()]
+	for i := range q {
+		hash := fmt.Sprintf(
+			"%s%s%s%s%s%s",
+			q[i].AccountID,
+			q[i].UsageType,
+			q[i].Platform,
+			q[i].CacheEngine,
+			q[i].DatabaseEngine,
+			q[i].Date,
+		)
+
+		v, ok := merged[hash]
 		if !ok {
-			merged[n[i].Hash()] = n[i]
+			merged[hash] = q[i]
 			continue
 		}
 
-		merged[n[i].Hash()] = Quantity{
-			AccountID:      n[i].AccountID,
-			Description:    n[i].Description,
-			Region:         n[i].Region,
-			UsageType:      n[i].UsageType,
-			Platform:       n[i].Platform,
-			CacheEngine:    n[i].CacheEngine,
-			DatabaseEngine: n[i].DatabaseEngine,
-			Date:           n[i].Date,
-			InstanceHour:   n[i].InstanceHour + v.InstanceHour,
-			InstanceNum:    n[i].InstanceNum + v.InstanceNum,
+		merged[hash] = Quantity{
+			AccountID:      q[i].AccountID,
+			Description:    q[i].Description,
+			Region:         q[i].Region,
+			UsageType:      q[i].UsageType,
+			Platform:       q[i].Platform,
+			CacheEngine:    q[i].CacheEngine,
+			DatabaseEngine: q[i].DatabaseEngine,
+			Date:           q[i].Date,
+			InstanceHour:   q[i].InstanceHour + v.InstanceHour,
+			InstanceNum:    q[i].InstanceNum + v.InstanceNum,
 		}
 	}
 

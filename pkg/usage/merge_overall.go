@@ -1,32 +1,45 @@
 package usage
 
-func MergeOverall(n []Quantity) []Quantity {
+import (
+	"fmt"
+)
+
+func MergeOverall(q []Quantity) []Quantity {
 	merged := make(map[string]Quantity)
-	for i := range n {
-		v, ok := merged[n[i].HashWihtoutAccountID()]
+	for i := range q {
+		hash := fmt.Sprintf(
+			"%s%s%s%s%s",
+			q[i].UsageType,
+			q[i].Platform,
+			q[i].CacheEngine,
+			q[i].DatabaseEngine,
+			q[i].Date,
+		)
+
+		v, ok := merged[hash]
 		if !ok {
-			merged[n[i].HashWihtoutAccountID()] = Quantity{
-				Region:         n[i].Region,
-				UsageType:      n[i].UsageType,
-				Platform:       n[i].Platform,
-				CacheEngine:    n[i].CacheEngine,
-				DatabaseEngine: n[i].DatabaseEngine,
-				Date:           n[i].Date,
-				InstanceHour:   n[i].InstanceHour,
-				InstanceNum:    n[i].InstanceNum,
+			merged[hash] = Quantity{
+				Region:         q[i].Region,
+				UsageType:      q[i].UsageType,
+				Platform:       q[i].Platform,
+				CacheEngine:    q[i].CacheEngine,
+				DatabaseEngine: q[i].DatabaseEngine,
+				Date:           q[i].Date,
+				InstanceHour:   q[i].InstanceHour,
+				InstanceNum:    q[i].InstanceNum,
 			}
 			continue
 		}
 
-		merged[n[i].HashWihtoutAccountID()] = Quantity{
-			Region:         n[i].Region,
-			UsageType:      n[i].UsageType,
-			Platform:       n[i].Platform,
-			CacheEngine:    n[i].CacheEngine,
-			DatabaseEngine: n[i].DatabaseEngine,
-			Date:           n[i].Date,
-			InstanceHour:   n[i].InstanceHour + v.InstanceHour,
-			InstanceNum:    n[i].InstanceNum + v.InstanceNum,
+		merged[hash] = Quantity{
+			Region:         q[i].Region,
+			UsageType:      q[i].UsageType,
+			Platform:       q[i].Platform,
+			CacheEngine:    q[i].CacheEngine,
+			DatabaseEngine: q[i].DatabaseEngine,
+			Date:           q[i].Date,
+			InstanceHour:   q[i].InstanceHour + v.InstanceHour,
+			InstanceNum:    q[i].InstanceNum + v.InstanceNum,
 		}
 	}
 

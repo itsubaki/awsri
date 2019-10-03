@@ -1,12 +1,23 @@
 package usage
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+)
 
-func Monthly(quantity []Quantity) map[string][]Quantity {
+func Monthly(q []Quantity) map[string][]Quantity {
 	monthly := make(map[string][]Quantity)
-	for i := range quantity {
-		hash := quantity[i].HashWithoutDate()
-		monthly[hash] = append(monthly[hash], quantity[i])
+	for i := range q {
+		hash := fmt.Sprintf(
+			"%s%s%s%s%s",
+			q[i].AccountID,
+			q[i].UsageType,
+			q[i].Platform,
+			q[i].CacheEngine,
+			q[i].DatabaseEngine,
+		)
+
+		monthly[hash] = append(monthly[hash], q[i])
 	}
 
 	for k := range monthly {

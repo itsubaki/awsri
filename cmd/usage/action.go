@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"sort"
 
 	"github.com/itsubaki/hermes/pkg/hermes"
 	"github.com/itsubaki/hermes/pkg/pricing"
@@ -50,13 +49,7 @@ func Action(c *cli.Context) {
 	}
 
 	if format == "json" && !monthly {
-		sort.SliceStable(quantity, func(i, j int) bool { return quantity[i].Date < quantity[j].Date })
-		sort.SliceStable(quantity, func(i, j int) bool { return quantity[i].DatabaseEngine < quantity[j].DatabaseEngine })
-		sort.SliceStable(quantity, func(i, j int) bool { return quantity[i].CacheEngine < quantity[j].CacheEngine })
-		sort.SliceStable(quantity, func(i, j int) bool { return quantity[i].Platform < quantity[j].Platform })
-		sort.SliceStable(quantity, func(i, j int) bool { return quantity[i].UsageType < quantity[j].UsageType })
-		sort.SliceStable(quantity, func(i, j int) bool { return quantity[i].AccountID < quantity[j].AccountID })
-
+		usage.Sort(quantity)
 		for _, q := range quantity {
 			bytes, err := json.Marshal(q)
 			if err != nil {
@@ -66,7 +59,6 @@ func Action(c *cli.Context) {
 
 			fmt.Println(string(bytes))
 		}
-
 		return
 	}
 
@@ -81,6 +73,7 @@ func Action(c *cli.Context) {
 
 			fmt.Println(string(bytes))
 		}
+		return
 	}
 
 	//if format == "csv" {
