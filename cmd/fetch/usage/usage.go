@@ -26,18 +26,18 @@ func Action(c *cli.Context) {
 
 		u, err := usage.Fetch(date[i].Start, date[i].End)
 		if err != nil {
-			fmt.Printf("fetch usage (%s, %s): %v", date[i].Start, date[i].End, err)
+			fmt.Printf("fetch usage (%s, %s): %v\n", date[i].Start, date[i].End, err)
 			os.Exit(1)
 		}
 
 		bytes, err := json.Marshal(u)
 		if err != nil {
-			fmt.Printf("marshal: %v", err)
+			fmt.Printf("marshal: %v\n", err)
 			os.Exit(1)
 		}
 
 		if err := ioutil.WriteFile(file, bytes, os.ModePerm); err != nil {
-			fmt.Errorf("write file: %v", err)
+			fmt.Errorf("write file: %v\n", err)
 			os.Exit(1)
 		}
 

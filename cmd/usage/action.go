@@ -23,14 +23,14 @@ func Action(c *cli.Context) {
 	date := usage.Last12Months()
 	quantity, err := usage.Deserialize(dir, date)
 	if err != nil {
-		fmt.Errorf("deserialize usage: %v", err)
+		fmt.Errorf("deserialize usage: %v\n", err)
 		os.Exit(1)
 	}
 
 	if normalize {
 		plist, err := pricing.Deserialize(dir, region)
 		if err != nil {
-			fmt.Errorf("desirialize pricing: %v", err)
+			fmt.Errorf("desirialize pricing: %v\n", err)
 		}
 
 		family := pricing.Family(plist)

@@ -27,7 +27,7 @@ func Action(c *cli.Context) {
 		for _, url := range pricing.URL {
 			p, err := pricing.Fetch(url, r)
 			if err != nil {
-				fmt.Printf("fetch pricing (%s, %s): %v", url, r, err)
+				fmt.Printf("fetch pricing (%s, %s): %v\n", url, r, err)
 				os.Exit(1)
 			}
 
