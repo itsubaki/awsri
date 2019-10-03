@@ -70,29 +70,20 @@ func TestPackage(t *testing.T) {
 	merged := usage.MergeOverall(normalized)
 	monthly := usage.Monthly(merged)
 
-	for k := range monthly {
-		if len(monthly[k][0].Platform) > 0 {
-			os := hermes.OperatingSystem[monthly[k][0].Platform]
-			for _, p := range price {
+	for _, p := range price {
+		for k := range monthly {
+			if len(monthly[k][0].Platform) > 0 {
+				os := hermes.OperatingSystem[monthly[k][0].Platform]
 				if p.UsageType != monthly[k][0].UsageType || p.OperatingSystem != os {
 					continue
 				}
-
-				q, p, err := hermes.BreakEvenPoint(monthly[k], p)
-				if err != nil {
-					t.Errorf("break-even point: %v", err)
-				}
-
-				fmt.Println(q, p)
-				break
 			}
-			continue
-		}
 
-		for _, p := range price {
-			str := fmt.Sprintf("%s%s%s", p.UsageType, p.CacheEngine, p.DatabaseEngine)
-			if str != k {
-				continue
+			if len(monthly[k][0].Platform) < 1 {
+				str := fmt.Sprintf("%s%s%s", p.UsageType, p.CacheEngine, p.DatabaseEngine)
+				if str != k {
+					continue
+				}
 			}
 
 			q, p, err := hermes.BreakEvenPoint(monthly[k], p)
@@ -104,5 +95,4 @@ func TestPackage(t *testing.T) {
 			break
 		}
 	}
-
 }
