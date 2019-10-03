@@ -26,3 +26,13 @@ func Monthly(q []Quantity) map[string][]Quantity {
 
 	return monthly
 }
+
+func SortedKey(monthly map[string][]Quantity) []string {
+	keys := make([]string, 0)
+	for k := range monthly {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	return keys
+}

@@ -76,35 +76,35 @@ func Action(c *cli.Context) {
 		return
 	}
 
-	//if format == "csv" {
-	//	fmt.Printf("accountID, description, region, usage_type, os/engine, ")
-	//	for i := range date {
-	//		fmt.Printf("%s, ", date[i].YYYYMM())
-	//	}
-	//	fmt.Println()
-	//
-	//	quantity = usage.MergeGroupBy(quantity)
-	//	month := usage.Monthly(quantity)
-	//	for _, v := range month {
-	//		fmt.Printf("%s, %s, ", v[0].AccountID, v[0].Description)
-	//		fmt.Printf("%s, %s, ", v[0].Region, v[0].UsageType)
-	//		fmt.Printf("%s, ", fmt.Sprintf("%s%s%s", v[0].Platform, v[0].CacheEngine, v[0].DatabaseEngine))
-	//
-	//		for _, d := range date {
-	//			found := false
-	//			for _, q := range v {
-	//				if d.YYYYMM() == q.Date {
-	//					fmt.Printf("%.3f, ", q.InstanceNum)
-	//					found = true
-	//					break
-	//				}
-	//			}
-	//
-	//			if !found {
-	//				fmt.Printf("0.0, ")
-	//			}
-	//		}
-	//		fmt.Println()
-	//	}
-	//}
+	if format == "csv" {
+		fmt.Printf("accountID, description, region, usage_type, os/engine, ")
+		for i := range date {
+			fmt.Printf("%s, ", date[i].YYYYMM())
+		}
+		fmt.Println()
+
+		mq := usage.Monthly(quantity)
+		keys := usage.SortedKey(mq)
+		for _, k := range keys {
+			fmt.Printf("%s, %s, ", mq[k][0].AccountID, mq[k][0].Description)
+			fmt.Printf("%s, %s, ", mq[k][0].Region, mq[k][0].UsageType)
+			fmt.Printf("%s, ", fmt.Sprintf("%s%s%s", mq[k][0].Platform, mq[k][0].CacheEngine, mq[k][0].DatabaseEngine))
+
+			for _, d := range date {
+				found := false
+				for _, q := range mq[k] {
+					if d.YYYYMM() == q.Date {
+						fmt.Printf("%.3f, ", q.InstanceNum)
+						found = true
+						break
+					}
+				}
+
+				if !found {
+					fmt.Printf("0.0, ")
+				}
+			}
+			fmt.Println()
+		}
+	}
 }
