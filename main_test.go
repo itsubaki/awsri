@@ -10,45 +10,6 @@ import (
 )
 
 func TestPackage(t *testing.T) {
-	// price list
-	plist, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
-	if err != nil {
-		t.Errorf("desirialize: %v", err)
-	}
-
-	// family -> minimum price
-	family := pricing.Family(plist)
-	for _, v := range family {
-		fmt.Println(v)
-	}
-
-	mini := pricing.Minimum(family, plist)
-	for _, v := range mini {
-		fmt.Println(v)
-	}
-
-	// forecast quantity
-	forecast, err := usage.Deserialize("/var/tmp/hermes", usage.Last12Months())
-	if err != nil {
-		t.Errorf("usage deserialize: %v", err)
-	}
-
-	n := hermes.Normalize(forecast, mini)
-	for _, nn := range n {
-		fmt.Println(nn)
-	}
-
-	merged := usage.Merge(n)
-	for _, m := range merged {
-		fmt.Println(m)
-	}
-
-	monthly := usage.Monthly(merged)
-	for _, m := range monthly {
-		fmt.Println(m)
-	}
-
-	// recommend
 	price := []pricing.Price{
 		pricing.Price{
 			Region:                  "ap-northeast-1",
@@ -64,14 +25,84 @@ func TestPackage(t *testing.T) {
 			ReservedHrs:             0,
 			NormalizationSizeFactor: "4",
 		},
+		pricing.Price{
+			Region:                  "ap-northeast-1",
+			UsageType:               "APN1-InstanceUsage:db.r4.large",
+			Tenancy:                 "Shared",
+			DatabaseEngine:          "Aurora MySQL",
+			OfferingClass:           "standard",
+			LeaseContractLength:     "1yr",
+			PurchaseOption:          "All Upfront",
+			OnDemand:                0.35,
+			ReservedQuantity:        1704,
+			ReservedHrs:             0,
+			NormalizationSizeFactor: "4",
+		},
+		pricing.Price{
+			Region:              "ap-northeast-1",
+			UsageType:           "APN1-NodeUsage:cache.r3.large",
+			Tenancy:             "Shared",
+			CacheEngine:         "Redis",
+			OfferingClass:       "standard",
+			LeaseContractLength: "1yr",
+			PurchaseOption:      "Heavy Utilization",
+			OnDemand:            0.273,
+			ReservedQuantity:    777,
+			ReservedHrs:         0.089,
+		},
 	}
 
-	for _, pp := range price {
-		hash := hermes.Hash(fmt.Sprintf("%s%s", pp.UsageType, "Linux/UNIX"))
-		q, p, err := hermes.BreakEvenPoint(monthly[hash], pp)
-		if err != nil {
-			t.Errorf("%v", err)
-		}
-		fmt.Printf("%s -> %.0f\n", p, q.InstanceNum)
+	plist, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
+	if err != nil {
+		fmt.Errorf("desirialize pricing: %v", err)
 	}
+
+	family := pricing.Family(plist)
+	mini := pricing.Minimum(family, plist)
+
+	date := usage.Last12Months()
+	forecast, err := usage.Deserialize("/var/tmp/hermes", date)
+	if err != nil {
+		t.Errorf("deserialize usage: %v", err)
+	}
+
+	normalized := hermes.Normalize(forecast, mini)
+	merged := usage.MergeOverall(normalized)
+	monthly := usage.Monthly(merged)
+
+	for k := range monthly {
+		if len(monthly[k][0].Platform) > 0 {
+			os := hermes.OperatingSystem[monthly[k][0].Platform]
+			for _, p := range price {
+				if p.UsageType != monthly[k][0].UsageType || p.OperatingSystem != os {
+					continue
+				}
+
+				q, p, err := hermes.BreakEvenPoint(monthly[k], p)
+				if err != nil {
+					t.Errorf("break-even point: %v", err)
+				}
+
+				fmt.Println(q, p)
+				break
+			}
+			continue
+		}
+
+		for _, p := range price {
+			str := fmt.Sprintf("%s%s%s", p.UsageType, p.CacheEngine, p.DatabaseEngine)
+			if str != k {
+				continue
+			}
+
+			q, p, err := hermes.BreakEvenPoint(monthly[k], p)
+			if err != nil {
+				t.Errorf("break-even point: %v", err)
+			}
+
+			fmt.Println(q, p)
+			break
+		}
+	}
+
 }

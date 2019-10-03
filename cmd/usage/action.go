@@ -7,7 +7,6 @@ import (
 
 	"github.com/itsubaki/hermes/pkg/hermes"
 	"github.com/itsubaki/hermes/pkg/pricing"
-
 	"github.com/itsubaki/hermes/pkg/usage"
 	"github.com/urfave/cli"
 )
@@ -29,7 +28,7 @@ func Action(c *cli.Context) {
 	}
 
 	if normalize {
-		plist, err := pricing.Deserialize("/var/tmp/hermes", region)
+		plist, err := pricing.Deserialize(dir, region)
 		if err != nil {
 			fmt.Errorf("desirialize pricing: %v", err)
 		}

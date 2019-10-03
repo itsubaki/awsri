@@ -1,8 +1,6 @@
 package usage
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func MergeOverall(q []Quantity) []Quantity {
 	merged := make(map[string]Quantity)
