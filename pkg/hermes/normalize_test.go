@@ -15,36 +15,8 @@ func TestNormalize(t *testing.T) {
 	}
 
 	family := pricing.Family(plist)
-
-	//fmt.Println("family map------")
-	//for k := range family {
-	//	if !strings.Contains(k, "BoxUsage:m4") {
-	//		continue
-	//	}
-	//	if !strings.Contains(k, "Linux") {
-	//		continue
-	//	}
-	//	if !strings.Contains(k, "NA") {
-	//		continue
-	//	}
-	//
-	//	fmt.Printf("%s -> %s\n", k, family[k])
-	//}
-	//
 	mini := pricing.Minimum(family, plist)
 
-	//fmt.Println("mini map------")
-	//for k := range mini {
-	//	if !strings.Contains(k, "BoxUsage:m4.2x") {
-	//		continue
-	//	}
-	//	if !strings.Contains(k, "Linux") {
-	//		continue
-	//	}
-	//
-	//	fmt.Printf("%s -> %s\n", mini[k].Price, mini[k].Minimum)
-	//}
-	//
 	forecast := []usage.Quantity{
 		{
 			Region:       "ap-northeast-1",
@@ -67,11 +39,16 @@ func TestNormalize(t *testing.T) {
 			InstanceHour: 4,
 			InstanceNum:  4,
 		},
+		{
+			Region:       "ap-northeast-1",
+			UsageType:    "APN1-NodeUsage:cache.r3.large",
+			CacheEngine:  "Redis",
+			InstanceHour: 4,
+			InstanceNum:  4,
+		},
 	}
 
 	n := Normalize(forecast, mini)
-
-	fmt.Println("------")
 	for _, nn := range n {
 		fmt.Println(nn)
 	}

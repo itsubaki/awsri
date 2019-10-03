@@ -27,6 +27,7 @@ func Normalize(quantity []usage.Quantity, mini map[string]pricing.Tuple) []usage
 		}
 
 		if len(v.Minimum.NormalizationSizeFactor) < 1 {
+			n = append(n, quantity[i])
 			continue
 		}
 

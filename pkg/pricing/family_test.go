@@ -2,7 +2,6 @@ package pricing
 
 import (
 	"fmt"
-	"strings"
 	"testing"
 )
 
@@ -13,14 +12,7 @@ func TestFamily(t *testing.T) {
 	}
 
 	family := Family(plist)
-	for k, v := range family {
-		if !strings.Contains(k, "BoxUsage:c4") {
-			continue
-		}
-		if !strings.Contains(k, "Linux") {
-			continue
-		}
-
-		fmt.Printf("%s %s\n", k, v)
+	for _, v := range family {
+		fmt.Println(v)
 	}
 }
