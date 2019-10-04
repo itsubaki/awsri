@@ -89,19 +89,19 @@ func New(version string) *cli.App {
 			format,
 			cli.BoolFlag{
 				Name:  "normalize, n",
-				Usage: "output normalized aws instance usage",
+				Usage: "output normalized usage",
 			},
 			cli.BoolFlag{
 				Name:  "merge, m",
-				Usage: "output merged aws instance usage",
+				Usage: "output merged usage group by linked account",
 			},
 			cli.BoolFlag{
-				Name:  "monthly, mm",
-				Usage: "output monthly aws instance usage",
+				Name:  "merge-overall, mm",
+				Usage: "output merged usage",
 			},
 			cli.BoolFlag{
-				Name:  "overall, o",
-				Usage: "--merged flag option",
+				Name:  "monthly, mon",
+				Usage: "output monthly usage",
 			},
 		},
 	}

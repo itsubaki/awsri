@@ -17,7 +17,7 @@ func Action(c *cli.Context) {
 	format := c.String("format")
 	normalize := c.Bool("normalize")
 	merge := c.Bool("merge")
-	overall := c.Bool("overall")
+	overall := c.Bool("merge-overall")
 	monthly := c.Bool("monthly")
 
 	date := usage.Last12Months()
@@ -39,12 +39,12 @@ func Action(c *cli.Context) {
 		quantity = hermes.Normalize(quantity, mini)
 	}
 
-	if merge && overall {
-		quantity = usage.MergeOverall(quantity)
+	if merge {
+		quantity = usage.Merge(quantity)
 	}
 
-	if merge && !overall {
-		quantity = usage.Merge(quantity)
+	if overall {
+		quantity = usage.MergeOverall(quantity)
 	}
 
 	if format == "json" && !monthly {
