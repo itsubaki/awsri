@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -26,31 +25,6 @@ func TestPackage(t *testing.T) {
 			ReservedHrs:             0,
 			NormalizationSizeFactor: "4",
 		},
-		//pricing.Price{
-		//	Region:                  "ap-northeast-1",
-		//	UsageType:               "APN1-InstanceUsage:db.r4.large",
-		//	Tenancy:                 "Shared",
-		//	DatabaseEngine:          "Aurora MySQL",
-		//	OfferingClass:           "standard",
-		//	LeaseContractLength:     "1yr",
-		//	PurchaseOption:          "All Upfront",
-		//	OnDemand:                0.35,
-		//	ReservedQuantity:        1704,
-		//	ReservedHrs:             0,
-		//	NormalizationSizeFactor: "4",
-		//},
-		//pricing.Price{
-		//	Region:              "ap-northeast-1",
-		//	UsageType:           "APN1-NodeUsage:cache.r3.large",
-		//	Tenancy:             "Shared",
-		//	CacheEngine:         "Redis",
-		//	OfferingClass:       "standard",
-		//	LeaseContractLength: "1yr",
-		//	PurchaseOption:      "Heavy Utilization",
-		//	OnDemand:            0.273,
-		//	ReservedQuantity:    777,
-		//	ReservedHrs:         0.089,
-		//},
 	}
 
 	plist, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
@@ -87,21 +61,8 @@ func TestPackage(t *testing.T) {
 				}
 			}
 
-			q, p := hermes.BreakEvenPoint(monthly[k], p)
-
-			in := hermes.Purchase{
-				Price:    p,
-				Quantity: monthly[k],
-			}
-
-			bytes, err := json.Marshal(in)
-			if err != nil {
-				panic(err)
-			}
-
-			fmt.Println(string(bytes))
-
-			fmt.Println(q, p)
+			q, _ := hermes.BreakEvenPoint(monthly[k], p)
+			fmt.Println(q)
 			break
 		}
 	}
