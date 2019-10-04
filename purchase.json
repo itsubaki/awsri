@@ -1,0 +1,102 @@
+[
+  {
+    "price": {
+      "UsageType": "APN1-BoxUsage:c4.large",
+      "LeaseContractLength": "1yr",
+      "PurchaseOption": "All Upfront",
+      "OnDemand": 0.126,
+      "ReservedQuantity": 738,
+      "ReservedHrs": 0,
+      "Tenancy": "Shared",
+      "PreInstalled": "NA",
+      "OperatingSystem": "Linux",
+      "OfferingClass": "standard"
+    },
+    "quantity": [
+      {
+        "region": "ap-northeast-1",
+        "usage_type": "APN1-BoxUsage:c4.large",
+        "platform": "Linux/UNIX",
+        "date": "2018-10",
+        "instance_num": 3245.1914064126345
+      },
+      {
+        "region": "ap-northeast-1",
+        "usage_type": "APN1-BoxUsage:c4.large",
+        "platform": "Linux/UNIX",
+        "date": "2018-11",
+        "instance_num": 2459.3736786874993
+      },
+      {
+        "region": "ap-northeast-1",
+        "usage_type": "APN1-BoxUsage:c4.large",
+        "platform": "Linux/UNIX",
+        "date": "2018-12",
+        "instance_num": 2724.4305039287638
+      },
+      {
+        "region": "ap-northeast-1",
+        "usage_type": "APN1-BoxUsage:c4.large",
+        "platform": "Linux/UNIX",
+        "date": "2019-01",
+        "instance_num": 3712.173584416667
+      },
+      {
+        "region": "ap-northeast-1",
+        "usage_type": "APN1-BoxUsage:c4.large",
+        "platform": "Linux/UNIX",
+        "date": "2019-02",
+        "instance_num": 2447.8624920357147
+      },
+      {
+        "region": "ap-northeast-1",
+        "usage_type": "APN1-BoxUsage:c4.large",
+        "platform": "Linux/UNIX",
+        "date": "2019-03",
+        "instance_num": 2304.627803876344
+      },
+      {
+        "region": "ap-northeast-1",
+        "usage_type": "APN1-BoxUsage:c4.large",
+        "platform": "Linux/UNIX",
+        "date": "2019-04",
+        "instance_num": 2031.1525168069447
+      },
+      {
+        "region": "ap-northeast-1",
+        "usage_type": "APN1-BoxUsage:c4.large",
+        "platform": "Linux/UNIX",
+        "date": "2019-05",
+        "instance_num": 1116.500066098118
+      },
+      {
+        "region": "ap-northeast-1",
+        "usage_type": "APN1-BoxUsage:c4.large",
+        "platform": "Linux/UNIX",
+        "date": "2019-06",
+        "instance_num": 1437.9145780916663
+      },
+      {
+        "region": "ap-northeast-1",
+        "usage_type": "APN1-BoxUsage:c4.large",
+        "platform": "Linux/UNIX",
+        "date": "2019-07",
+        "instance_num": 1718.0140065779574
+      },
+      {
+        "region": "ap-northeast-1",
+        "usage_type": "APN1-BoxUsage:c4.large",
+        "platform": "Linux/UNIX",
+        "date": "2019-08",
+        "instance_num": 1544.4457816545696
+      },
+      {
+        "region": "ap-northeast-1",
+        "usage_type": "APN1-BoxUsage:c4.large",
+        "platform": "Linux/UNIX",
+        "date": "2019-09",
+        "instance_num": 1648.2373744444449
+      }
+    ]
+  }
+]

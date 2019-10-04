@@ -56,10 +56,7 @@ $ go get github.com/itsubaki/hermes
 ```
 
 ```
-=== RUN   TestRecommend
-usage.Quantity{UsageType:"APN1-BoxUsage:c4.large", Platform:"Linux/UNIX", InstanceNum:3109.6292957806454}
---- PASS: TestRecommend (0.94s)
-PASS
+
 ```
 
 ## CommandLine Example
@@ -128,4 +125,15 @@ $ AWS_PROFILE=example hermes usage | jq .
 
 ```
 $ AWS_PROFILE=example hermes usage --format csv  | column -t -s, | less -S
+```
+
+
+```
+$ cat purchase.json | hermes | jq .
+{
+  "region": "ap-northeast-1",
+  "usage_type": "APN1-BoxUsage:c4.large",
+  "platform": "Linux/UNIX",
+  "instance_num": 1648
+}
 ```

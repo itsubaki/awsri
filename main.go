@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/itsubaki/hermes/cmd"
 	"github.com/itsubaki/hermes/cmd/fetch"
 	"github.com/itsubaki/hermes/cmd/pricing"
 	"github.com/itsubaki/hermes/cmd/usage"
@@ -18,6 +19,7 @@ func New(version string) *cli.App {
 	app.Name = "hermes"
 	app.Usage = "aws cost optimization"
 	app.Version = version
+	app.Action = cmd.Action
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "dir, d",
