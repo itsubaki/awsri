@@ -1,9 +1,5 @@
 package pricing
 
-func GetDays(i int) int {
-	return Days[i%12]
-}
-
 var Days = map[int]int{
 	0:  31, //12
 	1:  31,

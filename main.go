@@ -5,12 +5,9 @@ import (
 	"os"
 
 	"github.com/itsubaki/hermes/cmd"
-	"github.com/itsubaki/hermes/cmd/billing"
-	"github.com/itsubaki/hermes/cmd/initialize"
+	"github.com/itsubaki/hermes/cmd/fetch"
 	"github.com/itsubaki/hermes/cmd/pricing"
-	"github.com/itsubaki/hermes/cmd/store/costexp"
-	storep "github.com/itsubaki/hermes/cmd/store/costexp"
-	"github.com/itsubaki/hermes/cmd/store/reserved"
+	"github.com/itsubaki/hermes/cmd/usage"
 	"github.com/urfave/cli"
 )
 
@@ -25,11 +22,6 @@ func New(version string) *cli.App {
 	app.Action = cmd.Action
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:  "format, f",
-			Value: "json",
-			Usage: "json, csv, tsv",
-		},
-		cli.StringFlag{
 			Name:  "dir, d",
 			Value: "/var/tmp/hermes",
 		},
@@ -38,90 +30,88 @@ func New(version string) *cli.App {
 	region := cli.StringSliceFlag{
 		Name: "region, r",
 		Value: &cli.StringSlice{
+			"ap-east-1",
+			"ap-south-1",
 			"ap-northeast-1",
+			"ap-northeast-2",
+			"ap-northeast-3",
 			"ap-southeast-1",
+			"ap-southeast-2",
+			"eu-north-1",
+			"eu-west-1",
+			"eu-west-2",
+			"eu-west-3",
 			"eu-central-1",
+			"us-east-1",
+			"us-east-2",
 			"us-west-1",
 			"us-west-2",
+			"us-gov-east-1",
+			"us-gov-west-1",
+			"ca-central-1",
+			"sa-east-1",
+			"me-south-1",
 		},
 	}
 
-	init := cli.Command{
-		Name:   "init",
-		Action: initialize.Action,
-		Usage:  "download aws pricing, usage, reservation",
+	format := cli.StringFlag{
+		Name:  "format, f",
+		Value: "json",
+		Usage: "json, csv",
+	}
+
+	fetch := cli.Command{
+		Name:    "fetch",
+		Aliases: []string{"f"},
+		Action:  fetch.Action,
+		Usage:   "fetch aws pricing, usage",
 		Flags: []cli.Flag{
 			region,
 		},
 	}
 
-	billing := cli.Command{
-		Name:   "billing",
-		Action: billing.Action,
-		Usage:  "get aws billing details by account",
-		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "format, f",
-				Value: "json",
-				Usage: "json, csv, tsv",
-			},
-		},
-	}
-
 	pricing := cli.Command{
-		Name:   "pricing",
-		Action: pricing.Action,
-		Usage:  "get aws pricing",
+		Name:    "pricing",
+		Aliases: []string{"p"},
+		Action:  pricing.Action,
+		Usage:   "output aws pricing",
 		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "format, f",
-				Value: "json",
-				Usage: "json",
-			},
-			cli.StringFlag{
-				Name:  "region, r",
-				Value: "ap-northeast-1",
-				Usage: "",
-			},
+			region,
+			format,
 		},
 	}
 
-	flags := []cli.Flag{
-		cli.StringFlag{
-			Name: "project, p",
-		},
-	}
-
-	store := cli.Command{
-		Name:  "store",
-		Usage: "store to google cloud datastore",
-		Subcommands: []cli.Command{
-			{
-				Name:    "pricing",
-				Aliases: []string{"p"},
-				Action:  storep.Action,
-				Flags:   append(flags, region),
+	usage := cli.Command{
+		Name:    "usage",
+		Aliases: []string{"u"},
+		Action:  usage.Action,
+		Usage:   "output aws instance hour usage",
+		Flags: []cli.Flag{
+			region,
+			format,
+			cli.BoolFlag{
+				Name:  "normalize, n",
+				Usage: "output normalized usage",
 			},
-			{
-				Name:    "costexp",
-				Aliases: []string{"c"},
-				Action:  costexp.Action,
-				Flags:   flags,
+			cli.BoolFlag{
+				Name:  "merge, m",
+				Usage: "output merged usage group by linked account",
 			},
-			{
-				Name:    "reserved",
-				Aliases: []string{"r"},
-				Action:  reserved.Action,
-				Flags:   flags,
+			cli.BoolFlag{
+				Name:  "merge-overall, mm",
+				Usage: "output merged usage",
+			},
+			cli.BoolFlag{
+				Name:  "monthly, mon",
+				Usage: "output monthly usage",
 			},
 		},
 	}
 
 	app.Commands = []cli.Command{
-		init,
-		store,
-		billing,
+		fetch,
 		pricing,
+		usage,
 	}
 
 	return app
