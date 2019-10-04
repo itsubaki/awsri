@@ -48,8 +48,7 @@ func TestPackage(t *testing.T) {
 	for _, p := range price {
 		for k := range monthly {
 			if len(monthly[k][0].Platform) > 0 {
-				os := hermes.OperatingSystem[monthly[k][0].Platform]
-				if p.UsageType != monthly[k][0].UsageType || p.OperatingSystem != os {
+				if p.UsageType != monthly[k][0].UsageType || p.OperatingSystem != hermes.OperatingSystem[monthly[k][0].Platform] {
 					continue
 				}
 			}
