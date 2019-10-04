@@ -21,13 +21,15 @@ func Action(c *cli.Context) {
 	}
 
 	if format == "json" {
-		bytes, err := json.Marshal(price)
-		if err != nil {
-			fmt.Printf("marshal: %v\n", err)
-			os.Exit(1)
-		}
+		for _, p := range price {
+			bytes, err := json.Marshal(p)
+			if err != nil {
+				fmt.Printf("marshal: %v\n", err)
+				os.Exit(1)
+			}
 
-		fmt.Println(string(bytes))
+			fmt.Println(string(bytes))
+		}
 		return
 	}
 
