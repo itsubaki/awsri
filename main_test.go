@@ -55,8 +55,7 @@ func TestPackage(t *testing.T) {
 			}
 
 			if len(monthly[k][0].Platform) < 1 {
-				str := fmt.Sprintf("%s%s%s", p.UsageType, p.CacheEngine, p.DatabaseEngine)
-				if str != k {
+				if fmt.Sprintf("%s%s%s", p.UsageType, p.CacheEngine, p.DatabaseEngine) != k {
 					continue
 				}
 			}
