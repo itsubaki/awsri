@@ -86,10 +86,7 @@ func TestPackage(t *testing.T) {
 				}
 			}
 
-			q, p, err := hermes.BreakEvenPoint(monthly[k], p)
-			if err != nil {
-				t.Errorf("break-even point: %v", err)
-			}
+			q, p := hermes.BreakEvenPoint(monthly[k], p)
 
 			fmt.Println(q, p)
 			break

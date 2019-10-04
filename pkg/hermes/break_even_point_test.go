@@ -38,11 +38,7 @@ func TestBreakEvenPoint(t *testing.T) {
 		{InstanceNum: 10},
 	}
 
-	q, _, err := BreakEvenPoint(forecast, price)
-	if err != nil {
-		t.Errorf("%v", err)
-	}
-
+	q, _ := BreakEvenPoint(forecast, price)
 	if q.InstanceNum != 40 {
 		t.Errorf("%v", q.InstanceNum)
 	}

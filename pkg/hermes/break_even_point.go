@@ -1,7 +1,6 @@
 package hermes
 
 import (
-	"fmt"
 	"math"
 	"sort"
 
@@ -9,10 +8,18 @@ import (
 	"github.com/itsubaki/hermes/pkg/usage"
 )
 
-func BreakEvenPoint(monthly []usage.Quantity, price pricing.Price) (usage.Quantity, pricing.Price, error) {
+func BreakEvenPoint(monthly []usage.Quantity, price pricing.Price) (usage.Quantity, pricing.Price) {
 	p := price.BreakEvenPoint()
 	if len(monthly) < p {
-		return usage.Quantity{}, price, fmt.Errorf("dont exceed the break-even point %v < %v", len(monthly), p)
+		// dont exceed break-even point
+		return usage.Quantity{
+			Region:         monthly[0].Region,
+			UsageType:      monthly[0].UsageType,
+			Platform:       monthly[0].Platform,
+			DatabaseEngine: monthly[0].DatabaseEngine,
+			CacheEngine:    monthly[0].CacheEngine,
+			InstanceNum:    0.0,
+		}, price
 	}
 
 	num := make([]float64, 0)
@@ -28,5 +35,5 @@ func BreakEvenPoint(monthly []usage.Quantity, price pricing.Price) (usage.Quanti
 		DatabaseEngine: monthly[0].DatabaseEngine,
 		CacheEngine:    monthly[0].CacheEngine,
 		InstanceNum:    math.Floor(num[p-1]),
-	}, price, nil
+	}, price
 }
