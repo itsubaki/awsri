@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/itsubaki/hermes/pkg/hermes"
-
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/usage"
 

@@ -50,69 +50,6 @@ aws_secret_access_key = ****************************************
 $ go get github.com/itsubaki/hermes
 ```
 
-## API Example
-
-```go
-price := []pricing.Price{
-	pricing.Price{
-		Region:                  "ap-northeast-1",
-		UsageType:               "APN1-BoxUsage:c4.large",
-		Tenancy:                 "Shared",
-		PreInstalled:            "NA",
-		OperatingSystem:         "Linux",
-		OfferingClass:           "standard",
-		LeaseContractLength:     "1yr",
-		PurchaseOption:          "All Upfront",
-		OnDemand:                0.126,
-		ReservedQuantity:        738,
-		ReservedHrs:             0,
-		NormalizationSizeFactor: "4",
-	},
-}
-
-plist, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
-if err != nil {
-	fmt.Errorf("desirialize pricing: %v", err)
-}
-
-family := pricing.Family(plist)
-mini := pricing.Minimum(family, plist)
-
-date := usage.Last12Months()
-forecast, err := usage.Deserialize("/var/tmp/hermes", date)
-if err != nil {
-	t.Errorf("deserialize usage: %v", err)
-}
-
-normalized := hermes.Normalize(forecast, mini)
-merged := usage.MergeOverall(normalized)
-monthly := usage.Monthly(merged)
-
-for _, p := range price {
-	for k := range monthly {
-		if len(monthly[k][0].Platform) > 0 {
-			if p.UsageType != monthly[k][0].UsageType || p.OperatingSystem != hermes.OperatingSystem[monthly[k][0].Platform] {
-				continue
-			}
-		}
-
-		if len(monthly[k][0].Platform) < 1 {
-			if fmt.Sprintf("%s%s%s", p.UsageType, p.CacheEngine, p.DatabaseEngine) != k {
-				continue
-			}
-		}
-
-		q, _ := hermes.BreakEvenPoint(monthly[k], p)
-		fmt.Println(q)
-		break
-	}
-}
-```
-
-```
-{"region":"ap-northeast-1","usage_type":"APN1-BoxUsage:c4.large","platform":"Linux/UNIX","instance_num":1648}
-```
-
 ## CommandLine Example
 
 ```
@@ -134,7 +71,7 @@ write: /var/tmp/hermes/usage/2018-09.out
 
 ```
 $ AWS_PROFILE=example hermes pricing | jq .
-[ 
+[
   {
     "Version": "20190730012138",
     "SKU": "PDMPNVN5SPA5HWHH",
@@ -189,5 +126,44 @@ $ cat purchase.json | hermes | jq .
   "usage_type": "APN1-BoxUsage:c4.large",
   "platform": "Linux/UNIX",
   "instance_num": 1648
+}
+```
+
+## API Example
+
+```go
+price := pricing.Price{
+  Region:                  "ap-northeast-1",
+  UsageType:               "APN1-BoxUsage:c4.large",
+  Tenancy:                 "Shared",
+  PreInstalled:            "NA",
+  OperatingSystem:         "Linux",
+  OfferingClass:           "standard",
+  LeaseContractLength:     "1yr",
+  PurchaseOption:          "All Upfront",
+  OnDemand:                0.126,
+  ReservedQuantity:        738,
+  ReservedHrs:             0,
+  NormalizationSizeFactor: "4",
+}
+
+forecast := []usage.Quantity{
+  {InstanceNum: 120},
+  {InstanceNum: 110},
+  {InstanceNum: 100},
+  {InstanceNum: 90},
+  {InstanceNum: 80},
+  {InstanceNum: 70},
+  {InstanceNum: 60},
+  {InstanceNum: 50},
+  {InstanceNum: 40},
+  {InstanceNum: 30},
+  {InstanceNum: 20},
+  {InstanceNum: 10},
+}
+
+q, _ := BreakEvenPoint(forecast, price)
+if q.InstanceNum != 40 {
+  t.Errorf("%v", q.InstanceNum)
 }
 ```
