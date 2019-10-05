@@ -11,7 +11,7 @@ import (
 
 func TestPackage(t *testing.T) {
 	price := []pricing.Price{
-		pricing.Price{
+		{
 			Region:                  "ap-northeast-1",
 			UsageType:               "APN1-BoxUsage:c4.large",
 			Tenancy:                 "Shared",
