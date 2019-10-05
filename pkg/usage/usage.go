@@ -97,78 +97,78 @@ func Fetch(start, end string) ([]Quantity, error) {
 }
 
 func fetchBoxUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
-	type_ := make([]string, 0)
+	ut := make([]string, 0)
 	for i := range usageType {
 		if !strings.Contains(usageType[i], "BoxUsage") {
 			continue
 		}
-		type_ = append(type_, usageType[i])
+		ut = append(ut, usageType[i])
 	}
 
 	return fetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
 		Dimension:   "PLATFORM",
-		UsageType:   type_,
+		UsageType:   ut,
 		Start:       start,
 		End:         end,
 	})
 }
 
 func fetchNodeUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
-	type_ := make([]string, 0)
+	ut := make([]string, 0)
 	for i := range usageType {
 		if !strings.Contains(usageType[i], "NodeUsage") {
 			continue
 		}
-		type_ = append(type_, usageType[i])
+		ut = append(ut, usageType[i])
 	}
 
 	return fetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
 		Dimension:   "CACHE_ENGINE",
-		UsageType:   type_,
+		UsageType:   ut,
 		Start:       start,
 		End:         end,
 	})
 }
 
 func fetchInstanceUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
-	type_ := make([]string, 0)
+	ut := make([]string, 0)
 	for i := range usageType {
 		if !strings.Contains(usageType[i], "InstanceUsage") {
 			continue
 		}
 
-		type_ = append(type_, usageType[i])
+		ut = append(ut, usageType[i])
 	}
 
 	return fetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
 		Dimension:   "DATABASE_ENGINE",
-		UsageType:   type_,
+		UsageType:   ut,
 		Start:       start,
 		End:         end,
 	})
 }
 
 func fetchMultiAZUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
-	type_ := make([]string, 0)
+	ut := make([]string, 0)
 	for i := range usageType {
 		if !strings.Contains(usageType[i], "Multi-AZUsage") {
 			continue
 		}
 
-		type_ = append(type_, usageType[i])
+		ut = append(ut, usageType[i])
 	}
 
 	return fetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
 		Dimension:   "DATABASE_ENGINE",
-		UsageType:   type_,
+		UsageType:   ut,
 		Start:       start,
 		End:         end,
 	})
