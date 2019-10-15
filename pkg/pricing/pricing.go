@@ -171,8 +171,9 @@ func (p Price) BreakEvenPoint() int {
 	out, ond := 0, 0.0
 	for i := 1; i < month+1; i++ {
 		ond = ond + p.OnDemand*24*float64(Days[i%12])
-		if ond < res {
+		if ond > res {
 			out = i
+			break
 		}
 	}
 
