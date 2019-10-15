@@ -163,12 +163,16 @@ func (p Price) BreakEvenPoint() int {
 		month = 12 * 3
 	}
 
-	out, ond, res := 0, 0.0, p.ReservedQuantity
+	res := p.ReservedQuantity
 	for i := 1; i < month+1; i++ {
-		ond, res = ond+p.OnDemand*24*float64(Days[i%12]), res+p.ReservedHrs*24*float64(Days[i%12])
-		if ond > res {
+		res = res + p.ReservedHrs*24*float64(Days[i%12])
+	}
+
+	out, ond := 0, 0.0
+	for i := 1; i < month+1; i++ {
+		ond = ond + p.OnDemand*24*float64(Days[i%12])
+		if ond < res {
 			out = i
-			break
 		}
 	}
 
