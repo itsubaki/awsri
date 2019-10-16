@@ -39,8 +39,7 @@ func Action(c *cli.Context) {
 			fmt.Printf(
 				"%s, %.2f, %d, %s, %s, %s, %s, %s, %s, %s%s%s, %s, %s, %s, %s, %.3f, %.3f, %.3f, %s\n",
 				fmt.Sprintf(
-					"%s_%s_%s_%s_%s%s%s_%s_%s_%s_%s",
-					p.Version,
+					"%s_%s_%s_%s%s%s_%s_%s_%s",
 					p.UsageType,
 					p.LeaseContractLength,
 					p.PurchaseOption,
@@ -49,7 +48,6 @@ func Action(c *cli.Context) {
 					p.DatabaseEngine,
 					p.Tenancy,
 					p.PreInstalled,
-					p.Operation,
 					p.OfferingClass,
 				),
 				p.DiscountRate(),
