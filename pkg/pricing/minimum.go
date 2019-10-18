@@ -11,7 +11,7 @@ type Tuple struct {
 }
 
 func Minimum(family map[string]Price, plist []Price) map[string]Tuple {
-	smap := make(map[string]Tuple)
+	tuple := make(map[string]Tuple)
 	for i := range plist {
 		hash := fmt.Sprintf(
 			"%s%s%s%s",
@@ -22,7 +22,7 @@ func Minimum(family map[string]Price, plist []Price) map[string]Tuple {
 		)
 
 		if strings.LastIndex(plist[i].UsageType, ".") < 0 {
-			smap[hash] = Tuple{plist[i], plist[i]}
+			tuple[hash] = Tuple{plist[i], plist[i]}
 			continue
 		}
 
@@ -40,15 +40,15 @@ func Minimum(family map[string]Price, plist []Price) map[string]Tuple {
 			plist[i].Version,
 		)
 
-		smap[hash] = Tuple{plist[i], family[fhash]}
+		tuple[hash] = Tuple{plist[i], family[fhash]}
 	}
 
 	// validation
-	for _, v := range smap {
+	for _, v := range tuple {
 		if v.Price.OfferTermCode != v.Minimum.OfferTermCode {
 			panic("invalid OfferTermCode")
 		}
 	}
 
-	return smap
+	return tuple
 }

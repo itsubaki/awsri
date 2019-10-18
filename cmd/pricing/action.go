@@ -61,18 +61,7 @@ func Action(c *cli.Context) {
 		for _, p := range price {
 			fmt.Printf(
 				"%s, %.2f, %d, %s, %s, %s, %s, %s, %s, %s%s%s, %s, %s, %s, %s, %.3f, %.3f, %.3f, %s\n",
-				fmt.Sprintf(
-					"%s_%s_%s_%s%s%s_%s_%s_%s",
-					p.UsageType,
-					p.LeaseContractLength,
-					p.PurchaseOption,
-					p.OperatingSystem,
-					p.CacheEngine,
-					p.DatabaseEngine,
-					p.Tenancy,
-					p.PreInstalled,
-					p.OfferingClass,
-				),
+				p.ID(),
 				p.DiscountRate(),
 				p.BreakEvenPoint(),
 				p.Version,

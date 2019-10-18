@@ -63,7 +63,7 @@ func Action(c *cli.Context) {
 	}
 
 	if format == "csv" {
-		fmt.Printf("accountID, description, region, usage_type, os/engine, ")
+		fmt.Printf("account_id, description, region, usage_type, os/engine, ")
 		for i := range date {
 			fmt.Printf("%s, ", date[i].YYYYMM())
 		}
@@ -73,8 +73,7 @@ func Action(c *cli.Context) {
 		keys := usage.SortedKey(mq)
 		for _, k := range keys {
 			fmt.Printf("%s, %s, ", mq[k][0].AccountID, mq[k][0].Description)
-			fmt.Printf("%s, %s, ", mq[k][0].Region, mq[k][0].UsageType)
-			fmt.Printf("%s, ", fmt.Sprintf("%s%s%s", mq[k][0].Platform, mq[k][0].CacheEngine, mq[k][0].DatabaseEngine))
+			fmt.Printf("%s, %s, %s, ", mq[k][0].Region, mq[k][0].UsageType, mq[k][0].OSEngine())
 
 			for _, d := range date {
 				found := false

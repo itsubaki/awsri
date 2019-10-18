@@ -53,7 +53,7 @@ func Action(c *cli.Context) {
 	}
 
 	if format == "csv" {
-		fmt.Printf("accountID, region, instance_type, os/engine, ")
+		fmt.Printf("account_id, description, region, instance_type, os/engine, deploymet_option, ")
 		for i := range date {
 			fmt.Printf("%s, ", date[i].YYYYMM())
 		}
@@ -62,8 +62,15 @@ func Action(c *cli.Context) {
 		mr := reservation.Monthly(res)
 		keys := reservation.SortedKey(mr)
 		for _, k := range keys {
-			fmt.Printf("%s, %s, %s, ", mr[k][0].AccountID, mr[k][0].Region, mr[k][0].InstanceType)
-			fmt.Printf("%s, ", fmt.Sprintf("%s%s%s", mr[k][0].Platform, mr[k][0].CacheEngine, mr[k][0].DatabaseEngine))
+			fmt.Printf(
+				"%s, %s, %s, %s, %s, %s, ",
+				mr[k][0].AccountID,
+				mr[k][0].Description,
+				mr[k][0].Region,
+				mr[k][0].InstanceType,
+				mr[k][0].OSEngine(),
+				mr[k][0].DeploymentOption,
+			)
 
 			for _, d := range date {
 				found := false

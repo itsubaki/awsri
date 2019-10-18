@@ -14,14 +14,11 @@ func Family(plist []Price) map[string]Price {
 		}
 
 		hash := fmt.Sprintf(
-			//		"%s%s%s%s%s%s%s%s%s%s%s%s",
 			"%s%s%s%s%s%s%s%s%s%s",
 			plist[i].UsageType[:strings.LastIndex(plist[i].UsageType, ".")],
 			plist[i].OperatingSystem,
 			plist[i].CacheEngine,
 			plist[i].DatabaseEngine,
-			//			plist[i].Operation,
-			//			plist[i].PreInstalled,
 			plist[i].Region,
 			plist[i].OfferingClass,
 			plist[i].Tenancy,

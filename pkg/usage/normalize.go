@@ -11,14 +11,7 @@ import (
 func Normalize(q []Quantity, mini map[string]pricing.Tuple) []Quantity {
 	out := make([]Quantity, 0)
 	for i := range q {
-		hash := fmt.Sprintf(
-			"%s%s%s%s",
-			q[i].UsageType,
-			OperatingSystem[q[i].Platform],
-			q[i].CacheEngine,
-			q[i].DatabaseEngine,
-		)
-
+		hash := fmt.Sprintf("%s%s", q[i].UsageType, q[i].OSEngine())
 		v, ok := mini[hash]
 		if !ok {
 			out = append(out, q[i])

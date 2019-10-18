@@ -39,6 +39,14 @@ type GetQuantityInput struct {
 	End         string
 }
 
+func (q Quantity) OSEngine() string {
+	return fmt.Sprintf("%s%s%s", OperatingSystem[q.Platform], q.CacheEngine, q.DatabaseEngine)
+}
+
+func (q Quantity) PFEngine() string {
+	return fmt.Sprintf("%s%s%s", q.Platform, q.CacheEngine, q.DatabaseEngine)
+}
+
 func (q Quantity) String() string {
 	return q.JSON()
 }
@@ -71,7 +79,7 @@ var FetchFuncList = []FetchFunc{
 }
 
 func Fetch(start, end string) ([]Quantity, error) {
-	linkedAccount, err := fetchLinkedAccount(start, end)
+	linkedAccount, err := FetchLinkedAccount(start, end)
 	if err != nil {
 		return nil, fmt.Errorf("get linked account: %v", err)
 	}
@@ -293,7 +301,7 @@ func fetchUsageType(start, end string) ([]string, error) {
 	return out, nil
 }
 
-func fetchLinkedAccount(start, end string) ([]Account, error) {
+func FetchLinkedAccount(start, end string) ([]Account, error) {
 	input := costexplorer.GetDimensionValuesInput{
 		Dimension: aws.String("LINKED_ACCOUNT"),
 		TimePeriod: &costexplorer.DateInterval{

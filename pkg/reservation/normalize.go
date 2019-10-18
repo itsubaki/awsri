@@ -6,35 +6,13 @@ import (
 	"strings"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
-	"github.com/itsubaki/hermes/pkg/usage"
 )
 
 func Normalize(u []Utilization, mini map[string]pricing.Tuple) []Utilization {
 	out := make([]Utilization, 0)
-
 	for i := range u {
-		t := "BoxUsage"
-		if len(u[i].CacheEngine) > 0 {
-			t = "NodeUsage"
-		}
-		if len(u[i].DatabaseEngine) > 0 {
-			t = "InstanceUsage"
-		}
-
-		key := fmt.Sprintf(
-			"%s-%s:%s%s",
-			region[u[i].Region],
-			t,
-			u[i].InstanceType,
-			fmt.Sprintf(
-				"%s%s%s",
-				usage.OperatingSystem[u[i].Platform],
-				u[i].CacheEngine,
-				u[i].DatabaseEngine,
-			),
-		)
-
-		v, ok := mini[key]
+		hash := fmt.Sprintf("%s%s", u[i].UsageType(), u[i].OSEngine())
+		v, ok := mini[hash]
 		if !ok {
 			out = append(out, u[i])
 			continue
