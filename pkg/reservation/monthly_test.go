@@ -4,15 +4,13 @@ import (
 	"fmt"
 	"os"
 	"testing"
-
-	"github.com/itsubaki/hermes/pkg/usage"
 )
 
 func TestMonthly(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
 	merged := make([]Utilization, 0)
-	for _, d := range usage.Last12Months() {
+	for _, d := range Last12Months() {
 		u, err := Fetch(d.Start, d.End)
 		if err != nil {
 			t.Errorf("fetch: %v", err)

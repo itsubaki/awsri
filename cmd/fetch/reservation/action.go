@@ -1,4 +1,4 @@
-package usage
+package reservation
 
 import (
 	"encoding/json"
@@ -6,13 +6,14 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/itsubaki/hermes/pkg/reservation"
 	"github.com/itsubaki/hermes/pkg/usage"
 	"github.com/urfave/cli"
 )
 
 func Action(c *cli.Context) {
 	dir := c.GlobalString("dir")
-	path := fmt.Sprintf("%s/usage", dir)
+	path := fmt.Sprintf("%s/reservation", dir)
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		os.MkdirAll(path, os.ModePerm)
@@ -25,9 +26,9 @@ func Action(c *cli.Context) {
 			continue
 		}
 
-		u, err := usage.Fetch(date[i].Start, date[i].End)
+		u, err := reservation.Fetch(date[i].Start, date[i].End)
 		if err != nil {
-			fmt.Printf("fetch usage (%s, %s): %v\n", date[i].Start, date[i].End, err)
+			fmt.Printf("fetch reservation (%s, %s): %v\n", date[i].Start, date[i].End, err)
 			os.Exit(1)
 		}
 

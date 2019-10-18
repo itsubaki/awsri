@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -78,6 +79,9 @@ func fetch(input costexplorer.GetReservationCoverageInput) ([]Utilization, error
 					continue
 				}
 
+				index := strings.LastIndex(*input.TimePeriod.Start, "-")
+				date := (*input.TimePeriod.Start)[:index]
+
 				hours, err := strconv.ParseFloat(*g.Coverage.CoverageHours.ReservedHours, 64)
 				if err != nil {
 					return out, fmt.Errorf("parse float reserved hours: %v", err)
@@ -87,7 +91,7 @@ func fetch(input costexplorer.GetReservationCoverageInput) ([]Utilization, error
 					AccountID:    *g.Attributes["linkedAccount"],
 					Region:       *g.Attributes["region"],
 					InstanceType: *g.Attributes["instanceType"],
-					Date:         *input.TimePeriod.Start,
+					Date:         date,
 					Hours:        hours,
 				}
 

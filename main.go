@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/itsubaki/hermes/cmd"
-
 	"github.com/itsubaki/hermes/cmd/fetch"
 	"github.com/itsubaki/hermes/cmd/pricing"
+	"github.com/itsubaki/hermes/cmd/reservation"
 	"github.com/itsubaki/hermes/cmd/usage"
 	"github.com/urfave/cli"
 )
@@ -113,15 +113,33 @@ func New(version string) *cli.App {
 	}
 
 	recommend := cli.Command{
-		Name:    "recommend",
+		Name:   "recommend",
+		Action: cmd.Action,
+		Usage:  "output recommended reserved instance num",
+		Flags: []cli.Flag{
+			region,
+			format,
+		},
+	}
+
+	reservation := cli.Command{
+		Name:    "reservation",
 		Aliases: []string{"r"},
-		Action:  cmd.Action,
-		Usage:   "output recommended reserved instance num",
+		Usage:   "output reservation utilization group by linked accouq",
+		Action:  reservation.Action,
+		Flags: []cli.Flag{
+			format,
+			cli.BoolFlag{
+				Name:  "monthly, mon",
+				Usage: "output monthly usage",
+			},
+		},
 	}
 
 	app.Commands = []cli.Command{
 		fetch,
 		pricing,
+		reservation,
 		usage,
 		recommend,
 	}

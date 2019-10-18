@@ -27,3 +27,13 @@ func Monthly(u []Utilization) map[string][]Utilization {
 
 	return monthly
 }
+
+func SortedKey(monthly map[string][]Utilization) []string {
+	keys := make([]string, 0)
+	for k := range monthly {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	return keys
+}

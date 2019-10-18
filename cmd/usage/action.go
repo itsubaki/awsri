@@ -1,7 +1,6 @@
 package usage
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -50,13 +49,7 @@ func Action(c *cli.Context) {
 	if format == "json" && !monthly {
 		usage.Sort(quantity)
 		for _, q := range quantity {
-			bytes, err := json.Marshal(q)
-			if err != nil {
-				fmt.Printf("marshal: %v", err)
-				os.Exit(1)
-			}
-
-			fmt.Println(string(bytes))
+			fmt.Println(q)
 		}
 		return
 	}
@@ -64,13 +57,7 @@ func Action(c *cli.Context) {
 	if format == "json" && monthly {
 		mq := usage.Monthly(quantity)
 		for _, q := range mq {
-			bytes, err := json.Marshal(q)
-			if err != nil {
-				fmt.Printf("marshal: %v", err)
-				os.Exit(1)
-			}
-
-			fmt.Println(string(bytes))
+			fmt.Println(q)
 		}
 		return
 	}
@@ -103,7 +90,9 @@ func Action(c *cli.Context) {
 					fmt.Printf("0.0, ")
 				}
 			}
+
 			fmt.Println()
 		}
+		return
 	}
 }
