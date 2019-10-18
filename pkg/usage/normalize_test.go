@@ -1,10 +1,9 @@
-package hermes
+package usage
 
 import (
 	"testing"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
-	"github.com/itsubaki/hermes/pkg/usage"
 )
 
 func TestNormalize(t *testing.T) {
@@ -16,7 +15,7 @@ func TestNormalize(t *testing.T) {
 	family := pricing.Family(plist)
 	mini := pricing.Minimum(family, plist)
 
-	forecast := []usage.Quantity{
+	forecast := []Quantity{
 		{
 			Region:       "ap-northeast-1",
 			UsageType:    "APN1-BoxUsage:m4.large",

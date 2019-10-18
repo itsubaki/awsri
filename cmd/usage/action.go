@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/itsubaki/hermes/pkg/hermes"
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/usage"
 	"github.com/urfave/cli"
@@ -30,12 +29,13 @@ func Action(c *cli.Context) {
 		plist, err := pricing.Deserialize(dir, region)
 		if err != nil {
 			fmt.Errorf("desirialize pricing: %v\n", err)
+			os.Exit(1)
 		}
 
 		family := pricing.Family(plist)
 		mini := pricing.Minimum(family, plist)
 
-		quantity = hermes.Normalize(quantity, mini)
+		quantity = usage.Normalize(quantity, mini)
 	}
 
 	if merge {

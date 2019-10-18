@@ -27,14 +27,11 @@ func Minimum(family map[string]Price, plist []Price) map[string]Tuple {
 		}
 
 		fhash := fmt.Sprintf(
-			//			"%s%s%s%s%s%s%s%s%s%s%s%s",
 			"%s%s%s%s%s%s%s%s%s%s",
 			plist[i].UsageType[:strings.LastIndex(plist[i].UsageType, ".")],
 			plist[i].OperatingSystem,
 			plist[i].CacheEngine,
 			plist[i].DatabaseEngine,
-			//			plist[i].Operation,
-			//			plist[i].PreInstalled,
 			plist[i].Region,
 			plist[i].OfferingClass,
 			plist[i].Tenancy,
@@ -44,13 +41,6 @@ func Minimum(family map[string]Price, plist []Price) map[string]Tuple {
 		)
 
 		smap[hash] = Tuple{plist[i], family[fhash]}
-
-		//if strings.Contains(hash, "BoxUsage:c4.8x") && strings.Contains(hash, "Linux") {
-		//	if family[fhash].NormalizationSizeFactor == "8" {
-		//		fmt.Println(fhash)
-		//		fmt.Printf("%s\n", plist[i])
-		//	}
-		//}
 	}
 
 	// validation

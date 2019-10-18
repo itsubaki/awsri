@@ -1,4 +1,4 @@
-package hermes
+package usage
 
 /*
 OperatingSystem returns AWS Pricing OperatingSystem from Usage Platform.

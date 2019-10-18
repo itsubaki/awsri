@@ -4,20 +4,38 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/itsubaki/hermes/pkg/pricing"
+
 	"github.com/itsubaki/hermes/pkg/reservation"
+	"github.com/itsubaki/hermes/pkg/usage"
 	"github.com/urfave/cli"
 )
 
 func Action(c *cli.Context) {
+	region := c.StringSlice("region")
 	dir := c.GlobalString("dir")
 	format := c.String("format")
 	monthly := c.Bool("monthly")
+	normalize := c.Bool("normalize")
 
-	date := reservation.Last12Months()
+	date := usage.Last12Months()
 	res, err := reservation.Deserialize(dir, date)
 	if err != nil {
 		fmt.Printf("deserialize: %v\n", err)
 		os.Exit(1)
+	}
+
+	if normalize {
+		plist, err := pricing.Deserialize(dir, region)
+		if err != nil {
+			fmt.Errorf("desirialize pricing: %v\n", err)
+			os.Exit(1)
+		}
+
+		family := pricing.Family(plist)
+		mini := pricing.Minimum(family, plist)
+
+		res = reservation.Normalize(res, mini)
 	}
 
 	if format == "json" && !monthly {

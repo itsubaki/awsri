@@ -1,4 +1,4 @@
-package hermes
+package usage
 
 import (
 	"fmt"
@@ -6,28 +6,27 @@ import (
 	"strings"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
-	"github.com/itsubaki/hermes/pkg/usage"
 )
 
-func Normalize(quantity []usage.Quantity, mini map[string]pricing.Tuple) []usage.Quantity {
-	n := make([]usage.Quantity, 0)
-	for i := range quantity {
+func Normalize(q []Quantity, mini map[string]pricing.Tuple) []Quantity {
+	out := make([]Quantity, 0)
+	for i := range q {
 		hash := fmt.Sprintf(
 			"%s%s%s%s",
-			quantity[i].UsageType,
-			OperatingSystem[quantity[i].Platform],
-			quantity[i].CacheEngine,
-			quantity[i].DatabaseEngine,
+			q[i].UsageType,
+			OperatingSystem[q[i].Platform],
+			q[i].CacheEngine,
+			q[i].DatabaseEngine,
 		)
 
 		v, ok := mini[hash]
 		if !ok {
-			n = append(n, quantity[i])
+			out = append(out, q[i])
 			continue
 		}
 
 		if len(v.Minimum.NormalizationSizeFactor) < 1 {
-			n = append(n, quantity[i])
+			out = append(out, q[i])
 			continue
 		}
 
@@ -43,21 +42,21 @@ func Normalize(quantity []usage.Quantity, mini map[string]pricing.Tuple) []usage
 
 		scale := s1 / s0
 
-		n = append(n, usage.Quantity{
-			AccountID:      quantity[i].AccountID,
-			Description:    quantity[i].Description,
-			Region:         quantity[i].Region,
+		out = append(out, Quantity{
+			AccountID:      q[i].AccountID,
+			Description:    q[i].Description,
+			Region:         q[i].Region,
 			UsageType:      v.Minimum.UsageType,
-			Platform:       quantity[i].Platform,
-			CacheEngine:    quantity[i].CacheEngine,
-			DatabaseEngine: quantity[i].DatabaseEngine,
-			Date:           quantity[i].Date,
-			InstanceHour:   quantity[i].InstanceHour * scale,
-			InstanceNum:    quantity[i].InstanceNum * scale,
+			Platform:       q[i].Platform,
+			CacheEngine:    q[i].CacheEngine,
+			DatabaseEngine: q[i].DatabaseEngine,
+			Date:           q[i].Date,
+			InstanceHour:   q[i].InstanceHour * scale,
+			InstanceNum:    q[i].InstanceNum * scale,
 		})
 	}
 
-	return n
+	return out
 }
 
 // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/apply_ri.html

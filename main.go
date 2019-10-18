@@ -125,10 +125,19 @@ func New(version string) *cli.App {
 	reservation := cli.Command{
 		Name:    "reservation",
 		Aliases: []string{"r"},
-		Usage:   "output reservation utilization group by linked accouq",
+		Usage:   "output reservation utilization group by linked account",
 		Action:  reservation.Action,
 		Flags: []cli.Flag{
+			region,
 			format,
+			cli.BoolFlag{
+				Name:  "normalize, n",
+				Usage: "output normalized usage",
+			},
+			cli.BoolFlag{
+				Name:  "merge, m",
+				Usage: "output merged usage group by linked account",
+			},
 			cli.BoolFlag{
 				Name:  "monthly, mon",
 				Usage: "output monthly usage",

@@ -41,14 +41,14 @@ func TestPackage(t *testing.T) {
 		t.Errorf("deserialize usage: %v", err)
 	}
 
-	normalized := hermes.Normalize(forecast, mini)
+	normalized := usage.Normalize(forecast, mini)
 	merged := usage.MergeOverall(normalized)
 	monthly := usage.Monthly(merged)
 
 	for _, p := range price {
 		for k := range monthly {
 			if len(monthly[k][0].Platform) > 0 {
-				if p.UsageType != monthly[k][0].UsageType || p.OperatingSystem != hermes.OperatingSystem[monthly[k][0].Platform] {
+				if p.UsageType != monthly[k][0].UsageType || p.OperatingSystem != usage.OperatingSystem[monthly[k][0].Platform] {
 					continue
 				}
 			}

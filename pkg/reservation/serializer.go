@@ -6,13 +6,15 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
+
+	"github.com/itsubaki/hermes/pkg/usage"
 )
 
 func Serialize(dir string, quantity []Utilization) error {
 	return nil
 }
 
-func Deserialize(dir string, date []Date) ([]Utilization, error) {
+func Deserialize(dir string, date []usage.Date) ([]Utilization, error) {
 	utilization := make([]Utilization, 0)
 	for _, d := range date {
 		file := fmt.Sprintf("%s/reservation/%s.out", dir, d.YYYYMM())

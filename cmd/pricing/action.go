@@ -1,7 +1,6 @@
 package pricing
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -23,13 +22,7 @@ func Action(c *cli.Context) {
 
 	if format == "json" {
 		for _, p := range price {
-			bytes, err := json.Marshal(p)
-			if err != nil {
-				fmt.Printf("marshal: %v\n", err)
-				os.Exit(1)
-			}
-
-			fmt.Println(string(bytes))
+			fmt.Println(p)
 		}
 		return
 	}
