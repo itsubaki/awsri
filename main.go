@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/itsubaki/hermes/cmd"
+
 	"github.com/itsubaki/hermes/cmd/fetch"
 	"github.com/itsubaki/hermes/cmd/pricing"
 	"github.com/itsubaki/hermes/cmd/usage"
@@ -19,7 +20,6 @@ func New(version string) *cli.App {
 	app.Name = "hermes"
 	app.Usage = "aws cost optimization"
 	app.Version = version
-	app.Action = cmd.Action
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "dir, d",
@@ -112,10 +112,18 @@ func New(version string) *cli.App {
 		},
 	}
 
+	recommend := cli.Command{
+		Name:    "recommend",
+		Aliases: []string{"r"},
+		Action:  cmd.Action,
+		Usage:   "output recommended reserved instance num",
+	}
+
 	app.Commands = []cli.Command{
 		fetch,
 		pricing,
 		usage,
+		recommend,
 	}
 
 	return app
