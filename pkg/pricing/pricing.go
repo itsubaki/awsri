@@ -1,8 +1,6 @@
 package pricing
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -81,49 +79,25 @@ type Product struct {
 }
 
 type Price struct {
-	Version                 string  // common
-	SKU                     string  // common
-	OfferTermCode           string  // common
-	Region                  string  // common
-	InstanceType            string  // common
-	UsageType               string  // common
-	LeaseContractLength     string  // common
-	PurchaseOption          string  // common
-	OnDemand                float64 // common
-	ReservedQuantity        float64 // common
-	ReservedHrs             float64 // common
-	Tenancy                 string  // compute: Shared, Host, Dedicated
-	PreInstalled            string  // compute: SQL Web, SQL Ent, SQL Std, NA
-	Operation               string  // compute
-	OperatingSystem         string  // compute: Windows, Linux, SUSE, RHEL
-	CacheEngine             string  // cache
-	DatabaseEngine          string  // database
-	OfferingClass           string  // compute, database
-	NormalizationSizeFactor string  // compute, database
-}
-
-func (p Price) Hash() string {
-	s := fmt.Sprintf(
-		"%s%s%s%s%s%s%s%s%s",
-		strings.Split(p.UsageType, ".")[0],
-		p.LeaseContractLength,
-		p.PurchaseOption,
-		p.Tenancy,
-		p.PreInstalled,
-		p.OperatingSystem,
-		p.CacheEngine,
-		p.DatabaseEngine,
-		p.OfferingClass,
-	)
-
-	val, err := json.Marshal(s)
-	if err != nil {
-		panic(err)
-	}
-
-	sha := sha256.Sum256(val)
-	hash := hex.EncodeToString(sha[:])
-	return hash
+	Version                 string  `json:"version,omitempty"`                   // common
+	SKU                     string  `json:"sku,omitempty"`                       // common
+	OfferTermCode           string  `json:"offer_term_code,omitempty"`           // common
+	Region                  string  `json:"region,omitempty"`                    // common
+	InstanceType            string  `json:"instance_type,omitempty"`             // common
+	UsageType               string  `json:"usage_type,omitempty"`                // common
+	LeaseContractLength     string  `json:"lease_contract_length,omitempty"`     // common
+	PurchaseOption          string  `json:"purchase_option,omitempty"`           // common
+	OnDemand                float64 `json:"ondemand,omitempty"`                  // common
+	ReservedQuantity        float64 `json:"reserved_quantity,omitempty"`         // common
+	ReservedHrs             float64 `json:"reserved_hours,omitempty"`            // common
+	Tenancy                 string  `json:"tenancy,omitempty"`                   // compute: Shared, Host, Dedicated
+	PreInstalled            string  `json:"pre_installed,omitempty"`             // compute: SQL Web, SQL Ent, SQL Std, NA
+	Operation               string  `json:"operation,omitempty"`                 // compute
+	OperatingSystem         string  `json:"operating_system,omitempty"`          // compute: Windows, Linux, SUSE, RHEL
+	CacheEngine             string  `json:"cache_engine,omitempty"`              // cache
+	DatabaseEngine          string  `json:"database_engine,omitempty"`           // database
+	OfferingClass           string  `json:"offering_class,omitempty"`            // compute, database
+	NormalizationSizeFactor string  `json:"normalization_size_factor,omitempty"` // compute, database
 }
 
 func (p Price) String() string {

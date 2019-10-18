@@ -21,7 +21,7 @@ type Quantity struct {
 	AccountID      string  `json:"account_id,omitempty"`
 	Description    string  `json:"description,omitempty"`
 	Region         string  `json:"region,omitempty"`
-	UsageType      string  `json:"usage_type"`
+	UsageType      string  `json:"usage_type,omitempty"`
 	Platform       string  `json:"platform,omitempty"`
 	CacheEngine    string  `json:"cache_engine,omitempty"`
 	DatabaseEngine string  `json:"database_engine,omitempty"`

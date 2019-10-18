@@ -32,7 +32,7 @@ func Action(c *cli.Context) {
 	}
 
 	for _, p := range purchase {
-		q, _ := hermes.BreakEvenPoint(p.Quantity, p.Price)
-		fmt.Println(q)
+		cu := hermes.GetCostAndUsage(p.Quantity, p.Price)
+		fmt.Println(cu)
 	}
 }

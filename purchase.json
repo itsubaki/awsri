@@ -1,16 +1,16 @@
 [
   {
     "price": {
-      "UsageType": "APN1-BoxUsage:c4.large",
-      "LeaseContractLength": "1yr",
-      "PurchaseOption": "All Upfront",
-      "OnDemand": 0.126,
-      "ReservedQuantity": 738,
-      "ReservedHrs": 0,
-      "Tenancy": "Shared",
-      "PreInstalled": "NA",
-      "OperatingSystem": "Linux",
-      "OfferingClass": "standard"
+      "usage_type": "APN1-BoxUsage:c4.large",
+      "lease_contract_length": "1yr",
+      "purchase_option": "All Upfront",
+      "ondemand": 0.126,
+      "reserved_quantity": 738,
+      "reserved_hours": 0,
+      "tenancy": "Shared",
+      "pre_installed": "NA",
+      "operating_system": "Linux",
+      "offering_class": "standard"
     },
     "quantity": [
       {
