@@ -1,10 +1,6 @@
 package pricing
 
 import (
-	"fmt"
-	"io/ioutil"
-	"os"
-	"sort"
 	"testing"
 )
 
@@ -21,53 +17,6 @@ func TestFetchRedshift(t *testing.T) {
 
 	if len(price) < 1 {
 		t.Fail()
-	}
-}
-
-func TestDiscountRate(t *testing.T) {
-	price, err := Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
-	if err != nil {
-		t.Errorf("desirialize: %v", err)
-	}
-
-	sort.SliceStable(price, func(i, j int) bool { return price[i].DiscountRate() > price[j].DiscountRate() })
-
-	content := make([]string, 0)
-	for _, p := range price {
-		line := fmt.Sprintf("%.2f, %v, %v, %v, %v, %v, %v, %v, %v, %f, %f, %f, %v, %v, %v, %v, %v, %v, %v, %v　\n",
-			p.DiscountRate(),
-			p.Version,
-			p.SKU,
-			p.OfferTermCode,
-			p.Region,
-			p.InstanceType,
-			p.UsageType,
-			p.LeaseContractLength,
-			p.PurchaseOption,
-			p.OnDemand,
-			p.ReservedQuantity,
-			p.ReservedHrs,
-			p.Tenancy,
-			p.PreInstalled,
-			p.Operation,
-			p.OperatingSystem,
-			p.CacheEngine,
-			p.DatabaseEngine,
-			p.OfferingClass,
-			p.NormalizationSizeFactor,
-		)
-
-		content = append(content, line)
-	}
-
-	var str string
-	for i := range content {
-		str = str + content[i]
-	}
-
-	bytes := []byte(str)
-	if err := ioutil.WriteFile("/var/tmp/hermes/ri_dc_rate.csv", bytes, os.ModePerm); err != nil {
-		t.Errorf("write file: %v", err)
 	}
 }
 
@@ -108,7 +57,7 @@ func TestBreakEvenPoint(t *testing.T) {
 				ReservedHrs:             0.043,
 				NormalizationSizeFactor: "4",
 			},
-			7,
+			9,
 		},
 		{
 			Price{
@@ -125,7 +74,7 @@ func TestBreakEvenPoint(t *testing.T) {
 				ReservedHrs:             0.09,
 				NormalizationSizeFactor: "4",
 			},
-			1,
+			9,
 		},
 	}
 

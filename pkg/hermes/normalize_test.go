@@ -1,7 +1,6 @@
 package hermes
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
@@ -39,17 +38,12 @@ func TestNormalize(t *testing.T) {
 			InstanceHour: 4,
 			InstanceNum:  4,
 		},
-		{
-			Region:       "ap-northeast-1",
-			UsageType:    "APN1-NodeUsage:cache.r3.large",
-			CacheEngine:  "Redis",
-			InstanceHour: 4,
-			InstanceNum:  4,
-		},
 	}
 
 	n := Normalize(forecast, mini)
 	for _, nn := range n {
-		fmt.Println(nn)
+		if nn.UsageType != "APN1-BoxUsage:m4.large" {
+			t.Errorf("%s\n", nn)
+		}
 	}
 }

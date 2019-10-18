@@ -10,7 +10,7 @@ import (
 	"github.com/itsubaki/hermes/pkg/usage"
 )
 
-func TestCostAndUsage(t *testing.T) {
+func TestRecommend(t *testing.T) {
 	price := pricing.Price{
 		Region:                  "ap-northeast-1",
 		UsageType:               "APN1-BoxUsage:c4.large",
@@ -41,7 +41,7 @@ func TestCostAndUsage(t *testing.T) {
 		{Date: "2019-01", InstanceNum: 10},
 	}
 
-	q := GetCostAndUsage(forecast, price)
+	q := Recommend(forecast, price)
 
 	b, err := json.Marshal(q)
 	if err != nil {

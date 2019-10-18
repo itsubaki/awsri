@@ -32,7 +32,7 @@ func Action(c *cli.Context) {
 	}
 
 	for _, p := range purchase {
-		cu := hermes.GetCostAndUsage(p.Quantity, p.Price)
-		fmt.Println(cu)
+		r := hermes.Recommend(p.Quantity, p.Price)
+		fmt.Println(r)
 	}
 }

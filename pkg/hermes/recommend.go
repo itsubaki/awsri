@@ -8,17 +8,17 @@ import (
 	"github.com/itsubaki/hermes/pkg/usage"
 )
 
-type CostAndUsage struct {
+type Recommended struct {
 	Price pricing.Price `json:"price"`
 	Cost  Cost          `json:"cost"`
 	Usage Usage         `json:"usage"`
 }
 
-func (c CostAndUsage) String() string {
+func (c Recommended) String() string {
 	return c.JSON()
 }
 
-func (c CostAndUsage) JSON() string {
+func (c Recommended) JSON() string {
 	bytes, err := json.Marshal(c)
 	if err != nil {
 		panic(err)
@@ -51,7 +51,7 @@ type ReservedCost struct {
 	Hours    float64 `json:"hours"`
 }
 
-func GetCostAndUsage(monthly []usage.Quantity, price pricing.Price) CostAndUsage {
+func Recommend(monthly []usage.Quantity, price pricing.Price) Recommended {
 	totalHours := 0.0
 	for _, m := range monthly {
 		totalHours = totalHours + m.InstanceNum*float64(24*usage.Days[strings.Split(m.Date, "-")[1]])
@@ -70,7 +70,7 @@ func GetCostAndUsage(monthly []usage.Quantity, price pricing.Price) CostAndUsage
 	reservedHoursCost := reservedHours * price.ReservedHrs
 	reservedTotalCost := reservedOndemandCost + reservedQuantityCost + reservedHoursCost
 
-	return CostAndUsage{
+	return Recommended{
 		Price: price,
 		Usage: Usage{
 			TotalHours:          totalHours,
