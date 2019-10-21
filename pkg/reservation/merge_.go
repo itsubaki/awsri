@@ -4,6 +4,7 @@ import "fmt"
 
 func Merge(u []Utilization) []Utilization {
 	merged := make(map[string]Utilization)
+	counter := make(map[string]int)
 	for i := range u {
 		hash := fmt.Sprintf(
 			"%s%s%s%s%s%s%s%s",
@@ -20,6 +21,7 @@ func Merge(u []Utilization) []Utilization {
 		v, ok := merged[hash]
 		if !ok {
 			merged[hash] = u[i]
+			counter[hash]++
 			continue
 		}
 
@@ -36,11 +38,24 @@ func Merge(u []Utilization) []Utilization {
 			Hours:            u[i].Hours + v.Hours,
 			Percentage:       u[i].Percentage + v.Percentage,
 		}
+		counter[hash]++
 	}
 
 	out := make([]Utilization, 0)
 	for k := range merged {
-		out = append(out, merged[k])
+		out = append(out, Utilization{
+			AccountID:        merged[k].AccountID,
+			Description:      merged[k].Description,
+			Region:           merged[k].Region,
+			InstanceType:     merged[k].InstanceType,
+			Platform:         merged[k].Platform,
+			CacheEngine:      merged[k].CacheEngine,
+			DatabaseEngine:   merged[k].DatabaseEngine,
+			DeploymentOption: merged[k].DeploymentOption,
+			Date:             merged[k].Date,
+			Hours:            merged[k].Hours,
+			Percentage:       merged[k].Percentage / float64(counter[k]),
+		})
 	}
 
 	return out

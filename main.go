@@ -142,6 +142,11 @@ func New(version string) *cli.App {
 				Name:  "monthly, mon",
 				Usage: "output monthly usage",
 			},
+			cli.StringFlag{
+				Name:  "attribute",
+				Usage: "hours, percentage",
+				Value: "hours",
+			},
 		},
 	}
 

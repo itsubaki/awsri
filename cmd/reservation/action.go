@@ -18,6 +18,7 @@ func Action(c *cli.Context) {
 	normalize := c.Bool("normalize")
 	merge := c.Bool("merge")
 	monthly := c.Bool("monthly")
+	attribute := c.String("attribute")
 
 	date := usage.LastNMonths(12)
 	res, err := reservation.Deserialize(dir, date)
@@ -82,11 +83,19 @@ func Action(c *cli.Context) {
 			for _, d := range date {
 				found := false
 				for _, r := range m[k] {
-					if d.YYYYMM() == r.Date {
-						fmt.Printf("%.3f, ", r.Hours)
-						found = true
-						break
+					if d.YYYYMM() != r.Date {
+						continue
 					}
+
+					if attribute == "hours" {
+						fmt.Printf("%.3f, ", r.Hours)
+					}
+					if attribute == "percentage" {
+						fmt.Printf("%.3f, ", r.Percentage)
+					}
+
+					found = true
+					break
 				}
 
 				if !found {
