@@ -87,6 +87,9 @@ func Action(c *cli.Context) {
 						continue
 					}
 
+					if attribute == "num" {
+						fmt.Printf("%.3f, ", r.Num)
+					}
 					if attribute == "hours" {
 						fmt.Printf("%.3f, ", r.Hours)
 					}

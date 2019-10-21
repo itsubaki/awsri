@@ -17,6 +17,7 @@ func Action(c *cli.Context) {
 	merge := c.Bool("merge")
 	overall := c.Bool("merge-overall")
 	monthly := c.Bool("monthly")
+	attribute := c.String("attribute")
 
 	date := usage.LastNMonths(12)
 	quantity, err := usage.Deserialize(dir, date)
@@ -78,11 +79,19 @@ func Action(c *cli.Context) {
 			for _, d := range date {
 				found := false
 				for _, q := range mq[k] {
-					if d.YYYYMM() == q.Date {
-						fmt.Printf("%.3f, ", q.InstanceNum)
-						found = true
-						break
+					if d.YYYYMM() != q.Date {
+						continue
 					}
+
+					if attribute == "num" {
+						fmt.Printf("%.3f, ", q.InstanceNum)
+					}
+					if attribute == "hours" {
+						fmt.Printf("%.3f, ", q.InstanceHour)
+					}
+
+					found = true
+					break
 				}
 
 				if !found {

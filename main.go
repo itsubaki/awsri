@@ -109,16 +109,11 @@ func New(version string) *cli.App {
 				Name:  "monthly, mon",
 				Usage: "output monthly usage",
 			},
-		},
-	}
-
-	recommend := cli.Command{
-		Name:   "recommend",
-		Action: cmd.Action,
-		Usage:  "output recommended reserved instance num",
-		Flags: []cli.Flag{
-			region,
-			format,
+			cli.StringFlag{
+				Name:  "attribute, a",
+				Usage: "num, hours",
+				Value: "num",
+			},
 		},
 	}
 
@@ -143,10 +138,20 @@ func New(version string) *cli.App {
 				Usage: "output monthly usage",
 			},
 			cli.StringFlag{
-				Name:  "attribute",
-				Usage: "hours, percentage",
-				Value: "hours",
+				Name:  "attribute, a",
+				Usage: "num, hours, percentage",
+				Value: "num",
 			},
+		},
+	}
+
+	recommend := cli.Command{
+		Name:   "recommend",
+		Action: cmd.Action,
+		Usage:  "output recommended reserved instance num",
+		Flags: []cli.Flag{
+			region,
+			format,
 		},
 	}
 

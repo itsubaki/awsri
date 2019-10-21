@@ -36,6 +36,7 @@ func Merge(u []Utilization) []Utilization {
 			DeploymentOption: u[i].DeploymentOption,
 			Date:             u[i].Date,
 			Hours:            u[i].Hours + v.Hours,
+			Num:              u[i].Num + v.Num,
 			Percentage:       u[i].Percentage + v.Percentage,
 		}
 		counter[hash]++
@@ -54,6 +55,7 @@ func Merge(u []Utilization) []Utilization {
 			DeploymentOption: merged[k].DeploymentOption,
 			Date:             merged[k].Date,
 			Hours:            merged[k].Hours,
+			Num:              merged[k].Num,
 			Percentage:       merged[k].Percentage / float64(counter[k]),
 		})
 	}

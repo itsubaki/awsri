@@ -25,6 +25,7 @@ type Utilization struct {
 	DeploymentOption string  `json:"deployment_option,omitempty"`
 	Date             string  `json:"date"`
 	Hours            float64 `json:"hours"`
+	Num              float64 `json:"num"`
 	Percentage       float64 `json:"percentage"`
 }
 
@@ -182,6 +183,9 @@ func fetch(input costexplorer.GetReservationCoverageInput) ([]Utilization, error
 					return out, fmt.Errorf("parse float reserved hours: %v", err)
 				}
 
+				month := strings.Split(date, "-")[1]
+				num := hours / float64(24*usage.Days[month])
+
 				per, err := strconv.ParseFloat(*g.Coverage.CoverageHours.CoverageHoursPercentage, 64)
 				if err != nil {
 					return out, fmt.Errorf("parse float reserved hours percentage: %v", err)
@@ -192,6 +196,7 @@ func fetch(input costexplorer.GetReservationCoverageInput) ([]Utilization, error
 					InstanceType: *g.Attributes["instanceType"],
 					Date:         date,
 					Hours:        hours,
+					Num:          num,
 					Percentage:   per,
 				}
 
