@@ -6,13 +6,14 @@ func Merge(u []Utilization) []Utilization {
 	merged := make(map[string]Utilization)
 	for i := range u {
 		hash := fmt.Sprintf(
-			"%s%s%s%s%s%s%s",
+			"%s%s%s%s%s%s%s%s",
 			u[i].AccountID,
 			u[i].Region,
 			u[i].InstanceType,
 			u[i].Platform,
 			u[i].CacheEngine,
 			u[i].DatabaseEngine,
+			u[i].DeploymentOption,
 			u[i].Date,
 		)
 
@@ -23,14 +24,16 @@ func Merge(u []Utilization) []Utilization {
 		}
 
 		merged[hash] = Utilization{
-			AccountID:      u[i].AccountID,
-			Region:         u[i].Region,
-			InstanceType:   u[i].InstanceType,
-			Platform:       u[i].Platform,
-			CacheEngine:    u[i].CacheEngine,
-			DatabaseEngine: u[i].DatabaseEngine,
-			Date:           u[i].Date,
-			Hours:          u[i].Hours + v.Hours,
+			AccountID:        u[i].AccountID,
+			Description:      u[i].Description,
+			Region:           u[i].Region,
+			InstanceType:     u[i].InstanceType,
+			Platform:         u[i].Platform,
+			CacheEngine:      u[i].CacheEngine,
+			DatabaseEngine:   u[i].DatabaseEngine,
+			DeploymentOption: u[i].DeploymentOption,
+			Date:             u[i].Date,
+			Hours:            u[i].Hours + v.Hours,
 		}
 	}
 

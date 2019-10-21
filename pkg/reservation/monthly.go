@@ -9,13 +9,14 @@ func Monthly(u []Utilization) map[string][]Utilization {
 	monthly := make(map[string][]Utilization)
 	for i := range u {
 		hash := fmt.Sprintf(
-			"%s%s%s%s%s%s",
+			"%s%s%s%s%s%s%s",
 			u[i].AccountID,
 			u[i].Region,
 			u[i].InstanceType,
 			u[i].Platform,
 			u[i].CacheEngine,
 			u[i].DatabaseEngine,
+			u[i].DeploymentOption,
 		)
 
 		monthly[hash] = append(monthly[hash], u[i])

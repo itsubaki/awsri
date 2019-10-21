@@ -36,14 +36,16 @@ func Normalize(u []Utilization, mini map[string]pricing.Tuple) []Utilization {
 		scale := s1 / s0
 
 		out = append(out, Utilization{
-			AccountID:      u[i].AccountID,
-			Region:         u[i].Region,
-			InstanceType:   strings.Split(v.Minimum.UsageType, ":")[1],
-			Platform:       u[i].Platform,
-			CacheEngine:    u[i].CacheEngine,
-			DatabaseEngine: u[i].DatabaseEngine,
-			Date:           u[i].Date,
-			Hours:          u[i].Hours * scale,
+			AccountID:        u[i].AccountID,
+			Description:      u[i].Description,
+			Region:           u[i].Region,
+			InstanceType:     strings.Split(v.Minimum.UsageType, ":")[1],
+			Platform:         u[i].Platform,
+			CacheEngine:      u[i].CacheEngine,
+			DatabaseEngine:   u[i].DatabaseEngine,
+			DeploymentOption: u[i].DeploymentOption,
+			Date:             u[i].Date,
+			Hours:            u[i].Hours * scale,
 		})
 	}
 

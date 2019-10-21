@@ -45,36 +45,37 @@ func Action(c *cli.Context) {
 	}
 
 	if format == "json" && monthly {
-		mr := reservation.Monthly(res)
-		for _, r := range mr {
-			fmt.Println(r)
+		m := reservation.Monthly(res)
+		for _, mm := range m {
+			fmt.Println(mm)
 		}
 		return
 	}
 
 	if format == "csv" {
-		fmt.Printf("account_id, description, region, instance_type, os/engine, deploymet_option, ")
+		fmt.Printf("account_id, description, region, instance_type, usage_type, os/engine, deploymet_option, ")
 		for i := range date {
 			fmt.Printf("%s, ", date[i].YYYYMM())
 		}
 		fmt.Println()
 
-		mr := reservation.Monthly(res)
-		keys := reservation.SortedKey(mr)
+		m := reservation.Monthly(res)
+		keys := reservation.SortedKey(m)
 		for _, k := range keys {
 			fmt.Printf(
-				"%s, %s, %s, %s, %s, %s, ",
-				mr[k][0].AccountID,
-				mr[k][0].Description,
-				mr[k][0].Region,
-				mr[k][0].InstanceType,
-				mr[k][0].OSEngine(),
-				mr[k][0].DeploymentOption,
+				"%s, %s, %s, %s, %s, %s, %s, ",
+				m[k][0].AccountID,
+				m[k][0].Description,
+				m[k][0].Region,
+				m[k][0].InstanceType,
+				m[k][0].UsageType(),
+				m[k][0].OSEngine(),
+				m[k][0].DeploymentOption,
 			)
 
 			for _, d := range date {
 				found := false
-				for _, r := range mr[k] {
+				for _, r := range m[k] {
 					if d.YYYYMM() == r.Date {
 						fmt.Printf("%.3f, ", r.Hours)
 						found = true

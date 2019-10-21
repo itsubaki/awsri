@@ -260,9 +260,10 @@ func Fetch(start, end string) ([]Utilization, error) {
 		}
 	}
 
-	sort.SliceStable(out, func(i, j int) bool { return out[i].Platform < out[j].Platform })
-	sort.SliceStable(out, func(i, j int) bool { return out[i].CacheEngine < out[j].CacheEngine })
+	sort.SliceStable(out, func(i, j int) bool { return out[i].DeploymentOption < out[j].DeploymentOption })
 	sort.SliceStable(out, func(i, j int) bool { return out[i].DatabaseEngine < out[j].DatabaseEngine })
+	sort.SliceStable(out, func(i, j int) bool { return out[i].CacheEngine < out[j].CacheEngine })
+	sort.SliceStable(out, func(i, j int) bool { return out[i].Platform < out[j].Platform })
 	sort.SliceStable(out, func(i, j int) bool { return out[i].Region < out[j].Region })
 	sort.SliceStable(out, func(i, j int) bool { return out[i].AccountID < out[j].AccountID })
 
