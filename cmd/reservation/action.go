@@ -15,8 +15,9 @@ func Action(c *cli.Context) {
 	region := c.StringSlice("region")
 	dir := c.GlobalString("dir")
 	format := c.String("format")
-	monthly := c.Bool("monthly")
 	normalize := c.Bool("normalize")
+	merge := c.Bool("merge")
+	monthly := c.Bool("monthly")
 
 	date := usage.LastNMonths(12)
 	res, err := reservation.Deserialize(dir, date)
@@ -36,6 +37,10 @@ func Action(c *cli.Context) {
 		mini := pricing.Minimum(family, plist)
 
 		res = reservation.Normalize(res, mini)
+	}
+
+	if merge {
+		res = reservation.Merge(res)
 	}
 
 	if format == "json" && !monthly {
