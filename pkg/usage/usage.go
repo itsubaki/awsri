@@ -72,11 +72,12 @@ func Sort(quantity []Quantity) {
 type FetchFunc func(start, end string, account Account, usageType []string) ([]Quantity, error)
 
 var FetchFuncList = []FetchFunc{
-	fetchNode,
 	fetchBoxUsage,
+	//fetchSpotUsage,
 	fetchNodeUsage,
 	fetchInstanceUsage,
 	fetchMultiAZUsage,
+	fetchNode,
 }
 
 func Fetch(start, end string) ([]Quantity, error) {
@@ -109,6 +110,25 @@ func fetchBoxUsage(start, end string, account Account, usageType []string) ([]Qu
 	ut := make([]string, 0)
 	for i := range usageType {
 		if !strings.Contains(usageType[i], "BoxUsage:") {
+			continue
+		}
+		ut = append(ut, usageType[i])
+	}
+
+	return fetchQuantity(&GetQuantityInput{
+		AccountID:   account.ID,
+		Description: account.Description,
+		Dimension:   "PLATFORM",
+		UsageType:   ut,
+		Start:       start,
+		End:         end,
+	})
+}
+
+func fetchSpotUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
+	ut := make([]string, 0)
+	for i := range usageType {
+		if !strings.Contains(usageType[i], "SpotUsage:") {
 			continue
 		}
 		ut = append(ut, usageType[i])
@@ -192,7 +212,7 @@ func fetchNode(start, end string, account Account, usageType []string) ([]Quanti
 		ut = append(ut, usageType[i])
 	}
 
-	return fetchQuantity(&GetQuantityInput{
+	q, err := fetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
 		Dimension:   "DATABASE_ENGINE",
@@ -200,6 +220,19 @@ func fetchNode(start, end string, account Account, usageType []string) ([]Quanti
 		Start:       start,
 		End:         end,
 	})
+	if err != nil {
+		return make([]Quantity, 0), err
+	}
+
+	out := make([]Quantity, 0)
+	for i := range q {
+		if q[i].DatabaseEngine != "NoDatabaseEngine" {
+			continue
+		}
+		out = append(out, q[i])
+	}
+
+	return out, nil
 }
 
 func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {

@@ -35,7 +35,6 @@ func TestUsageType(t *testing.T) {
 	for _, s := range sorted {
 		fmt.Println(s)
 	}
-
 }
 
 func TestFetch(t *testing.T) {

@@ -270,5 +270,4 @@ func Sort(u []Utilization) {
 	sort.SliceStable(u, func(i, j int) bool { return u[i].Platform < u[j].Platform })
 	sort.SliceStable(u, func(i, j int) bool { return u[i].Region < u[j].Region })
 	sort.SliceStable(u, func(i, j int) bool { return u[i].AccountID < u[j].AccountID })
-
 }
