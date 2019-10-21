@@ -77,9 +77,9 @@ func (u Utilization) JSON() string {
 // Amazon Relational Database Service
 // Amazon ElastiCache, Amazon Redshift
 // Amazon Elasticsearch Service
-type getInputFunc func() (*costexplorer.Expression, []*costexplorer.GroupDefinition)
+type fetchInputFunc func() (*costexplorer.Expression, []*costexplorer.GroupDefinition)
 
-func getComputeInput() (*costexplorer.Expression, []*costexplorer.GroupDefinition) {
+func fetchComputeInput() (*costexplorer.Expression, []*costexplorer.GroupDefinition) {
 	return &costexplorer.Expression{
 			Dimensions: &costexplorer.DimensionValues{
 				Key:    aws.String("SERVICE"),
@@ -101,7 +101,7 @@ func getComputeInput() (*costexplorer.Expression, []*costexplorer.GroupDefinitio
 		}
 }
 
-func getCacheInput() (*costexplorer.Expression, []*costexplorer.GroupDefinition) {
+func fetchCacheInput() (*costexplorer.Expression, []*costexplorer.GroupDefinition) {
 	return &costexplorer.Expression{
 			Dimensions: &costexplorer.DimensionValues{
 				Key:    aws.String("SERVICE"),
@@ -123,7 +123,7 @@ func getCacheInput() (*costexplorer.Expression, []*costexplorer.GroupDefinition)
 		}
 }
 
-func getDatabaseInput() (*costexplorer.Expression, []*costexplorer.GroupDefinition) {
+func fetchDatabaseInput() (*costexplorer.Expression, []*costexplorer.GroupDefinition) {
 	return &costexplorer.Expression{
 			Dimensions: &costexplorer.DimensionValues{
 				Key:    aws.String("SERVICE"),
@@ -149,10 +149,10 @@ func getDatabaseInput() (*costexplorer.Expression, []*costexplorer.GroupDefiniti
 		}
 }
 
-var getInputFuncList = []getInputFunc{
-	getComputeInput,
-	getCacheInput,
-	getDatabaseInput,
+var fetchInputFuncList = []fetchInputFunc{
+	fetchComputeInput,
+	fetchCacheInput,
+	fetchDatabaseInput,
 }
 
 func fetch(input costexplorer.GetReservationCoverageInput) ([]Utilization, error) {
@@ -221,7 +221,7 @@ func Fetch(start, end string) ([]Utilization, error) {
 	}
 
 	out := make([]Utilization, 0)
-	for _, f := range getInputFuncList {
+	for _, f := range fetchInputFuncList {
 		for _, a := range linked {
 			exp, groupby := f()
 
