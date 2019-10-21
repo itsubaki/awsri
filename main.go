@@ -111,7 +111,7 @@ func New(version string) *cli.App {
 			},
 			cli.StringFlag{
 				Name:  "attribute, a",
-				Usage: "num, hours",
+				Usage: "num, hours (format csv only)",
 				Value: "num",
 			},
 		},
@@ -139,7 +139,7 @@ func New(version string) *cli.App {
 			},
 			cli.StringFlag{
 				Name:  "attribute, a",
-				Usage: "num, hours, percentage",
+				Usage: "num, hours, percentage (format csv only)",
 				Value: "num",
 			},
 		},
