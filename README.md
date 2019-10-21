@@ -34,6 +34,7 @@ aws_secret_access_key = ****************************************
         "ec2:DescribeReserved*",
         "rds:DescribeReserved*",
         "elasticache:DescribeReserved*",
+        "redshift:DescribeReserved*",
         "organizations:List*",
         "organizations:Describe*",
         "ce:Get*"

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/aws/aws-sdk-go/service/redshift"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
@@ -18,7 +20,7 @@ type Reserved struct {
 	Duration           int64     `json:"duration"`
 	OfferingType       string    `json:"offering_type"`
 	OfferingClass      string    `json:"offering_class,omitempty"`
-	ProductDescription string    `json:"product_description"`
+	ProductDescription string    `json:"product_description,omitempty"`
 	InstanceType       string    `json:"instance_type,omitempty"`
 	InstanceCount      int64     `json:"instance_count,omitempty"`
 	CacheNodeType      string    `json:"cache_node_type,omitempty"`
@@ -46,9 +48,10 @@ func (r Reserved) JSON() string {
 type fetchFunc func(region []string) ([]Reserved, error)
 
 var fetchFuncList = []fetchFunc{
-	fetchReservedEC2,
-	fetchReservedCache,
-	fetchReservedDatabase,
+	fetchEC2,
+	fetchCache,
+	fetchDatabase,
+	fetchRedshift,
 }
 
 func Fetch(region []string) ([]Reserved, error) {
@@ -64,7 +67,7 @@ func Fetch(region []string) ([]Reserved, error) {
 	return out, nil
 }
 
-func fetchReservedEC2(region []string) ([]Reserved, error) {
+func fetchEC2(region []string) ([]Reserved, error) {
 	out := make([]Reserved, 0)
 	for _, r := range region {
 		ses, err := session.NewSession(
@@ -104,7 +107,7 @@ func fetchReservedEC2(region []string) ([]Reserved, error) {
 	return out, nil
 }
 
-func fetchReservedCache(region []string) ([]Reserved, error) {
+func fetchCache(region []string) ([]Reserved, error) {
 	out := make([]Reserved, 0)
 	for _, r := range region {
 		ses, err := session.NewSession(
@@ -118,17 +121,17 @@ func fetchReservedCache(region []string) ([]Reserved, error) {
 		client := elasticache.New(ses)
 		var maker *string
 		for {
-			input := &elasticache.DescribeReservedCacheNodesInput{}
+			input := elasticache.DescribeReservedCacheNodesInput{}
 			if maker != nil {
 				input.Marker = maker
 			}
 
-			output, err := client.DescribeReservedCacheNodes(input)
+			desc, err := client.DescribeReservedCacheNodes(&input)
 			if err != nil {
 				return out, fmt.Errorf("describe reserved cache node (region=%s): %v", r, err)
 			}
 
-			for _, i := range output.ReservedCacheNodes {
+			for _, i := range desc.ReservedCacheNodes {
 				out = append(out, Reserved{
 					Region:             r,
 					ReservedID:         *i.ReservedCacheNodeId,
@@ -142,17 +145,17 @@ func fetchReservedCache(region []string) ([]Reserved, error) {
 				})
 			}
 
-			if output.Marker == nil {
+			if desc.Marker == nil {
 				break
 			}
-			maker = output.Marker
+			maker = desc.Marker
 		}
 	}
 
 	return out, nil
 }
 
-func fetchReservedDatabase(region []string) ([]Reserved, error) {
+func fetchDatabase(region []string) ([]Reserved, error) {
 	out := make([]Reserved, 0)
 	for _, r := range region {
 		ses, err := session.NewSession(
@@ -167,17 +170,17 @@ func fetchReservedDatabase(region []string) ([]Reserved, error) {
 		client := rds.New(ses)
 		var maker *string
 		for {
-			input := &rds.DescribeReservedDBInstancesInput{}
+			input := rds.DescribeReservedDBInstancesInput{}
 			if maker != nil {
 				input.Marker = maker
 			}
 
-			output, err := client.DescribeReservedDBInstances(input)
+			desc, err := client.DescribeReservedDBInstances(&input)
 			if err != nil {
 				return out, fmt.Errorf("describe reserved db instance (region=%s): %v", r, err)
 			}
 
-			for _, i := range output.ReservedDBInstances {
+			for _, i := range desc.ReservedDBInstances {
 				out = append(out, Reserved{
 					Region:             r,
 					ReservedID:         *i.ReservedDBInstanceId,
@@ -192,11 +195,60 @@ func fetchReservedDatabase(region []string) ([]Reserved, error) {
 				})
 			}
 
-			if output.Marker == nil {
+			if desc.Marker == nil {
 				break
 			}
-			maker = output.Marker
+			maker = desc.Marker
 		}
+	}
+
+	return out, nil
+}
+
+func fetchRedshift(region []string) ([]Reserved, error) {
+	out := make([]Reserved, 0)
+	for _, r := range region {
+		ses, err := session.NewSession(
+			&aws.Config{
+				Region: aws.String(r),
+			},
+		)
+		if err != nil {
+			return out, fmt.Errorf("new session (region=%s): %v", r, err)
+		}
+
+		client := redshift.New(ses)
+		var maker *string
+		for {
+			input := redshift.DescribeReservedNodesInput{}
+			if maker != nil {
+				input.Marker = maker
+			}
+
+			desc, err := client.DescribeReservedNodes(&input)
+			if err != nil {
+				return out, fmt.Errorf("describe reserved db instance (region=%s): %v", r, err)
+			}
+
+			for _, i := range desc.ReservedNodes {
+				out = append(out, Reserved{
+					Region:         r,
+					ReservedID:     *i.ReservedNodeId,
+					Duration:       *i.Duration,
+					OfferingType:   *i.OfferingType,
+					CacheNodeType:  *i.NodeType,
+					CacheNodeCount: *i.NodeCount,
+					Start:          *i.StartTime,
+					State:          *i.State,
+				})
+			}
+
+			if desc.Marker == nil {
+				break
+			}
+			maker = desc.Marker
+		}
+
 	}
 
 	return out, nil
