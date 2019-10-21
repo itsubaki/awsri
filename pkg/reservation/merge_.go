@@ -34,6 +34,7 @@ func Merge(u []Utilization) []Utilization {
 			DeploymentOption: u[i].DeploymentOption,
 			Date:             u[i].Date,
 			Hours:            u[i].Hours + v.Hours,
+			Percentage:       u[i].Percentage + v.Percentage,
 		}
 	}
 

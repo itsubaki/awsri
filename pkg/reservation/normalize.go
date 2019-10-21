@@ -46,6 +46,7 @@ func Normalize(u []Utilization, mini map[string]pricing.Tuple) []Utilization {
 			DeploymentOption: u[i].DeploymentOption,
 			Date:             u[i].Date,
 			Hours:            u[i].Hours * scale,
+			Percentage:       u[i].Percentage,
 		})
 	}
 
