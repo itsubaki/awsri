@@ -35,7 +35,7 @@ func TestPackage(t *testing.T) {
 	family := pricing.Family(plist)
 	mini := pricing.Minimum(family, plist)
 
-	date := usage.Last12Months()
+	date := usage.LastNMonths(12)
 	forecast, err := usage.Deserialize("/var/tmp/hermes", date)
 	if err != nil {
 		t.Errorf("deserialize usage: %v", err)

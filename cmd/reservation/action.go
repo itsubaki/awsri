@@ -18,7 +18,7 @@ func Action(c *cli.Context) {
 	monthly := c.Bool("monthly")
 	normalize := c.Bool("normalize")
 
-	date := usage.Last12Months()
+	date := usage.LastNMonths(12)
 	res, err := reservation.Deserialize(dir, date)
 	if err != nil {
 		fmt.Printf("deserialize: %v\n", err)

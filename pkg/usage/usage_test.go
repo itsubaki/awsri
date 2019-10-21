@@ -11,7 +11,7 @@ func TestUsageType(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
 	merged := make([]string, 0)
-	for _, d := range Last12Months() {
+	for _, d := range LastNMonths(1) {
 		usageType, err := fetchUsageType(d.Start, d.End)
 		if err != nil {
 			t.Errorf("get usage type: %v", err)
@@ -40,7 +40,7 @@ func TestUsageType(t *testing.T) {
 func TestFetch(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	m := Last12Months()[0]
+	m := LastNMonths(1)[0]
 	list, err := Fetch(m.Start, m.End)
 	if err != nil {
 		t.Errorf("get usage quantity: %v", err)

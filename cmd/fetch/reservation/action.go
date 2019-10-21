@@ -19,7 +19,7 @@ func Action(c *cli.Context) {
 		os.MkdirAll(path, os.ModePerm)
 	}
 
-	date := usage.Last12Months()
+	date := usage.LastNMonths(12)
 	for i := range date {
 		file := fmt.Sprintf("%s/%s.out", path, date[i].YYYYMM())
 		if _, err := os.Stat(file); !os.IsNotExist(err) {

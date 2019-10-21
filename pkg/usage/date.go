@@ -1,6 +1,9 @@
 package usage
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type Date struct {
 	Start string
@@ -11,9 +14,13 @@ func (d Date) YYYYMM() string {
 	return d.Start[:7]
 }
 
-func Last12Months() []Date {
+func LastNMonths(n int) []Date {
+	if n < 1 || n > 12 {
+		panic(fmt.Sprintf("parameter=%v is not in 0 < n < 13", n))
+	}
+
 	month := make([]time.Time, 0)
-	for i := 1; i < 13; i++ {
+	for i := 1; i < n+1; i++ {
 		month = append(month, time.Now().AddDate(0, -i, 0))
 	}
 

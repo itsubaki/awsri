@@ -18,7 +18,7 @@ func Action(c *cli.Context) {
 	overall := c.Bool("merge-overall")
 	monthly := c.Bool("monthly")
 
-	date := usage.Last12Months()
+	date := usage.LastNMonths(12)
 	quantity, err := usage.Deserialize(dir, date)
 	if err != nil {
 		fmt.Errorf("deserialize usage: %v\n", err)
