@@ -260,12 +260,15 @@ func Fetch(start, end string) ([]Utilization, error) {
 		}
 	}
 
-	sort.SliceStable(out, func(i, j int) bool { return out[i].DeploymentOption < out[j].DeploymentOption })
-	sort.SliceStable(out, func(i, j int) bool { return out[i].DatabaseEngine < out[j].DatabaseEngine })
-	sort.SliceStable(out, func(i, j int) bool { return out[i].CacheEngine < out[j].CacheEngine })
-	sort.SliceStable(out, func(i, j int) bool { return out[i].Platform < out[j].Platform })
-	sort.SliceStable(out, func(i, j int) bool { return out[i].Region < out[j].Region })
-	sort.SliceStable(out, func(i, j int) bool { return out[i].AccountID < out[j].AccountID })
-
 	return out, nil
+}
+
+func Sort(u []Utilization) {
+	sort.SliceStable(u, func(i, j int) bool { return u[i].DeploymentOption < u[j].DeploymentOption })
+	sort.SliceStable(u, func(i, j int) bool { return u[i].DatabaseEngine < u[j].DatabaseEngine })
+	sort.SliceStable(u, func(i, j int) bool { return u[i].CacheEngine < u[j].CacheEngine })
+	sort.SliceStable(u, func(i, j int) bool { return u[i].Platform < u[j].Platform })
+	sort.SliceStable(u, func(i, j int) bool { return u[i].Region < u[j].Region })
+	sort.SliceStable(u, func(i, j int) bool { return u[i].AccountID < u[j].AccountID })
+
 }

@@ -72,6 +72,7 @@ func Sort(quantity []Quantity) {
 type FetchFunc func(start, end string, account Account, usageType []string) ([]Quantity, error)
 
 var FetchFuncList = []FetchFunc{
+	fetchNode,
 	fetchBoxUsage,
 	fetchNodeUsage,
 	fetchInstanceUsage,
@@ -107,7 +108,7 @@ func Fetch(start, end string) ([]Quantity, error) {
 func fetchBoxUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
 	ut := make([]string, 0)
 	for i := range usageType {
-		if !strings.Contains(usageType[i], "BoxUsage") {
+		if !strings.Contains(usageType[i], "BoxUsage:") {
 			continue
 		}
 		ut = append(ut, usageType[i])
@@ -126,7 +127,7 @@ func fetchBoxUsage(start, end string, account Account, usageType []string) ([]Qu
 func fetchNodeUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
 	ut := make([]string, 0)
 	for i := range usageType {
-		if !strings.Contains(usageType[i], "NodeUsage") {
+		if !strings.Contains(usageType[i], "NodeUsage:") {
 			continue
 		}
 		ut = append(ut, usageType[i])
@@ -145,7 +146,7 @@ func fetchNodeUsage(start, end string, account Account, usageType []string) ([]Q
 func fetchInstanceUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
 	ut := make([]string, 0)
 	for i := range usageType {
-		if !strings.Contains(usageType[i], "InstanceUsage") {
+		if !strings.Contains(usageType[i], "InstanceUsage:") {
 			continue
 		}
 
@@ -165,10 +166,29 @@ func fetchInstanceUsage(start, end string, account Account, usageType []string) 
 func fetchMultiAZUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
 	ut := make([]string, 0)
 	for i := range usageType {
-		if !strings.Contains(usageType[i], "Multi-AZUsage") {
+		if !strings.Contains(usageType[i], "Multi-AZUsage:") {
 			continue
 		}
 
+		ut = append(ut, usageType[i])
+	}
+
+	return fetchQuantity(&GetQuantityInput{
+		AccountID:   account.ID,
+		Description: account.Description,
+		Dimension:   "DATABASE_ENGINE",
+		UsageType:   ut,
+		Start:       start,
+		End:         end,
+	})
+}
+
+func fetchNode(start, end string, account Account, usageType []string) ([]Quantity, error) {
+	ut := make([]string, 0)
+	for i := range usageType {
+		if !strings.Contains(usageType[i], "Node:") {
+			continue
+		}
 		ut = append(ut, usageType[i])
 	}
 

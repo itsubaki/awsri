@@ -39,6 +39,7 @@ func Action(c *cli.Context) {
 	}
 
 	if format == "json" && !monthly {
+		reservation.Sort(res)
 		for _, r := range res {
 			fmt.Println(r)
 		}
