@@ -48,7 +48,7 @@ func (r Reserved) JSON() string {
 type fetchFunc func(region []string) ([]Reserved, error)
 
 var fetchFuncList = []fetchFunc{
-	fetchEC2,
+	fetchCompute,
 	fetchCache,
 	fetchDatabase,
 	fetchRedshift,
@@ -67,7 +67,7 @@ func Fetch(region []string) ([]Reserved, error) {
 	return out, nil
 }
 
-func fetchEC2(region []string) ([]Reserved, error) {
+func fetchCompute(region []string) ([]Reserved, error) {
 	out := make([]Reserved, 0)
 	for _, r := range region {
 		ses, err := session.NewSession(
