@@ -84,7 +84,7 @@ func Action(c *cli.Context) {
 					}
 
 					if q.Unit == "GB" {
-						fmt.Printf("%.3f, ", q.Byte)
+						fmt.Printf("%.3f, ", q.GByte)
 					}
 					if q.Unit == "Hrs" && attribute == "num" {
 						fmt.Printf("%.3f, ", q.InstanceNum)
