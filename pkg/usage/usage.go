@@ -22,7 +22,9 @@ type Quantity struct {
 	DatabaseEngine string  `json:"database_engine,omitempty"`
 	Date           string  `json:"date,omitempty"`
 	InstanceHour   float64 `json:"instance_hour,omitempty"`
-	InstanceNum    float64 `json:"instance_num"`
+	InstanceNum    float64 `json:"instance_num,omitempty"`
+	Byte           float64 `json:"byte,omitempty"`
+	Unit           string  `json:"unit"`
 }
 
 type GetQuantityInput struct {
@@ -66,17 +68,6 @@ func Sort(quantity []Quantity) {
 
 type FetchFunc func(start, end string, account Account, usageType []string) ([]Quantity, error)
 
-func Fetch(start, end string) ([]Quantity, error) {
-	return FetchWith(start, end, []FetchFunc{
-		fetchBoxUsage,
-		//fetchSpotUsage,
-		fetchNodeUsage,
-		fetchInstanceUsage,
-		fetchMultiAZUsage,
-		fetchNode,
-	})
-}
-
 func FetchWith(start, end string, fn []FetchFunc) ([]Quantity, error) {
 	linkedAccount, err := FetchLinkedAccount(start, end)
 	if err != nil {
@@ -101,6 +92,55 @@ func FetchWith(start, end string, fn []FetchFunc) ([]Quantity, error) {
 	}
 
 	return out, nil
+}
+
+func Fetch(start, end string) ([]Quantity, error) {
+	return FetchWith(start, end, []FetchFunc{
+		fetchBoxUsage,
+		//fetchSpotUsage,
+		fetchNodeUsage,
+		fetchInstanceUsage,
+		fetchMultiAZUsage,
+		fetchNode,
+		fetchDataTransfer,
+		fetchCloudFront,
+	})
+}
+
+func fetchDataTransfer(start, end string, account Account, usageType []string) ([]Quantity, error) {
+	ut := make([]string, 0)
+	for i := range usageType {
+		if !strings.Contains(usageType[i], "DataTransfer") {
+			continue
+		}
+		ut = append(ut, usageType[i])
+	}
+
+	return fetchQuantity(&GetQuantityInput{
+		AccountID:   account.ID,
+		Description: account.Description,
+		UsageType:   ut,
+		Start:       start,
+		End:         end,
+	})
+}
+
+func fetchCloudFront(start, end string, account Account, usageType []string) ([]Quantity, error) {
+	ut := make([]string, 0)
+	for i := range usageType {
+		if !strings.Contains(usageType[i], "CloudFront") {
+			continue
+		}
+		ut = append(ut, usageType[i])
+	}
+
+	return fetchQuantity(&GetQuantityInput{
+		AccountID:   account.ID,
+		Description: account.Description,
+		UsageType:   ut,
+		Start:       start,
+		End:         end,
+	})
 }
 
 func fetchBoxUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
@@ -294,29 +334,40 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 				continue
 			}
 
-			hrs, _ := strconv.ParseFloat(amount, 64)
-			month := strings.Split(in.Start, "-")[1]
-			num := hrs / float64(24*Days[month])
-
 			index := strings.LastIndex(in.Start, "-")
 			date := string(in.Start)[:index]
+
 			q := Quantity{
-				AccountID:    in.AccountID,
-				Description:  in.Description,
-				Date:         date,
-				UsageType:    *g.Keys[0],
-				InstanceHour: hrs,
-				InstanceNum:  num,
+				AccountID:   in.AccountID,
+				Description: in.Description,
+				Date:        date,
+				UsageType:   *g.Keys[0],
 			}
 
-			if in.Dimension == "PLATFORM" {
-				q.Platform = *g.Keys[1]
+			if *g.Metrics["UsageQuantity"].Unit == "GB" {
+				gb, _ := strconv.ParseFloat(amount, 64)
+				q.Byte = gb * 1000 * 1000 * 1000
+				q.Unit = "GB"
 			}
-			if in.Dimension == "CACHE_ENGINE" {
-				q.CacheEngine = *g.Keys[1]
-			}
-			if in.Dimension == "DATABASE_ENGINE" {
-				q.DatabaseEngine = *g.Keys[1]
+
+			if *g.Metrics["UsageQuantity"].Unit == "Hrs" {
+				hrs, _ := strconv.ParseFloat(amount, 64)
+				month := strings.Split(in.Start, "-")[1]
+				num := hrs / float64(24*Days[month])
+
+				q.InstanceHour = hrs
+				q.InstanceNum = num
+				q.Unit = "Hrs"
+
+				if in.Dimension == "PLATFORM" {
+					q.Platform = *g.Keys[1]
+				}
+				if in.Dimension == "CACHE_ENGINE" {
+					q.CacheEngine = *g.Keys[1]
+				}
+				if in.Dimension == "DATABASE_ENGINE" {
+					q.DatabaseEngine = *g.Keys[1]
+				}
 			}
 
 			region, ok := region[strings.Split(q.UsageType, "-")[0]]
