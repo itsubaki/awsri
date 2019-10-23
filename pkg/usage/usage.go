@@ -12,11 +12,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/costexplorer"
 )
 
-type Account struct {
-	ID          string
-	Description string
-}
-
 type Quantity struct {
 	AccountID      string  `json:"account_id,omitempty"`
 	Description    string  `json:"description,omitempty"`
@@ -349,32 +344,6 @@ func fetchUsageType(start, end string) ([]string, error) {
 	out := make([]string, 0)
 	for _, d := range val.DimensionValues {
 		out = append(out, *d.Value)
-	}
-
-	return out, nil
-}
-
-func FetchLinkedAccount(start, end string) ([]Account, error) {
-	input := costexplorer.GetDimensionValuesInput{
-		Dimension: aws.String("LINKED_ACCOUNT"),
-		TimePeriod: &costexplorer.DateInterval{
-			Start: &start,
-			End:   &end,
-		},
-	}
-
-	c := costexplorer.New(session.Must(session.NewSession()))
-	val, err := c.GetDimensionValues(&input)
-	if err != nil {
-		return []Account{}, fmt.Errorf("get dimension values: %v", err)
-	}
-
-	out := make([]Account, 0)
-	for _, v := range val.DimensionValues {
-		out = append(out, Account{
-			ID:          *v.Value,
-			Description: *v.Attributes["description"],
-		})
 	}
 
 	return out, nil

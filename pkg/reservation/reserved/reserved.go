@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/aws/aws-sdk-go/service/redshift"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/elasticache"
 	"github.com/aws/aws-sdk-go/service/rds"
+	"github.com/aws/aws-sdk-go/service/redshift"
 )
 
 type Reserved struct {
