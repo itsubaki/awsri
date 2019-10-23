@@ -54,8 +54,17 @@ var fetchFuncList = []fetchFunc{
 }
 
 func Fetch(region []string) ([]Reserved, error) {
+	return FetchWith(region, []fetchFunc{
+		fetchCompute,
+		fetchCache,
+		fetchDatabase,
+		fetchRedshift,
+	})
+}
+
+func FetchWith(region []string, fn []fetchFunc) ([]Reserved, error) {
 	out := make([]Reserved, 0)
-	for _, f := range fetchFuncList {
+	for _, f := range fn {
 		list, err := f(region)
 		if err != nil {
 			return out, fmt.Errorf("fetch reserved description: %v", err)

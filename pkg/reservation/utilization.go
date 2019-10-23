@@ -151,10 +151,61 @@ func fetchDatabaseInput() (*costexplorer.Expression, []*costexplorer.GroupDefini
 		}
 }
 
-var fetchInputFuncList = []fetchInputFunc{
-	fetchComputeInput,
-	fetchCacheInput,
-	fetchDatabaseInput,
+func Fetch(start, end string) ([]Utilization, error) {
+	return FetchWith(start, end, []fetchInputFunc{
+		fetchComputeInput,
+		fetchCacheInput,
+		fetchDatabaseInput,
+	})
+}
+
+func FetchWith(start, end string, fn []fetchInputFunc) ([]Utilization, error) {
+	linked, err := usage.FetchLinkedAccount(start, end)
+	if err != nil {
+		return nil, fmt.Errorf("get linked account: %v", err)
+	}
+
+	out := make([]Utilization, 0)
+	for _, f := range fn {
+		for _, a := range linked {
+			exp, groupby := f()
+
+			and := make([]*costexplorer.Expression, 0)
+			and = append(and, &costexplorer.Expression{
+				Dimensions: &costexplorer.DimensionValues{
+					Key:    aws.String("LINKED_ACCOUNT"),
+					Values: []*string{aws.String(a.ID)},
+				},
+			})
+			and = append(and, exp)
+
+			input := costexplorer.GetReservationCoverageInput{
+				Metrics: []*string{aws.String("Hour")},
+				Filter: &costexplorer.Expression{
+					And: and,
+				},
+				GroupBy: groupby,
+				TimePeriod: &costexplorer.DateInterval{
+					Start: &start,
+					End:   &end,
+				},
+			}
+
+			u, err := fetch(input)
+			if err != nil {
+				return out, fmt.Errorf("fetch: %v", err)
+			}
+
+			for i := range u {
+				u[i].AccountID = a.ID
+				u[i].Description = a.Description
+			}
+
+			out = append(out, u...)
+		}
+	}
+
+	return out, nil
 }
 
 func fetch(input costexplorer.GetReservationCoverageInput) ([]Utilization, error) {
@@ -221,55 +272,6 @@ func fetch(input costexplorer.GetReservationCoverageInput) ([]Utilization, error
 			break
 		}
 		token = rc.NextPageToken
-	}
-
-	return out, nil
-}
-
-func Fetch(start, end string) ([]Utilization, error) {
-	linked, err := usage.FetchLinkedAccount(start, end)
-	if err != nil {
-		return nil, fmt.Errorf("get linked account: %v", err)
-	}
-
-	out := make([]Utilization, 0)
-	for _, f := range fetchInputFuncList {
-		for _, a := range linked {
-			exp, groupby := f()
-
-			and := make([]*costexplorer.Expression, 0)
-			and = append(and, &costexplorer.Expression{
-				Dimensions: &costexplorer.DimensionValues{
-					Key:    aws.String("LINKED_ACCOUNT"),
-					Values: []*string{aws.String(a.ID)},
-				},
-			})
-			and = append(and, exp)
-
-			input := costexplorer.GetReservationCoverageInput{
-				Metrics: []*string{aws.String("Hour")},
-				Filter: &costexplorer.Expression{
-					And: and,
-				},
-				GroupBy: groupby,
-				TimePeriod: &costexplorer.DateInterval{
-					Start: &start,
-					End:   &end,
-				},
-			}
-
-			u, err := fetch(input)
-			if err != nil {
-				return out, fmt.Errorf("fetch: %v", err)
-			}
-
-			for i := range u {
-				u[i].AccountID = a.ID
-				u[i].Description = a.Description
-			}
-
-			out = append(out, u...)
-		}
 	}
 
 	return out, nil

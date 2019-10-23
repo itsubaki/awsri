@@ -66,16 +66,18 @@ func Sort(quantity []Quantity) {
 
 type FetchFunc func(start, end string, account Account, usageType []string) ([]Quantity, error)
 
-var FetchFuncList = []FetchFunc{
-	fetchBoxUsage,
-	//fetchSpotUsage,
-	fetchNodeUsage,
-	fetchInstanceUsage,
-	fetchMultiAZUsage,
-	fetchNode,
+func Fetch(start, end string) ([]Quantity, error) {
+	return FetchWith(start, end, []FetchFunc{
+		fetchBoxUsage,
+		//fetchSpotUsage,
+		fetchNodeUsage,
+		fetchInstanceUsage,
+		fetchMultiAZUsage,
+		fetchNode,
+	})
 }
 
-func Fetch(start, end string) ([]Quantity, error) {
+func FetchWith(start, end string, fn []FetchFunc) ([]Quantity, error) {
 	linkedAccount, err := FetchLinkedAccount(start, end)
 	if err != nil {
 		return nil, fmt.Errorf("get linked account: %v", err)
@@ -88,7 +90,7 @@ func Fetch(start, end string) ([]Quantity, error) {
 
 	out := make([]Quantity, 0)
 	for _, a := range linkedAccount {
-		for _, f := range FetchFuncList {
+		for _, f := range fn {
 			quantity, err := f(start, end, a, usageType)
 			if err != nil {
 				return nil, fmt.Errorf("get usage quantity: %v", err)
@@ -249,19 +251,23 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 		})
 	}
 
+	groupby := []*costexplorer.GroupDefinition{
+		{
+			Key:  aws.String("USAGE_TYPE"),
+			Type: aws.String("DIMENSION"),
+		},
+	}
+	if len(in.Dimension) > 0 {
+		groupby = append(groupby, &costexplorer.GroupDefinition{
+			Key:  aws.String(in.Dimension),
+			Type: aws.String("DIMENSION"),
+		})
+	}
+
 	input := costexplorer.GetCostAndUsageInput{
 		Metrics:     []*string{aws.String("UsageQuantity")},
 		Granularity: aws.String("MONTHLY"),
-		GroupBy: []*costexplorer.GroupDefinition{
-			{
-				Key:  aws.String("USAGE_TYPE"),
-				Type: aws.String("DIMENSION"),
-			},
-			{
-				Key:  aws.String(in.Dimension),
-				Type: aws.String("DIMENSION"),
-			},
-		},
+		GroupBy:     groupby,
 		TimePeriod: &costexplorer.DateInterval{
 			Start: &in.Start,
 			End:   &in.End,
