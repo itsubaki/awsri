@@ -23,7 +23,7 @@ type Quantity struct {
 	Date           string  `json:"date,omitempty"`
 	InstanceHour   float64 `json:"instance_hour,omitempty"`
 	InstanceNum    float64 `json:"instance_num,omitempty"`
-	GByte          float64 `json:"gigabyte,omitempty"`
+	GByte          float64 `json:"giga_byte,omitempty"`
 	Unit           string  `json:"unit"`
 }
 
