@@ -46,6 +46,8 @@ func Normalize(q []Quantity, mini map[string]pricing.Tuple) []Quantity {
 			Date:           q[i].Date,
 			InstanceHour:   q[i].InstanceHour * scale,
 			InstanceNum:    q[i].InstanceNum * scale,
+			GByte:          q[i].GByte,
+			Unit:           q[i].Unit,
 		})
 	}
 

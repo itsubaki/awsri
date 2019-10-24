@@ -32,6 +32,8 @@ func Merge(q []Quantity) []Quantity {
 			Date:           q[i].Date,
 			InstanceHour:   q[i].InstanceHour + v.InstanceHour,
 			InstanceNum:    q[i].InstanceNum + v.InstanceNum,
+			GByte:          q[i].GByte + v.GByte,
+			Unit:           q[i].Unit,
 		}
 	}
 
