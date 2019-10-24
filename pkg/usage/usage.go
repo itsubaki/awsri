@@ -31,6 +31,7 @@ type GetQuantityInput struct {
 	AccountID   string
 	Description string
 	Dimension   string
+	Metric      string
 	UsageType   []string
 	Start       string
 	End         string
@@ -119,6 +120,7 @@ func fetchDataTransfer(start, end string, account Account, usageType []string) (
 	return fetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
+		Metric:      "UsageQuantity",
 		UsageType:   ut,
 		Start:       start,
 		End:         end,
@@ -137,6 +139,7 @@ func fetchCloudFront(start, end string, account Account, usageType []string) ([]
 	return fetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
+		Metric:      "UsageQuantity",
 		UsageType:   ut,
 		Start:       start,
 		End:         end,
@@ -155,6 +158,7 @@ func fetchBoxUsage(start, end string, account Account, usageType []string) ([]Qu
 	return fetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
+		Metric:      "UsageQuantity",
 		Dimension:   "PLATFORM",
 		UsageType:   ut,
 		Start:       start,
@@ -174,6 +178,7 @@ func fetchSpotUsage(start, end string, account Account, usageType []string) ([]Q
 	return fetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
+		Metric:      "UsageQuantity",
 		Dimension:   "PLATFORM",
 		UsageType:   ut,
 		Start:       start,
@@ -193,6 +198,7 @@ func fetchNodeUsage(start, end string, account Account, usageType []string) ([]Q
 	return fetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
+		Metric:      "UsageQuantity",
 		Dimension:   "CACHE_ENGINE",
 		UsageType:   ut,
 		Start:       start,
@@ -213,6 +219,7 @@ func fetchInstanceUsage(start, end string, account Account, usageType []string) 
 	return fetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
+		Metric:      "UsageQuantity",
 		Dimension:   "DATABASE_ENGINE",
 		UsageType:   ut,
 		Start:       start,
@@ -233,6 +240,7 @@ func fetchMultiAZUsage(start, end string, account Account, usageType []string) (
 	return fetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
+		Metric:      "UsageQuantity",
 		Dimension:   "DATABASE_ENGINE",
 		UsageType:   ut,
 		Start:       start,
@@ -252,6 +260,7 @@ func fetchNode(start, end string, account Account, usageType []string) ([]Quanti
 	q, err := fetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
+		Metric:      "UsageQuantity",
 		Dimension:   "DATABASE_ENGINE",
 		UsageType:   ut,
 		Start:       start,
@@ -305,7 +314,7 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 	}
 
 	input := costexplorer.GetCostAndUsageInput{
-		Metrics:     []*string{aws.String("UsageQuantity")},
+		Metrics:     []*string{&in.Metric},
 		Granularity: aws.String("MONTHLY"),
 		GroupBy:     groupby,
 		TimePeriod: &costexplorer.DateInterval{
@@ -329,7 +338,7 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 	out := make([]Quantity, 0)
 	for _, r := range usage.ResultsByTime {
 		for _, g := range r.Groups {
-			amount := *g.Metrics["UsageQuantity"].Amount
+			amount := *g.Metrics[in.Metric].Amount
 			if amount == "0" {
 				continue
 			}
@@ -344,12 +353,12 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 				UsageType:   *g.Keys[0],
 			}
 
-			if *g.Metrics["UsageQuantity"].Unit == "GB" {
+			if *g.Metrics[in.Metric].Unit == "GB" {
 				q.GByte = amount
 				q.Unit = "GB"
 			}
 
-			if *g.Metrics["UsageQuantity"].Unit == "Hrs" {
+			if *g.Metrics[in.Metric].Unit == "Hrs" {
 				hrs, _ := strconv.ParseFloat(amount, 64)
 				month := strings.Split(in.Start, "-")[1]
 				num := hrs / float64(24*Days[month])
