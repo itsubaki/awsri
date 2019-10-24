@@ -23,7 +23,7 @@ type Quantity struct {
 	Date           string  `json:"date,omitempty"`
 	InstanceHour   float64 `json:"instance_hour,omitempty"`
 	InstanceNum    float64 `json:"instance_num,omitempty"`
-	GByte          float64 `json:"giga_byte,omitempty"`
+	GByte          string  `json:"giga_byte,omitempty"`
 	Unit           string  `json:"unit"`
 }
 
@@ -345,8 +345,7 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 			}
 
 			if *g.Metrics["UsageQuantity"].Unit == "GB" {
-				gb, _ := strconv.ParseFloat(amount, 64)
-				q.GByte = gb
+				q.GByte = amount
 				q.Unit = "GB"
 			}
 
