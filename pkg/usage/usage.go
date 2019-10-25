@@ -24,6 +24,7 @@ type Quantity struct {
 	InstanceHour   float64 `json:"instance_hour,omitempty"`
 	InstanceNum    float64 `json:"instance_num,omitempty"`
 	GByte          float64 `json:"giga_byte,omitempty"`
+	Requests       float64 `json:"requests,omitempty"`
 	Unit           string  `json:"unit"`
 }
 
@@ -104,16 +105,18 @@ func Fetch(start, end string) ([]Quantity, error) {
 		fetchMultiAZUsage,
 		fetchNode,
 		fetchDataTransfer,
-		fetchCloudFront,
+		fetchRequests,
 	})
 }
 
 func fetchDataTransfer(start, end string, account Account, usageType []string) ([]Quantity, error) {
 	ut := make([]string, 0)
 	for i := range usageType {
+		// JP-DataTransfer-Out-Bytes is CloudFront -> Japan -> Bandwidth in AWS Console
 		if !strings.Contains(usageType[i], "DataTransfer") {
 			continue
 		}
+
 		ut = append(ut, usageType[i])
 	}
 
@@ -127,12 +130,13 @@ func fetchDataTransfer(start, end string, account Account, usageType []string) (
 	})
 }
 
-func fetchCloudFront(start, end string, account Account, usageType []string) ([]Quantity, error) {
+func fetchRequests(start, end string, account Account, usageType []string) ([]Quantity, error) {
 	ut := make([]string, 0)
 	for i := range usageType {
-		if !strings.Contains(usageType[i], "CloudFront") {
+		if !strings.Contains(usageType[i], "Requests-") {
 			continue
 		}
+
 		ut = append(ut, usageType[i])
 	}
 
@@ -338,6 +342,7 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 	out := make([]Quantity, 0)
 	for _, r := range usage.ResultsByTime {
 		for _, g := range r.Groups {
+			//fmt.Println(g)
 			amount := *g.Metrics[in.Metric].Amount
 			if amount == "0" {
 				continue
@@ -351,6 +356,12 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 				Description: in.Description,
 				Date:        date,
 				UsageType:   *g.Keys[0],
+			}
+
+			if *g.Metrics[in.Metric].Unit == "Requests" {
+				req, _ := strconv.ParseFloat(amount, 64)
+				q.Requests = req
+				q.Unit = "Requests"
 			}
 
 			if *g.Metrics[in.Metric].Unit == "GB" {
@@ -379,11 +390,9 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 				}
 			}
 
-			region, ok := region[strings.Split(q.UsageType, "-")[0]]
-			if !ok {
-				continue
+			if region, ok := region[strings.Split(q.UsageType, "-")[0]]; ok {
+				q.Region = region
 			}
-			q.Region = region
 
 			out = append(out, q)
 		}

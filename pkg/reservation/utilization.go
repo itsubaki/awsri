@@ -77,7 +77,8 @@ func (u Utilization) JSON() string {
 // Service Filter are
 // Amazon Elastic Compute Cloud - Compute
 // Amazon Relational Database Service
-// Amazon ElastiCache, Amazon Redshift
+// Amazon ElastiCache
+// Amazon Redshift
 // Amazon Elasticsearch Service
 type fetchInputFunc func() (*costexplorer.Expression, []*costexplorer.GroupDefinition)
 
@@ -151,11 +152,30 @@ func fetchDatabaseInput() (*costexplorer.Expression, []*costexplorer.GroupDefini
 		}
 }
 
+func fetchRedshiftInput() (*costexplorer.Expression, []*costexplorer.GroupDefinition) {
+	return &costexplorer.Expression{
+			Dimensions: &costexplorer.DimensionValues{
+				Key:    aws.String("SERVICE"),
+				Values: []*string{aws.String("Amazon Redshift")},
+			},
+		}, []*costexplorer.GroupDefinition{
+			{
+				Key:  aws.String("INSTANCE_TYPE"),
+				Type: aws.String("DIMENSION"),
+			},
+			{
+				Key:  aws.String("REGION"),
+				Type: aws.String("DIMENSION"),
+			},
+		}
+}
+
 func Fetch(start, end string) ([]Utilization, error) {
 	return FetchWith(start, end, []fetchInputFunc{
 		fetchComputeInput,
 		fetchCacheInput,
 		fetchDatabaseInput,
+		fetchRedshiftInput,
 	})
 }
 

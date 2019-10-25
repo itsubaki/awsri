@@ -26,6 +26,7 @@ func MergeOverall(q []Quantity) []Quantity {
 				InstanceHour:   q[i].InstanceHour,
 				InstanceNum:    q[i].InstanceNum,
 				GByte:          q[i].GByte,
+				Requests:       q[i].Requests,
 				Unit:           q[i].Unit,
 			}
 			continue
@@ -41,6 +42,7 @@ func MergeOverall(q []Quantity) []Quantity {
 			InstanceHour:   q[i].InstanceHour + v.InstanceHour,
 			InstanceNum:    q[i].InstanceNum + v.InstanceNum,
 			GByte:          q[i].GByte + v.GByte,
+			Requests:       q[i].Requests + v.Requests,
 			Unit:           q[i].Unit,
 		}
 	}
