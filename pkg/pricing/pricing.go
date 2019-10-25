@@ -17,6 +17,7 @@ var URL = []string{
 }
 
 var BaseURL = "https://pricing.us-east-1.amazonaws.com"
+var Index = fmt.Sprintf("%s%s", BaseURL, "/offers/v1.0/aws/index.json")
 var Compute = fmt.Sprintf("%s%s", BaseURL, "/offers/v1.0/aws/AmazonEC2/current/region_index.json")
 var Database = fmt.Sprintf("%s%s", BaseURL, "/offers/v1.0/aws/AmazonRDS/current/region_index.json")
 var Cache = fmt.Sprintf("%s%s", BaseURL, "/offers/v1.0/aws/AmazonElastiCache/current/region_index.json")
