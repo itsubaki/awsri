@@ -24,7 +24,7 @@ type Quantity struct {
 	InstanceHour   float64 `json:"instance_hour,omitempty"`
 	InstanceNum    float64 `json:"instance_num,omitempty"`
 	GByte          float64 `json:"giga_byte,omitempty"`
-	Requests       float64 `json:"requests,omitempty"`
+	Requests       int64   `json:"requests,omitempty"`
 	Unit           string  `json:"unit"`
 }
 
@@ -359,7 +359,7 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 			}
 
 			if *g.Metrics[in.Metric].Unit == "Requests" {
-				req, _ := strconv.ParseFloat(amount, 64)
+				req, _ := strconv.ParseInt(amount, 10, 64)
 				q.Requests = req
 				q.Unit = "Requests"
 			}

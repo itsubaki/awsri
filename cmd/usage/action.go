@@ -83,6 +83,9 @@ func Action(c *cli.Context) {
 						continue
 					}
 
+					if q.Unit == "Requests" {
+						fmt.Printf("%d, ", q.Requests)
+					}
 					if q.Unit == "GB" {
 						fmt.Printf("%.10f, ", q.GByte)
 					}
