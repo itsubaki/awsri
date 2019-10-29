@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/itsubaki/hermes/pkg/cost"
-
 	"github.com/itsubaki/hermes/pkg/usage"
 	"github.com/urfave/cli"
 )
