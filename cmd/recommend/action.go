@@ -1,4 +1,4 @@
-package cmd
+package recommend
 
 import (
 	"encoding/json"

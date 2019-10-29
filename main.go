@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/itsubaki/hermes/cmd"
+	"github.com/itsubaki/hermes/cmd/cost"
 	"github.com/itsubaki/hermes/cmd/fetch"
 	"github.com/itsubaki/hermes/cmd/pricing"
+	"github.com/itsubaki/hermes/cmd/recommend"
 	"github.com/itsubaki/hermes/cmd/reservation"
 	"github.com/itsubaki/hermes/cmd/usage"
 	"github.com/urfave/cli"
@@ -64,7 +65,7 @@ func New(version string) *cli.App {
 		Name:    "fetch",
 		Aliases: []string{"f"},
 		Action:  fetch.Action,
-		Usage:   "fetch aws pricing, usage",
+		Usage:   "fetch aws pricing, usage, reservation",
 		Flags: []cli.Flag{
 			region,
 		},
@@ -137,6 +138,16 @@ func New(version string) *cli.App {
 				Name:  "monthly, mon",
 				Usage: "output monthly usage",
 			},
+		},
+	}
+
+	recommend := cli.Command{
+		Name:   "recommend",
+		Action: recommend.Action,
+		Usage:  "output recommended reserved instance num",
+		Flags: []cli.Flag{
+			region,
+			format,
 			cli.StringFlag{
 				Name:  "attribute, a",
 				Usage: "num, hours, percentage (format csv only)",
@@ -145,13 +156,18 @@ func New(version string) *cli.App {
 		},
 	}
 
-	recommend := cli.Command{
-		Name:   "recommend",
-		Action: cmd.Action,
-		Usage:  "output recommended reserved instance num",
+	cost := cli.Command{
+		Name:    "cost",
+		Aliases: []string{"c"},
+		Action:  cost.Action,
+		Usage:   "output cost group by linked account",
 		Flags: []cli.Flag{
-			region,
 			format,
+			cli.StringFlag{
+				Name:  "attribute, a",
+				Usage: "amortized, net-amortized, unblended, net-unblended, blended (format csv only)",
+				Value: "amortized",
+			},
 		},
 	}
 
@@ -161,6 +177,7 @@ func New(version string) *cli.App {
 		reservation,
 		usage,
 		recommend,
+		cost,
 	}
 
 	return app
