@@ -319,20 +319,26 @@ func fetch(region string, list PriceList) (map[string]Price, error) {
 				continue
 			}
 
+			// APN1-InstanceUsage:db.m5.4xl -> APN1-InstanceUsage:db.m5.4xlarge
+			ut := pp.Attributes["usagetype"]
+			if strings.HasSuffix(ut, "xl") {
+				ut = fmt.Sprintf("%sarge", ut)
+			}
+
 			out[k] = Price{
 				Version:                 v.Version,
 				SKU:                     v.SKU,
 				OfferTermCode:           v.OfferTermCode,
 				Region:                  region,
 				InstanceType:            pp.Attributes["instanceType"],
-				UsageType:               pp.Attributes["usagetype"],
+				UsageType:               ut,
 				Tenancy:                 pp.Attributes["tenancy"],
 				PreInstalled:            pp.Attributes["preInstalledSw"],
 				OperatingSystem:         pp.Attributes["operatingSystem"],
 				Operation:               pp.Attributes["operation"],
 				CacheEngine:             pp.Attributes["cacheEngine"],
 				DatabaseEngine:          pp.Attributes["databaseEngine"],
-				LeaseContractLength:     v.LeaseContractLength,
+				LeaseContractLength:     strings.ReplaceAll(v.LeaseContractLength, " ", ""),
 				PurchaseOption:          v.PurchaseOption,
 				OfferingClass:           v.OfferingClass,
 				OnDemand:                v.OnDemand,

@@ -14,12 +14,12 @@ type Recommended struct {
 	Usage Usage         `json:"usage"`
 }
 
-func (c Recommended) String() string {
-	return c.JSON()
+func (r Recommended) String() string {
+	return r.JSON()
 }
 
-func (c Recommended) JSON() string {
-	bytes, err := json.Marshal(c)
+func (r Recommended) JSON() string {
+	bytes, err := json.Marshal(r)
 	if err != nil {
 		panic(err)
 	}
