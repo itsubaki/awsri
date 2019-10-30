@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/itsubaki/hermes/pkg/account"
+	"github.com/itsubaki/hermes/pkg/usage"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -103,7 +103,7 @@ func Fetch(start, end string) ([]AccountCost, error) {
 		}
 	}
 
-	a, err := account.Fetch(start, end)
+	a, err := usage.FetchLinkedAccount(start, end)
 	if err != nil {
 		return []AccountCost{}, fmt.Errorf("get linked account: %v", err)
 	}
