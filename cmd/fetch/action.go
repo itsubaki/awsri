@@ -14,7 +14,7 @@ import (
 func Action(c *cli.Context) {
 	dir := c.GlobalString("dir")
 	region := c.StringSlice("region")
-	date := usage.LastNMonths(12)
+	date := usage.LastNMonths(c.Int("months"))
 
 	if err := cost.Serialize(dir, date); err != nil {
 		fmt.Printf("serialize cost: %v", err)

@@ -13,7 +13,7 @@ func Action(c *cli.Context) {
 	dir := c.GlobalString("dir")
 	format := c.String("format")
 	attribute := c.String("attribute")
-	date := usage.LastNMonths(12)
+	date := usage.LastNMonths(c.Int("months"))
 
 	ac, err := cost.Deserialize(dir, date)
 	if err != nil {
@@ -75,5 +75,4 @@ func Action(c *cli.Context) {
 		}
 		return
 	}
-
 }

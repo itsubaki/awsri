@@ -61,6 +61,11 @@ func New(version string) *cli.App {
 		Usage: "json, csv",
 	}
 
+	months := cli.IntFlag{
+		Name:  "months",
+		Value: 12,
+	}
+
 	fetch := cli.Command{
 		Name:    "fetch",
 		Aliases: []string{"f"},
@@ -68,6 +73,7 @@ func New(version string) *cli.App {
 		Usage:   "fetch aws pricing, usage, reservation, cost",
 		Flags: []cli.Flag{
 			region,
+			months,
 		},
 	}
 
@@ -94,6 +100,7 @@ func New(version string) *cli.App {
 		Flags: []cli.Flag{
 			region,
 			format,
+			months,
 			cli.BoolFlag{
 				Name:  "normalize, n",
 				Usage: "output normalized usage",
@@ -126,6 +133,7 @@ func New(version string) *cli.App {
 		Flags: []cli.Flag{
 			region,
 			format,
+			months,
 			cli.BoolFlag{
 				Name:  "normalize, n",
 				Usage: "output normalized usage",
@@ -168,6 +176,7 @@ func New(version string) *cli.App {
 		Usage:   "output cost group by linked account",
 		Flags: []cli.Flag{
 			format,
+			months,
 			cli.StringFlag{
 				Name:  "attribute, a",
 				Usage: "amortized, net-amortized, unblended, net-unblended, blended (format csv only)",
