@@ -1,8 +1,6 @@
 package cost
 
-import (
-	"sort"
-)
+import "sort"
 
 func Monthly(c []AccountCost) map[string][]AccountCost {
 	monthly := make(map[string][]AccountCost)

@@ -1,4 +1,4 @@
-package usage
+package account
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ type Account struct {
 	Description string
 }
 
-func FetchLinkedAccount(start, end string) ([]Account, error) {
+func Fetch(start, end string) ([]Account, error) {
 	input := costexplorer.GetDimensionValuesInput{
 		Dimension: aws.String("LINKED_ACCOUNT"),
 		TimePeriod: &costexplorer.DateInterval{

@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/itsubaki/hermes/pkg/account"
 	"github.com/itsubaki/hermes/pkg/usage"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -180,7 +181,7 @@ func Fetch(start, end string) ([]Utilization, error) {
 }
 
 func FetchWith(start, end string, fn []fetchInputFunc) ([]Utilization, error) {
-	linked, err := usage.FetchLinkedAccount(start, end)
+	linked, err := account.Fetch(start, end)
 	if err != nil {
 		return nil, fmt.Errorf("get linked account: %v", err)
 	}

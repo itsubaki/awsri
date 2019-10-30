@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/itsubaki/hermes/pkg/usage"
+	"github.com/itsubaki/hermes/pkg/account"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -41,7 +41,7 @@ func (a AccountCost) JSON() string {
 	return string(bytes)
 }
 
-func FetchCostGroupByLinkedAccount(start, end string) ([]AccountCost, error) {
+func Fetch(start, end string) ([]AccountCost, error) {
 	input := costexplorer.GetCostAndUsageInput{
 		Metrics: []*string{
 			aws.String("NetAmortizedCost"),
@@ -103,16 +103,17 @@ func FetchCostGroupByLinkedAccount(start, end string) ([]AccountCost, error) {
 		}
 	}
 
-	account, err := usage.FetchLinkedAccount(start, end)
+	a, err := account.Fetch(start, end)
 	if err != nil {
 		return []AccountCost{}, fmt.Errorf("get linked account: %v", err)
 	}
+
 	for i := range out {
-		for _, a := range account {
-			if out[i].AccountID != a.ID {
+		for _, aa := range a {
+			if out[i].AccountID != aa.ID {
 				continue
 			}
-			out[i].Description = a.Description
+			out[i].Description = aa.Description
 		}
 	}
 

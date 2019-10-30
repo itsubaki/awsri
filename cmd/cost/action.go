@@ -10,18 +10,15 @@ import (
 )
 
 func Action(c *cli.Context) {
+	dir := c.GlobalString("dir")
 	format := c.String("format")
 	attribute := c.String("attribute")
 
 	date := usage.LastNMonths(12)
-	ac := make([]cost.AccountCost, 0)
-	for _, d := range date {
-		out, err := cost.FetchCostGroupByLinkedAccount(d.Start, d.End)
-		if err != nil {
-			fmt.Errorf("fetch cost group by linked account: %v\n", err)
-			os.Exit(1)
-		}
-		ac = append(ac, out...)
+	ac, err := cost.Deserialize(dir, date)
+	if err != nil {
+		fmt.Errorf("deserialize cost: %v\n", err)
+		os.Exit(1)
 	}
 
 	if format == "json" {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/itsubaki/hermes/pkg/hermes"
 	"github.com/itsubaki/hermes/pkg/pricing"
+	"github.com/itsubaki/hermes/pkg/recommend"
 	"github.com/itsubaki/hermes/pkg/usage"
 )
 
@@ -59,7 +59,7 @@ func TestPackage(t *testing.T) {
 				}
 			}
 
-			q, _ := hermes.BreakEvenPoint(monthly[k], p)
+			q, _ := recommend.BreakEvenPoint(monthly[k], p)
 			fmt.Println(q)
 			break
 		}

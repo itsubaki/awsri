@@ -65,7 +65,7 @@ func New(version string) *cli.App {
 		Name:    "fetch",
 		Aliases: []string{"f"},
 		Action:  fetch.Action,
-		Usage:   "fetch aws pricing, usage, reservation",
+		Usage:   "fetch aws pricing, usage, reservation, cost",
 		Flags: []cli.Flag{
 			region,
 		},
