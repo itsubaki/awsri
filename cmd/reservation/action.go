@@ -19,8 +19,8 @@ func Action(c *cli.Context) {
 	merge := c.Bool("merge")
 	monthly := c.Bool("monthly")
 	attribute := c.String("attribute")
-
 	date := usage.LastNMonths(12)
+
 	res, err := reservation.Deserialize(dir, date)
 	if err != nil {
 		fmt.Printf("deserialize: %v\n", err)

@@ -8,8 +8,7 @@ import (
 
 func TestFetch(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
-
-	r, err := Fetch([]string{"ap-northeast-1"})
+	r, err := Fetch([]string{"ap-northeast-1", "us-west-2"})
 	if err != nil {
 		t.Errorf("fetch reserved: %v", err)
 	}

@@ -1,16 +1,38 @@
 package fetch
 
 import (
-	"github.com/itsubaki/hermes/cmd/fetch/cost"
-	"github.com/itsubaki/hermes/cmd/fetch/pricing"
-	"github.com/itsubaki/hermes/cmd/fetch/reservation"
-	"github.com/itsubaki/hermes/cmd/fetch/usage"
+	"fmt"
+	"os"
+
+	"github.com/itsubaki/hermes/pkg/cost"
+	"github.com/itsubaki/hermes/pkg/pricing"
+	"github.com/itsubaki/hermes/pkg/reservation"
+	"github.com/itsubaki/hermes/pkg/usage"
 	"github.com/urfave/cli"
 )
 
 func Action(c *cli.Context) {
-	pricing.Action(c)
-	usage.Action(c)
-	reservation.Action(c)
-	cost.Action(c)
+	dir := c.GlobalString("dir")
+	region := c.StringSlice("region")
+	date := usage.LastNMonths(12)
+
+	if err := cost.Serialize(dir, date); err != nil {
+		fmt.Printf("serialize cost: %v", err)
+		os.Exit(1)
+	}
+
+	if err := reservation.Serialize(dir, date); err != nil {
+		fmt.Printf("serialize reservation: %v", err)
+		os.Exit(1)
+	}
+
+	if err := usage.Serialize(dir, date); err != nil {
+		fmt.Printf("serialize usage: %v", err)
+		os.Exit(1)
+	}
+
+	if err := pricing.Serialize(dir, region); err != nil {
+		fmt.Printf("serialize pricing: %v", err)
+		os.Exit(1)
+	}
 }

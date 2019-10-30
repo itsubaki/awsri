@@ -8,24 +8,43 @@ import (
 	"sort"
 )
 
-func Serialize(dir, region string, price []Price) error {
+func Serialize(dir string, region []string) error {
 	path := fmt.Sprintf("%s/pricing", dir)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		os.MkdirAll(path, os.ModePerm)
 	}
 
-	file := fmt.Sprintf("%s/%s.out", path, region)
-	if _, err := os.Stat(file); !os.IsNotExist(err) {
-		return nil
-	}
+	for _, r := range region {
+		file := fmt.Sprintf("%s/%s.out", path, r)
+		if _, err := os.Stat(file); !os.IsNotExist(err) {
+			continue
+		}
 
-	bytes, err := json.Marshal(price)
-	if err != nil {
-		return fmt.Errorf("marshal: %v", err)
-	}
+		price := make([]Price, 0)
+		for _, url := range URL {
+			p, err := Fetch(url, r)
+			if err != nil {
+				return fmt.Errorf("fetch pricing (%s, %s): %v\n", url, r, err)
+			}
 
-	if err := ioutil.WriteFile(file, bytes, os.ModePerm); err != nil {
-		return fmt.Errorf("write file: %v", err)
+			list := make([]Price, 0)
+			for k := range p {
+				list = append(list, p[k])
+			}
+
+			price = append(price, list...)
+		}
+
+		bytes, err := json.Marshal(price)
+		if err != nil {
+			return fmt.Errorf("marshal: %v", err)
+		}
+
+		if err := ioutil.WriteFile(file, bytes, os.ModePerm); err != nil {
+			return fmt.Errorf("write file: %v", err)
+		}
+
+		fmt.Printf("write: %v\n", file)
 	}
 
 	return nil

@@ -10,7 +10,35 @@ import (
 	"github.com/itsubaki/hermes/pkg/usage"
 )
 
-func Serialize(dir string, cost []AccountCost) error {
+func Serialize(dir string, date []usage.Date) error {
+	path := fmt.Sprintf("%s/cost", dir)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.MkdirAll(path, os.ModePerm)
+	}
+
+	for i := range date {
+		file := fmt.Sprintf("%s/%s.out", path, date[i].YYYYMM())
+		if _, err := os.Stat(file); !os.IsNotExist(err) {
+			continue
+		}
+
+		ac, err := Fetch(date[i].Start, date[i].End)
+		if err != nil {
+			return fmt.Errorf("fetch cost (%s, %s): %v\n", date[i].Start, date[i].End, err)
+		}
+
+		bytes, err := json.Marshal(ac)
+		if err != nil {
+			return fmt.Errorf("marshal: %v\n", err)
+		}
+
+		if err := ioutil.WriteFile(file, bytes, os.ModePerm); err != nil {
+			return fmt.Errorf("write file: %v\n", err)
+		}
+
+		fmt.Printf("write: %v\n", file)
+	}
+
 	return nil
 }
 

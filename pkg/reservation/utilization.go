@@ -59,7 +59,15 @@ func (u Utilization) Usage() string {
 		return "Multi-AZUsage"
 	}
 
-	panic("invalid usage")
+	if strings.Contains(u.InstanceType, "ds1") || strings.Contains(u.InstanceType, "ds2") {
+		return "Node"
+	}
+
+	if strings.Contains(u.InstanceType, "dc1") || strings.Contains(u.InstanceType, "dc2") {
+		return "Node"
+	}
+
+	panic(fmt.Sprintf("invalid usage=%v", u))
 }
 
 func (u Utilization) String() string {
