@@ -17,7 +17,7 @@ func Action(c *cli.Context) {
 	stdin, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
 		fmt.Printf("read stdin: %v", err)
-		return
+		os.Exit(1)
 	}
 
 	type Purchase struct {
@@ -27,8 +27,8 @@ func Action(c *cli.Context) {
 
 	var purchase []Purchase
 	if err := json.Unmarshal(stdin, &purchase); err != nil {
-		fmt.Println(fmt.Errorf("unmarshal: %v", err))
-		return
+		fmt.Printf("unmarshal: %v\n", err)
+		os.Exit(1)
 	}
 
 	for _, p := range purchase {

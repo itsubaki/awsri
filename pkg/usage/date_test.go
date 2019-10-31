@@ -6,7 +6,7 @@ import (
 )
 
 func TestLastNMonths(t *testing.T) {
-	for _, d := range LastNMonths(1) {
+	for _, d := range Last12Months() {
 		fmt.Println(d)
 	}
 }

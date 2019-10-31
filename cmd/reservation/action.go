@@ -30,7 +30,7 @@ func Action(c *cli.Context) {
 	if normalize {
 		plist, err := pricing.Deserialize(dir, region)
 		if err != nil {
-			fmt.Errorf("desirialize pricing: %v\n", err)
+			fmt.Printf("desirialize pricing: %v\n", err)
 			os.Exit(1)
 		}
 

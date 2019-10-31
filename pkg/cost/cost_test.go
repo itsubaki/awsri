@@ -11,7 +11,7 @@ import (
 func TestFetchCostGroupByLinkedAccount(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	m := usage.LastNMonths(1)[0]
+	m := usage.Last12Months()[0]
 	out, err := Fetch(m.Start, m.End)
 	if err != nil {
 		t.Errorf("fetch cost group by linked account: %v", err)

@@ -14,14 +14,22 @@ func (d Date) YYYYMM() string {
 	return d.Start[:7]
 }
 
+func Last12Months() []Date {
+	return LastNMonths(12)
+}
+
 func LastNMonths(n int) []Date {
+	return LastNMonthsWith(time.Now(), n)
+}
+
+func LastNMonthsWith(now time.Time, n int) []Date {
 	if n < 1 || n > 12 {
 		panic(fmt.Sprintf("parameter=%v is not in 0 < n < 13", n))
 	}
 
 	month := make([]time.Time, 0)
 	for i := 1; i < n+1; i++ {
-		month = append(month, time.Now().AddDate(0, -i, 0))
+		month = append(month, now.AddDate(0, -i, -now.Day()+1))
 	}
 
 	tmp := make([]Date, 0)

@@ -17,7 +17,7 @@ func Action(c *cli.Context) {
 
 	ac, err := cost.Deserialize(dir, date)
 	if err != nil {
-		fmt.Errorf("deserialize cost: %v\n", err)
+		fmt.Printf("deserialize cost: %v\n", err)
 		os.Exit(1)
 	}
 

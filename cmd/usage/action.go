@@ -22,14 +22,14 @@ func Action(c *cli.Context) {
 
 	quantity, err := usage.Deserialize(dir, date)
 	if err != nil {
-		fmt.Errorf("deserialize usage: %v\n", err)
+		fmt.Printf("deserialize usage: %v\n", err)
 		os.Exit(1)
 	}
 
 	if normalize {
 		plist, err := pricing.Deserialize(dir, region)
 		if err != nil {
-			fmt.Errorf("desirialize pricing: %v\n", err)
+			fmt.Printf("desirialize pricing: %v\n", err)
 			os.Exit(1)
 		}
 
