@@ -1,6 +1,7 @@
 package usage
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -57,6 +58,20 @@ func (q Quantity) JSON() string {
 	}
 
 	return string(bytes)
+}
+
+func (q Quantity) Pretty() string {
+	b, err := json.Marshal(q)
+	if err != nil {
+		panic(err)
+	}
+
+	var pretty bytes.Buffer
+	if err := json.Indent(&pretty, b, "", " "); err != nil {
+		panic(err)
+	}
+
+	return pretty.String()
 }
 
 func Sort(quantity []Quantity) {

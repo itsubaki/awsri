@@ -32,7 +32,7 @@ func Action(c *cli.Context) {
 	}
 
 	for _, p := range purchase {
-		r := recommend.Recommend(p.Quantity, p.Price)
+		r := recommend.Do(p.Quantity, p.Price)
 		fmt.Println(r)
 	}
 }

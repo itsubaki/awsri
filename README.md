@@ -116,7 +116,7 @@ $ AWS_PROFILE=example hermes usage | jq .
 ```
 
 ```
-$ AWS_PROFILE=example hermes usage --format csv  | column -t -s, | less -S
+$ AWS_PROFILE=example hermes usage --format csv | column -t -s, | less -S
 ```
 
 

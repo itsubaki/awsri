@@ -1,6 +1,7 @@
 package reserved
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -42,6 +43,20 @@ func (r Reserved) JSON() string {
 	}
 
 	return string(bytes)
+}
+
+func (r Reserved) Pretty() string {
+	b, err := json.Marshal(r)
+	if err != nil {
+		panic(err)
+	}
+
+	var pretty bytes.Buffer
+	if err := json.Indent(&pretty, b, "", " "); err != nil {
+		panic(err)
+	}
+
+	return pretty.String()
 }
 
 type fetchFunc func(region []string) ([]Reserved, error)

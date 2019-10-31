@@ -1,6 +1,7 @@
 package reservation
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -80,6 +81,20 @@ func (u Utilization) JSON() string {
 	}
 
 	return string(bytes)
+}
+
+func (u Utilization) Pretty() string {
+	b, err := json.Marshal(u)
+	if err != nil {
+		panic(err)
+	}
+
+	var pretty bytes.Buffer
+	if err := json.Indent(&pretty, b, "", " "); err != nil {
+		panic(err)
+	}
+
+	return pretty.String()
 }
 
 // Service Filter are

@@ -52,14 +52,14 @@ func Action(c *cli.Context) {
 					if attribute == "net-amortized" {
 						fmt.Printf("%s, ", q.NetAmortizedCost.Amount)
 					}
+					if attribute == "blended" {
+						fmt.Printf("%s, ", q.BlendedCost.Amount)
+					}
 					if attribute == "unblended" {
 						fmt.Printf("%s, ", q.UnblendedCost.Amount)
 					}
 					if attribute == "net-unblended" {
 						fmt.Printf("%s, ", q.NetUnblendedCost.Amount)
-					}
-					if attribute == "blended" {
-						fmt.Printf("%s, ", q.BlendedCost.Amount)
 					}
 
 					found = true

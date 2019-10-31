@@ -1,6 +1,7 @@
 package cost
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -33,12 +34,26 @@ func (a AccountCost) String() string {
 }
 
 func (a AccountCost) JSON() string {
-	bytes, err := json.Marshal(a)
+	b, err := json.Marshal(a)
 	if err != nil {
 		panic(err)
 	}
 
-	return string(bytes)
+	return string(b)
+}
+
+func (a AccountCost) Pretty() string {
+	b, err := json.Marshal(a)
+	if err != nil {
+		panic(err)
+	}
+
+	var pretty bytes.Buffer
+	if err := json.Indent(&pretty, b, "", " "); err != nil {
+		panic(err)
+	}
+
+	return pretty.String()
 }
 
 func Fetch(start, end string) ([]AccountCost, error) {

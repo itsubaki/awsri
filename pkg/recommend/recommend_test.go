@@ -1,8 +1,6 @@
 package recommend
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -41,17 +39,5 @@ func TestRecommend(t *testing.T) {
 		{Date: "2019-01", InstanceNum: 10},
 	}
 
-	q := Recommend(forecast, price)
-
-	b, err := json.Marshal(q)
-	if err != nil {
-		panic(err)
-	}
-
-	var pretty bytes.Buffer
-	if err := json.Indent(&pretty, b, "", " "); err != nil {
-		panic(err)
-	}
-
-	fmt.Println(string(pretty.Bytes()))
+	fmt.Println(Do(forecast, price).PrettyJSON())
 }

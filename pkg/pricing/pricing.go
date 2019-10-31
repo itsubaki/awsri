@@ -1,6 +1,7 @@
 package pricing
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -127,6 +128,20 @@ func (p Price) JSON() string {
 	}
 
 	return string(bytes)
+}
+
+func (p Price) Pretty() string {
+	b, err := json.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+
+	var pretty bytes.Buffer
+	if err := json.Indent(&pretty, b, "", " "); err != nil {
+		panic(err)
+	}
+
+	return pretty.String()
 }
 
 func (p Price) DiscountRate() float64 {
