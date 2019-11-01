@@ -159,13 +159,7 @@ func New(version string) *cli.App {
 		Action: recommend.Action,
 		Usage:  "output recommended reserved instance num",
 		Flags: []cli.Flag{
-			region,
 			format,
-			cli.StringFlag{
-				Name:  "attribute, a",
-				Usage: "num, hours, percentage (format csv only)",
-				Value: "num",
-			},
 		},
 	}
 

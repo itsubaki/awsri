@@ -144,6 +144,10 @@ func (p Price) Pretty() string {
 	return pretty.String()
 }
 
+func (p Price) OSEngine() string {
+	return fmt.Sprintf("%s%s%s", p.OperatingSystem, p.DatabaseEngine, p.CacheEngine)
+}
+
 func (p Price) DiscountRate() float64 {
 	month := 12
 	if p.LeaseContractLength == "3yr" {
