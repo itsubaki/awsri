@@ -171,11 +171,6 @@ func New(version string) *cli.App {
 		Flags: []cli.Flag{
 			format,
 			months,
-			cli.StringFlag{
-				Name:  "attribute, a",
-				Usage: "amortized, net-amortized, unblended, net-unblended, blended (format csv only)",
-				Value: "blended",
-			},
 		},
 	}
 
