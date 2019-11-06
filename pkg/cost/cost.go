@@ -56,6 +56,47 @@ func (a AccountCost) Pretty() string {
 	return pretty.String()
 }
 
+func FetchWithout(start, end string, without []string) ([]AccountCost, error) {
+	input := costexplorer.GetCostAndUsageInput{
+		Metrics: []*string{
+			aws.String("NetAmortizedCost"),
+			aws.String("NetUnblendedCost"),
+			aws.String("UnblendedCost"),
+			aws.String("AmortizedCost"),
+			aws.String("BlendedCost"),
+		},
+		Granularity: aws.String("MONTHLY"),
+		GroupBy: []*costexplorer.GroupDefinition{
+			{
+				Key:  aws.String("LINKED_ACCOUNT"),
+				Type: aws.String("DIMENSION"),
+			},
+		},
+		TimePeriod: &costexplorer.DateInterval{
+			Start: aws.String(start),
+			End:   aws.String(end),
+		},
+	}
+
+	if len(without) > 0 {
+		or := make([]*costexplorer.Expression, 0)
+		for _, w := range without {
+			or = append(or, &costexplorer.Expression{
+				Dimensions: &costexplorer.DimensionValues{
+					Key:    aws.String("SERVICE"),
+					Values: []*string{aws.String(w)},
+				},
+			})
+		}
+
+		input.Filter = &costexplorer.Expression{
+			Or: or,
+		}
+	}
+
+	return fetch(start, end, &input)
+}
+
 func Fetch(start, end string) ([]AccountCost, error) {
 	input := costexplorer.GetCostAndUsageInput{
 		Metrics: []*string{
@@ -78,14 +119,18 @@ func Fetch(start, end string) ([]AccountCost, error) {
 		},
 	}
 
+	return fetch(start, end, &input)
+}
+
+func fetch(start, end string, input *costexplorer.GetCostAndUsageInput) ([]AccountCost, error) {
 	c := costexplorer.New(session.Must(session.NewSession()))
-	cost, err := c.GetCostAndUsage(&input)
+	cost, err := c.GetCostAndUsage(input)
 	if err != nil {
 		return []AccountCost{}, fmt.Errorf("get cost and usage: %v", err)
 	}
 
 	index := strings.LastIndex(start, "-")
-	date := string(start)[:index]
+	date := start[:index]
 
 	out := make([]AccountCost, 0)
 	for _, r := range cost.ResultsByTime {
