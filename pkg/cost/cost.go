@@ -17,11 +17,11 @@ type AccountCost struct {
 	AccountID        string `json:"account_id"`
 	Description      string `json:"description"`
 	Date             string `json:"date,omitempty"`
-	AmortizedCost    Cost   `json:"amortized_cost"`
-	NetAmortizedCost Cost   `json:"net_amortized_cost"`
-	UnblendedCost    Cost   `json:"unblended_cost"`
-	NetUnblendedCost Cost   `json:"net_unblended_cost"`
-	BlendedCost      Cost   `json:"blended_cost"`
+	UnblendedCost    Cost   `json:"unblended_cost"`     // volume discount for a single account
+	BlendedCost      Cost   `json:"blended_cost"`       // volume discount across linked account
+	AmortizedCost    Cost   `json:"amortized_cost"`     // unblended + ReservedInstances/12
+	NetAmortizedCost Cost   `json:"net_amortized_cost"` // before discount
+	NetUnblendedCost Cost   `json:"net_unblended_cost"` // before discount
 }
 
 type Cost struct {
