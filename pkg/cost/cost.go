@@ -76,6 +76,10 @@ func FetchWith(start, end string, with []string) ([]AccountCost, error) {
 				Key:  aws.String("LINKED_ACCOUNT"),
 				Type: aws.String("DIMENSION"),
 			},
+			{
+				Key:  aws.String("SERVICE"),
+				Type: aws.String("DIMENSION"),
+			},
 		},
 		TimePeriod: &costexplorer.DateInterval{
 			Start: aws.String(start),
@@ -90,11 +94,6 @@ func FetchWith(start, end string, with []string) ([]AccountCost, error) {
 				Values: []*string{aws.String(with[0])},
 			},
 		}
-
-		input.GroupBy = append(input.GroupBy, &costexplorer.GroupDefinition{
-			Key:  aws.String("SERVICE"),
-			Type: aws.String("DIMENSION"),
-		})
 	}
 
 	if len(with) > 1 {
@@ -111,11 +110,6 @@ func FetchWith(start, end string, with []string) ([]AccountCost, error) {
 		input.Filter = &costexplorer.Expression{
 			Or: or,
 		}
-
-		input.GroupBy = append(input.GroupBy, &costexplorer.GroupDefinition{
-			Key:  aws.String("SERVICE"),
-			Type: aws.String("DIMENSION"),
-		})
 	}
 
 	return fetch(start, end, &input)
@@ -139,8 +133,9 @@ func fetch(start, end string, input *costexplorer.GetCostAndUsageInput) ([]Accou
 
 		for _, r := range cost.ResultsByTime {
 			for _, g := range r.Groups {
-				ac := AccountCost{
+				o := AccountCost{
 					AccountID: *g.Keys[0],
+					Service:   *g.Keys[1],
 					Date:      date,
 					AmortizedCost: Cost{
 						Amount: *g.Metrics["AmortizedCost"].Amount,
@@ -164,11 +159,7 @@ func fetch(start, end string, input *costexplorer.GetCostAndUsageInput) ([]Accou
 					},
 				}
 
-				if len(input.GroupBy) > 1 {
-					ac.Service = *g.Keys[1]
-				}
-
-				out = append(out, ac)
+				out = append(out, o)
 			}
 		}
 

@@ -1,11 +1,15 @@
 package cost
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+)
 
 func Monthly(c []AccountCost) map[string][]AccountCost {
 	monthly := make(map[string][]AccountCost)
 	for i := range c {
-		monthly[c[i].AccountID] = append(monthly[c[i].AccountID], c[i])
+		hash := fmt.Sprintf("%s_%s", c[i].AccountID, c[i].Service)
+		monthly[hash] = append(monthly[hash], c[i])
 	}
 
 	for k := range monthly {
