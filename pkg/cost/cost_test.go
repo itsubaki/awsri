@@ -22,11 +22,11 @@ func TestFetch(t *testing.T) {
 	}
 }
 
-func TestFetchWithout(t *testing.T) {
+func TestFetchWith(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
 	m := usage.Last12Months()[0]
-	out, err := FetchWithout(m.Start, m.End, []string{
+	out, err := FetchWith(m.Start, m.End, []string{
 		"Amazon Elastic Compute Cloud - Compute",
 		"Amazon ElastiCache",
 		"Amazon Relational Database Service",

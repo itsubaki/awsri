@@ -325,6 +325,7 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 			Type: aws.String("DIMENSION"),
 		},
 	}
+
 	if len(in.Dimension) > 0 {
 		groupby = append(groupby, &costexplorer.GroupDefinition{
 			Key:  aws.String(in.Dimension),
@@ -348,69 +349,80 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 		}
 	}
 
-	c := costexplorer.New(session.Must(session.NewSession()))
-	usage, err := c.GetCostAndUsage(&input)
-	if err != nil {
-		return []Quantity{}, fmt.Errorf("get cost and usage. or=%v: %v", or, err)
-	}
-
 	out := make([]Quantity, 0)
-	for _, r := range usage.ResultsByTime {
-		for _, g := range r.Groups {
-			//fmt.Println(g)
-			amount := *g.Metrics[in.Metric].Amount
-			if amount == "0" {
-				continue
-			}
+	c := costexplorer.New(session.Must(session.NewSession()))
 
-			index := strings.LastIndex(in.Start, "-")
-			date := string(in.Start)[:index]
+	var token *string
+	for {
+		input.NextPageToken = token
 
-			q := Quantity{
-				AccountID:   in.AccountID,
-				Description: in.Description,
-				Date:        date,
-				UsageType:   *g.Keys[0],
-			}
-
-			if *g.Metrics[in.Metric].Unit == "Requests" {
-				req, _ := strconv.ParseInt(amount, 10, 64)
-				q.Requests = req
-				q.Unit = "Requests"
-			}
-
-			if *g.Metrics[in.Metric].Unit == "GB" {
-				gb, _ := strconv.ParseFloat(amount, 64)
-				q.GByte = gb
-				q.Unit = "GB"
-			}
-
-			if *g.Metrics[in.Metric].Unit == "Hrs" {
-				hrs, _ := strconv.ParseFloat(amount, 64)
-				month := strings.Split(in.Start, "-")[1]
-				num := hrs / float64(24*Days[month])
-
-				q.InstanceHour = hrs
-				q.InstanceNum = num
-				q.Unit = "Hrs"
-
-				if in.Dimension == "PLATFORM" {
-					q.Platform = *g.Keys[1]
-				}
-				if in.Dimension == "CACHE_ENGINE" {
-					q.CacheEngine = *g.Keys[1]
-				}
-				if in.Dimension == "DATABASE_ENGINE" {
-					q.DatabaseEngine = *g.Keys[1]
-				}
-			}
-
-			if region, ok := region[strings.Split(q.UsageType, "-")[0]]; ok {
-				q.Region = region
-			}
-
-			out = append(out, q)
+		usage, err := c.GetCostAndUsage(&input)
+		if err != nil {
+			return []Quantity{}, fmt.Errorf("get cost and usage. or=%v: %v", or, err)
 		}
+
+		for _, r := range usage.ResultsByTime {
+			for _, g := range r.Groups {
+				//fmt.Println(g)
+				amount := *g.Metrics[in.Metric].Amount
+				if amount == "0" {
+					continue
+				}
+
+				index := strings.LastIndex(in.Start, "-")
+				date := string(in.Start)[:index]
+
+				q := Quantity{
+					AccountID:   in.AccountID,
+					Description: in.Description,
+					Date:        date,
+					UsageType:   *g.Keys[0],
+				}
+
+				if *g.Metrics[in.Metric].Unit == "Requests" {
+					req, _ := strconv.ParseInt(amount, 10, 64)
+					q.Requests = req
+					q.Unit = "Requests"
+				}
+
+				if *g.Metrics[in.Metric].Unit == "GB" {
+					gb, _ := strconv.ParseFloat(amount, 64)
+					q.GByte = gb
+					q.Unit = "GB"
+				}
+
+				if *g.Metrics[in.Metric].Unit == "Hrs" {
+					hrs, _ := strconv.ParseFloat(amount, 64)
+					month := strings.Split(in.Start, "-")[1]
+					num := hrs / float64(24*Days[month])
+
+					q.InstanceHour = hrs
+					q.InstanceNum = num
+					q.Unit = "Hrs"
+
+					if in.Dimension == "PLATFORM" {
+						q.Platform = *g.Keys[1]
+					}
+					if in.Dimension == "CACHE_ENGINE" {
+						q.CacheEngine = *g.Keys[1]
+					}
+					if in.Dimension == "DATABASE_ENGINE" {
+						q.DatabaseEngine = *g.Keys[1]
+					}
+				}
+
+				if region, ok := region[strings.Split(q.UsageType, "-")[0]]; ok {
+					q.Region = region
+				}
+
+				out = append(out, q)
+			}
+		}
+
+		if usage.NextPageToken == nil {
+			break
+		}
+		token = usage.NextPageToken
 	}
 
 	return out, nil

@@ -253,11 +253,12 @@ func FetchWith(start, end string, fn []fetchInputFunc) ([]Utilization, error) {
 
 func fetch(input costexplorer.GetReservationCoverageInput) ([]Utilization, error) {
 	out := make([]Utilization, 0)
-
 	c := costexplorer.New(session.Must(session.NewSession()))
+
 	var token *string
 	for {
 		input.NextPageToken = token
+
 		rc, err := c.GetReservationCoverage(&input)
 		if err != nil {
 			return out, fmt.Errorf("get reservation coverage: %v", err)
