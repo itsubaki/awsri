@@ -8,7 +8,7 @@ import (
 func Monthly(c []AccountCost) map[string][]AccountCost {
 	monthly := make(map[string][]AccountCost)
 	for i := range c {
-		hash := fmt.Sprintf("%s_%s", c[i].AccountID, c[i].Service)
+		hash := fmt.Sprintf("%s_%s_%s", c[i].AccountID, c[i].Service, c[i].RecordType)
 		monthly[hash] = append(monthly[hash], c[i])
 	}
 

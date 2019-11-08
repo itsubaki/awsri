@@ -28,7 +28,7 @@ func Action(c *cli.Context) {
 	}
 
 	if format == "csv" {
-		fmt.Printf("account_id, description, service, ")
+		fmt.Printf("account_id, description, service, record_type, ")
 		for i := range date {
 			fmt.Printf("%s, ", date[i].YYYYMM())
 		}
@@ -37,7 +37,7 @@ func Action(c *cli.Context) {
 		mc := cost.Monthly(ac)
 		keys := cost.SortedKey(mc)
 		for _, k := range keys {
-			fmt.Printf("%s, %s, %s, ", mc[k][0].AccountID, mc[k][0].Description, mc[k][0].Service)
+			fmt.Printf("%s, %s, %s, %s, ", mc[k][0].AccountID, mc[k][0].Description, mc[k][0].Service, mc[k][0].RecordType)
 
 			for _, d := range date {
 				found := false

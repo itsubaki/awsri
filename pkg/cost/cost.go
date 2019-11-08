@@ -18,6 +18,7 @@ type AccountCost struct {
 	Description      string `json:"description"`
 	Date             string `json:"date,omitempty"`
 	Service          string `json:"service,omitempty"`
+	RecordType       string `json:"record_type,omitempty"`
 	UnblendedCost    Cost   `json:"unblended_cost"`     // volume discount for a single account
 	BlendedCost      Cost   `json:"blended_cost"`       // volume discount across linked account
 	AmortizedCost    Cost   `json:"amortized_cost"`     // unblended + ReservedInstances/12
@@ -73,11 +74,11 @@ func FetchWith(start, end string, with []string) ([]AccountCost, error) {
 		Granularity: aws.String("MONTHLY"),
 		GroupBy: []*costexplorer.GroupDefinition{
 			{
-				Key:  aws.String("LINKED_ACCOUNT"),
+				Key:  aws.String("SERVICE"),
 				Type: aws.String("DIMENSION"),
 			},
 			{
-				Key:  aws.String("SERVICE"),
+				Key:  aws.String("RECORD_TYPE"),
 				Type: aws.String("DIMENSION"),
 			},
 		},
@@ -87,32 +88,62 @@ func FetchWith(start, end string, with []string) ([]AccountCost, error) {
 		},
 	}
 
-	if len(with) == 1 {
-		input.Filter = &costexplorer.Expression{
-			Dimensions: &costexplorer.DimensionValues{
-				Key:    aws.String("SERVICE"),
-				Values: []*string{aws.String(with[0])},
-			},
-		}
+	la, err := usage.FetchLinkedAccount(start, end)
+	if err != nil {
+		return []AccountCost{}, fmt.Errorf("get linked account: %v", err)
 	}
 
-	if len(with) > 1 {
-		or := make([]*costexplorer.Expression, 0)
-		for _, w := range with {
-			or = append(or, &costexplorer.Expression{
+	out := make([]AccountCost, 0)
+	for _, a := range la {
+
+		if len(with) == 0 {
+			input.Filter = &costexplorer.Expression{
 				Dimensions: &costexplorer.DimensionValues{
-					Key:    aws.String("SERVICE"),
-					Values: []*string{aws.String(w)},
+					Key:    aws.String("LINKED_ACCOUNT"),
+					Values: []*string{aws.String(a.ID)},
+				},
+			}
+		}
+
+		if len(with) > 0 {
+			or := make([]*costexplorer.Expression, 0)
+			for _, w := range with {
+				or = append(or, &costexplorer.Expression{
+					Dimensions: &costexplorer.DimensionValues{
+						Key:    aws.String("SERVICE"),
+						Values: []*string{aws.String(w)},
+					},
+				})
+			}
+
+			and := make([]*costexplorer.Expression, 0)
+			and = append(and, &costexplorer.Expression{
+				Dimensions: &costexplorer.DimensionValues{
+					Key:    aws.String("LINKED_ACCOUNT"),
+					Values: []*string{aws.String(a.ID)},
 				},
 			})
+			and = append(and, &costexplorer.Expression{Or: or})
+
+			input.Filter = &costexplorer.Expression{
+				And: and,
+			}
 		}
 
-		input.Filter = &costexplorer.Expression{
-			Or: or,
+		o, err := fetch(start, end, &input)
+		if err != nil {
+			return o, fmt.Errorf("fetch: %v", err)
 		}
+
+		for i := range o {
+			o[i].AccountID = a.ID
+			o[i].Description = a.Description
+		}
+
+		out = append(out, o...)
 	}
 
-	return fetch(start, end, &input)
+	return out, nil
 }
 
 func fetch(start, end string, input *costexplorer.GetCostAndUsageInput) ([]AccountCost, error) {
@@ -134,9 +165,9 @@ func fetch(start, end string, input *costexplorer.GetCostAndUsageInput) ([]Accou
 		for _, r := range cost.ResultsByTime {
 			for _, g := range r.Groups {
 				o := AccountCost{
-					AccountID: *g.Keys[0],
-					Service:   *g.Keys[1],
-					Date:      date,
+					Service:    *g.Keys[0],
+					RecordType: *g.Keys[1],
+					Date:       date,
 					AmortizedCost: Cost{
 						Amount: *g.Metrics["AmortizedCost"].Amount,
 						Unit:   *g.Metrics["AmortizedCost"].Unit,
@@ -167,20 +198,6 @@ func fetch(start, end string, input *costexplorer.GetCostAndUsageInput) ([]Accou
 			break
 		}
 		token = cost.NextPageToken
-	}
-
-	a, err := usage.FetchLinkedAccount(start, end)
-	if err != nil {
-		return []AccountCost{}, fmt.Errorf("get linked account: %v", err)
-	}
-
-	for i := range out {
-		for _, aa := range a {
-			if out[i].AccountID != aa.ID {
-				continue
-			}
-			out[i].Description = aa.Description
-		}
 	}
 
 	return out, nil
