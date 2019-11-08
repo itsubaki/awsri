@@ -114,7 +114,7 @@ func FetchWith(start, end string, fn []FetchFunc) ([]Quantity, error) {
 func Fetch(start, end string) ([]Quantity, error) {
 	return FetchWith(start, end, []FetchFunc{
 		fetchBoxUsage,
-		//fetchSpotUsage,
+		fetchSpotUsage,
 		fetchNodeUsage,
 		fetchInstanceUsage,
 		fetchMultiAZUsage,

@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestUsageType(t *testing.T) {
+func TestFetchUsageType(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
 	merged := make([]string, 0)
@@ -48,6 +48,22 @@ func TestFetch(t *testing.T) {
 
 	if len(list) < 1 {
 		t.Errorf("usage quantity is empty")
+	}
+
+	for i := range list {
+		fmt.Printf("%#v\n", list[i])
+	}
+}
+
+func TestFetchWith(t *testing.T) {
+	os.Setenv("AWS_PROFILE", "example")
+
+	m := LastNMonths(1)[0]
+	list, err := FetchWith(m.Start, m.End, []FetchFunc{
+		fetchSpotUsage,
+	})
+	if err != nil {
+		t.Errorf("get usage quantity: %v", err)
 	}
 
 	for i := range list {
