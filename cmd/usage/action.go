@@ -3,6 +3,7 @@ package usage
 import (
 	"fmt"
 	"os"
+	"sort"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/usage"
@@ -64,6 +65,8 @@ func Action(c *cli.Context) {
 	}
 
 	if format == "csv" {
+		sort.Slice(date, func(i, j int) bool { return date[i].Start < date[j].Start })
+
 		fmt.Printf("account_id, description, region, usage_type, os/engine, ")
 		for i := range date {
 			fmt.Printf("%s, ", date[i].YYYYMM())
