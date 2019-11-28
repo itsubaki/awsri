@@ -27,12 +27,12 @@ func Serialize(dir string, date []usage.Date) error {
 			return fmt.Errorf("fetch cost (%s, %s): %v\n", date[i].Start, date[i].End, err)
 		}
 
-		bytes, err := json.Marshal(ac)
+		b, err := json.Marshal(ac)
 		if err != nil {
 			return fmt.Errorf("marshal: %v\n", err)
 		}
 
-		if err := ioutil.WriteFile(file, bytes, os.ModePerm); err != nil {
+		if err := ioutil.WriteFile(file, b, os.ModePerm); err != nil {
 			return fmt.Errorf("write file: %v\n", err)
 		}
 

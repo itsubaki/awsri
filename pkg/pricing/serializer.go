@@ -35,12 +35,12 @@ func Serialize(dir string, region []string) error {
 			price = append(price, list...)
 		}
 
-		bytes, err := json.Marshal(price)
+		b, err := json.Marshal(price)
 		if err != nil {
 			return fmt.Errorf("marshal: %v", err)
 		}
 
-		if err := ioutil.WriteFile(file, bytes, os.ModePerm); err != nil {
+		if err := ioutil.WriteFile(file, b, os.ModePerm); err != nil {
 			return fmt.Errorf("write file: %v", err)
 		}
 

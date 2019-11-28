@@ -75,12 +75,12 @@ func (u Utilization) String() string {
 }
 
 func (u Utilization) JSON() string {
-	bytes, err := json.Marshal(u)
+	b, err := json.Marshal(u)
 	if err != nil {
 		panic(err)
 	}
 
-	return string(bytes)
+	return string(b)
 }
 
 func (u Utilization) Pretty() string {

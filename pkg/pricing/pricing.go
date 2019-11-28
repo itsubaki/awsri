@@ -122,12 +122,12 @@ func (p Price) String() string {
 }
 
 func (p Price) JSON() string {
-	bytes, err := json.Marshal(p)
+	b, err := json.Marshal(p)
 	if err != nil {
 		panic(err)
 	}
 
-	return string(bytes)
+	return string(b)
 }
 
 func (p Price) Pretty() string {

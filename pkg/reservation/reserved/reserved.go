@@ -37,12 +37,12 @@ func (r Reserved) String() string {
 }
 
 func (r Reserved) JSON() string {
-	bytes, err := json.Marshal(r)
+	b, err := json.Marshal(r)
 	if err != nil {
 		panic(err)
 	}
 
-	return string(bytes)
+	return string(b)
 }
 
 func (r Reserved) Pretty() string {

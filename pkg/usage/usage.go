@@ -52,12 +52,12 @@ func (q Quantity) String() string {
 }
 
 func (q Quantity) JSON() string {
-	bytes, err := json.Marshal(q)
+	b, err := json.Marshal(q)
 	if err != nil {
 		panic(err)
 	}
 
-	return string(bytes)
+	return string(b)
 }
 
 func (q Quantity) Pretty() string {
