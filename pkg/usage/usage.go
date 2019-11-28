@@ -114,13 +114,14 @@ func FetchWith(start, end string, fn []FetchFunc) ([]Quantity, error) {
 func Fetch(start, end string) ([]Quantity, error) {
 	return FetchWith(start, end, []FetchFunc{
 		fetchBoxUsage,
-		fetchSpotUsage,
 		fetchNodeUsage,
 		fetchInstanceUsage,
 		fetchMultiAZUsage,
 		fetchNode,
-		fetchDataTransfer,
-		fetchRequests,
+		// TODO buggy
+		//fetchDataTransfer,
+		//fetchRequests,
+		//fetchSpotUsage,
 	})
 }
 

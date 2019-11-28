@@ -2,6 +2,7 @@ package usage
 
 import (
 	"fmt"
+	"sort"
 	"time"
 )
 
@@ -44,6 +45,8 @@ func LastNMonthsWith(now time.Time, n int) []Date {
 	for i := len(tmp) - 1; i > -1; i-- {
 		out = append(out, tmp[i])
 	}
+
+	sort.Slice(out, func(i, j int) bool { return out[i].Start > out[j].Start })
 
 	return out
 }
