@@ -23,6 +23,11 @@ func Normalize(u []Utilization, mini map[string]pricing.Tuple) []Utilization {
 			continue
 		}
 
+		if strings.Contains(v.Price.OperatingSystem, "Windows") {
+			out = append(out, u[i])
+			continue
+		}
+
 		s0, err := strconv.ParseFloat(v.Minimum.NormalizationSizeFactor, 64)
 		if err != nil {
 			panic(fmt.Sprintf("invalid normalization size factor: %v", err))

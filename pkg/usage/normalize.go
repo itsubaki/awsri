@@ -3,6 +3,7 @@ package usage
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
 )
@@ -18,6 +19,11 @@ func Normalize(q []Quantity, mini map[string]pricing.Tuple) []Quantity {
 		}
 
 		if len(v.Minimum.NormalizationSizeFactor) < 1 {
+			out = append(out, q[i])
+			continue
+		}
+
+		if strings.Contains(v.Price.OperatingSystem, "Windows") {
 			out = append(out, q[i])
 			continue
 		}
