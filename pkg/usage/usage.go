@@ -292,9 +292,6 @@ func fetchNode(start, end string, account Account, usageType []string) ([]Quanti
 
 	out := make([]Quantity, 0)
 	for i := range q {
-		if q[i].DatabaseEngine != "NoDatabaseEngine" {
-			continue
-		}
 		out = append(out, q[i])
 	}
 
