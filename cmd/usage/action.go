@@ -11,7 +11,7 @@ import (
 )
 
 func Action(c *cli.Context) {
-	region := c.StringSlice("region")
+	region := c.String("region")
 	dir := c.GlobalString("dir")
 	format := c.String("format")
 	normalize := c.Bool("normalize")
@@ -28,7 +28,7 @@ func Action(c *cli.Context) {
 	}
 
 	if normalize {
-		plist, err := pricing.Deserialize(dir, region)
+		plist, err := pricing.Deserialize(dir, []string{region})
 		if err != nil {
 			fmt.Printf("desirialize pricing: %v\n", err)
 			os.Exit(1)
