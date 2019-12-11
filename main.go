@@ -85,10 +85,6 @@ func New(version string) *cli.App {
 		Flags: []cli.Flag{
 			region,
 			format,
-			cli.BoolFlag{
-				Name:  "show-id",
-				Usage: "add an ID to uniquely identify the price (format csv only)",
-			},
 		},
 	}
 
