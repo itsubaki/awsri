@@ -370,11 +370,16 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 				index := strings.LastIndex(in.Start, "-")
 				date := string(in.Start)[:index]
 
+				type_ := *g.Keys[0]
+				if strings.HasSuffix(type_, "xl") {
+					type_ = fmt.Sprintf("%sarge", type_)
+				}
+
 				q := Quantity{
 					AccountID:   in.AccountID,
 					Description: in.Description,
 					Date:        date,
-					UsageType:   *g.Keys[0],
+					UsageType:   type_,
 				}
 
 				if *g.Metrics[in.Metric].Unit == "Requests" {
