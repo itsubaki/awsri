@@ -46,7 +46,7 @@ func LastNMonthsWith(now time.Time, n int) []Date {
 		out = append(out, tmp[i])
 	}
 
-	sort.Slice(out, func(i, j int) bool { return out[i].Start > out[j].Start })
+	sort.Slice(out, func(i, j int) bool { return out[i].Start < out[j].Start })
 
 	return out
 }
