@@ -39,5 +39,5 @@ func TestRecommend(t *testing.T) {
 		{Date: "2019-01", InstanceNum: 10},
 	}
 
-	fmt.Println(Do(forecast, price).PrettyJSON())
+	fmt.Println(Do(forecast, price).Pretty())
 }
