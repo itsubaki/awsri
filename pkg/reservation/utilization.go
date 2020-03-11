@@ -29,6 +29,7 @@ type Utilization struct {
 	Hours            float64 `json:"hours"`
 	Num              float64 `json:"num"`
 	Percentage       float64 `json:"percentage"`
+	OndemandCost     float64 `json:"ondemand_cost"`
 }
 
 func (u Utilization) UsageType() string {

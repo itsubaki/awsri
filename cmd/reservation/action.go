@@ -34,13 +34,36 @@ func Action(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	if normalize {
-		plist, err := pricing.Deserialize(dir, []string{region})
-		if err != nil {
-			fmt.Printf("desirialize pricing: %v\n", err)
-			os.Exit(1)
-		}
+	plist, err := pricing.Deserialize(dir, []string{region})
+	if err != nil {
+		fmt.Printf("desirialize pricing: %v\n", err)
+		os.Exit(1)
+	}
 
+	for i, r := range res {
+		for _, p := range plist {
+			if p.UsageType != r.UsageType() {
+				continue
+			}
+
+			if len(p.OperatingSystem) > 0 && p.OperatingSystem != r.OSEngine() {
+				continue
+			}
+
+			if len(p.OperatingSystem) > 0 && p.PreInstalled != reservation.PreInstalled[r.Platform] {
+				continue
+			}
+
+			if len(p.DatabaseEngine) > 0 && p.DatabaseEngine != r.DatabaseEngine {
+				continue
+			}
+
+			res[i].OndemandCost = p.OnDemand * r.Hours
+			break
+		}
+	}
+
+	if normalize {
 		family := pricing.Family(plist)
 		mini := pricing.Minimum(family, plist)
 
