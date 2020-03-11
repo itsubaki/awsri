@@ -57,8 +57,8 @@ func Action(c *cli.Context) {
 	}
 
 	if format == "json" && monthly {
-		mq := usage.Monthly(quantity)
-		for _, q := range mq {
+		g, _ := usage.GroupBy(quantity)
+		for _, q := range g {
 			fmt.Println(q)
 		}
 		return
@@ -73,15 +73,14 @@ func Action(c *cli.Context) {
 		}
 		fmt.Println()
 
-		mq := usage.Monthly(quantity)
-		keys := usage.SortedKey(mq)
+		g, keys := usage.GroupBy(quantity)
 		for _, k := range keys {
-			fmt.Printf("%s, %s, ", mq[k][0].AccountID, mq[k][0].Description)
-			fmt.Printf("%s, %s, %s, ", mq[k][0].Region, mq[k][0].UsageType, mq[k][0].OSEngine())
+			fmt.Printf("%s, %s, ", g[k][0].AccountID, g[k][0].Description)
+			fmt.Printf("%s, %s, %s, ", g[k][0].Region, g[k][0].UsageType, g[k][0].OSEngine())
 
 			for _, d := range date {
 				found := false
-				for _, q := range mq[k] {
+				for _, q := range g[k] {
 					if d.YYYYMM() != q.Date {
 						continue
 					}

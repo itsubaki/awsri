@@ -34,14 +34,13 @@ func Action(c *cli.Context) {
 		}
 		fmt.Println()
 
-		mc := cost.Monthly(ac)
-		keys := cost.SortedKey(mc)
+		g, keys := cost.GroupBy(ac)
 		for _, k := range keys {
-			fmt.Printf("%s, %s, %s, %s, ", mc[k][0].AccountID, mc[k][0].Description, mc[k][0].Service, mc[k][0].RecordType)
+			fmt.Printf("%s, %s, %s, %s, ", g[k][0].AccountID, g[k][0].Description, g[k][0].Service, g[k][0].RecordType)
 
 			for _, d := range date {
 				found := false
-				for _, q := range mc[k] {
+				for _, q := range g[k] {
 					if d.YYYYMM() != q.Date {
 						continue
 					}

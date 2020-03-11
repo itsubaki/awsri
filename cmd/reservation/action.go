@@ -52,9 +52,9 @@ func Action(c *cli.Context) {
 	}
 
 	if format == "json" && monthly {
-		m := reservation.Monthly(res)
-		for _, mm := range m {
-			fmt.Println(mm)
+		g, _ := reservation.GroupBy(res)
+		for _, m := range g {
+			fmt.Println(m)
 		}
 		return
 	}
@@ -66,23 +66,22 @@ func Action(c *cli.Context) {
 		}
 		fmt.Println()
 
-		m := reservation.Monthly(res)
-		keys := reservation.SortedKey(m)
+		g, keys := reservation.GroupBy(res)
 		for _, k := range keys {
 			fmt.Printf(
 				"%s, %s, %s, %s, %s, %s, %s, ",
-				m[k][0].AccountID,
-				m[k][0].Description,
-				m[k][0].Region,
-				m[k][0].InstanceType,
-				m[k][0].UsageType(),
-				m[k][0].OSEngine(),
-				m[k][0].DeploymentOption,
+				g[k][0].AccountID,
+				g[k][0].Description,
+				g[k][0].Region,
+				g[k][0].InstanceType,
+				g[k][0].UsageType(),
+				g[k][0].OSEngine(),
+				g[k][0].DeploymentOption,
 			)
 
 			for _, d := range date {
 				found := false
-				for _, r := range m[k] {
+				for _, r := range g[k] {
 					if d.YYYYMM() != r.Date {
 						continue
 					}
