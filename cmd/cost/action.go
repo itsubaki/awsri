@@ -3,8 +3,6 @@ package cost
 import (
 	"fmt"
 	"os"
-	"strconv"
-	"strings"
 
 	"github.com/itsubaki/hermes/pkg/usage"
 
@@ -18,18 +16,10 @@ func Action(c *cli.Context) {
 	attribute := c.String("attribute")
 	period := c.String("period")
 
-	n, err := strconv.Atoi(period[:len(period)-1])
+	date, err := usage.Last(period)
 	if err != nil {
-		fmt.Printf("invalid period(%v) ex. 12m, 365d: %v", period, err)
+		fmt.Printf("get last months/days: %v", err)
 		os.Exit(1)
-	}
-
-	var date []usage.Date
-	if strings.HasSuffix(period, "m") {
-		date = usage.LastNMonths(n)
-	}
-	if strings.HasSuffix(period, "d") {
-		date = usage.LastNDays(n)
 	}
 
 	ac, err := cost.Deserialize(dir, date)

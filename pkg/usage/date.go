@@ -3,6 +3,8 @@ package usage
 import (
 	"fmt"
 	"sort"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -31,6 +33,23 @@ func (d Date) YYYYMM() string {
 
 func (d Date) YYYYMMDD() string {
 	return d.Start
+}
+
+func Last(period string) ([]Date, error) {
+	n, err := strconv.Atoi(period[:len(period)-1])
+	if err != nil {
+		return []Date{}, fmt.Errorf("invalid period(%v) ex. 12m, 365d: %v", period, err)
+	}
+
+	var date []Date
+	if strings.HasSuffix(period, "m") {
+		date = LastNMonths(n)
+	}
+	if strings.HasSuffix(period, "d") {
+		date = LastNDays(n)
+	}
+
+	return date, nil
 }
 
 func Last12Months() []Date {
