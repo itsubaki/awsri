@@ -17,9 +17,15 @@ func Action(c *cli.Context) {
 	normalize := c.Bool("normalize")
 	merge := c.Bool("merge")
 	overall := c.Bool("merge-overall")
-	monthly := c.Bool("monthly")
+	groupby := c.Bool("groupby")
 	attribute := c.String("attribute")
-	date := usage.LastNMonths(c.Int("months"))
+	period := c.String("period")
+
+	date, err := usage.Last(period)
+	if err != nil {
+		fmt.Printf("get last months/days: %v", err)
+		os.Exit(1)
+	}
 
 	quantity, err := usage.Deserialize(dir, date)
 	if err != nil {
@@ -48,7 +54,7 @@ func Action(c *cli.Context) {
 		quantity = usage.MergeOverall(quantity)
 	}
 
-	if format == "json" && !monthly {
+	if format == "json" && !groupby {
 		usage.Sort(quantity)
 		for _, q := range quantity {
 			fmt.Println(q)
@@ -56,9 +62,9 @@ func Action(c *cli.Context) {
 		return
 	}
 
-	if format == "json" && monthly {
-		mq := usage.Monthly(quantity)
-		for _, q := range mq {
+	if format == "json" && groupby {
+		g, _ := usage.GroupBy(quantity)
+		for _, q := range g {
 			fmt.Println(q)
 		}
 		return
@@ -69,20 +75,19 @@ func Action(c *cli.Context) {
 
 		fmt.Printf("account_id, description, region, usage_type, os/engine, ")
 		for i := range date {
-			fmt.Printf("%s, ", date[i].YYYYMM())
+			fmt.Printf("%s, ", date[i].String())
 		}
 		fmt.Println()
 
-		mq := usage.Monthly(quantity)
-		keys := usage.SortedKey(mq)
+		g, keys := usage.GroupBy(quantity)
 		for _, k := range keys {
-			fmt.Printf("%s, %s, ", mq[k][0].AccountID, mq[k][0].Description)
-			fmt.Printf("%s, %s, %s, ", mq[k][0].Region, mq[k][0].UsageType, mq[k][0].OSEngine())
+			fmt.Printf("%s, %s, ", g[k][0].AccountID, g[k][0].Description)
+			fmt.Printf("%s, %s, %s, ", g[k][0].Region, g[k][0].UsageType, g[k][0].OSEngine())
 
 			for _, d := range date {
 				found := false
-				for _, q := range mq[k] {
-					if d.YYYYMM() != q.Date {
+				for _, q := range g[k] {
+					if d.YYYYMMDD() != q.Date {
 						continue
 					}
 

@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -367,9 +368,6 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 					continue
 				}
 
-				index := strings.LastIndex(in.Start, "-")
-				date := string(in.Start)[:index]
-
 				type_ := *g.Keys[0]
 				if strings.HasSuffix(type_, "xl") {
 					type_ = fmt.Sprintf("%sarge", type_)
@@ -378,7 +376,7 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 				q := Quantity{
 					AccountID:   in.AccountID,
 					Description: in.Description,
-					Date:        date,
+					Date:        in.Start,
 					UsageType:   type_,
 				}
 
@@ -396,12 +394,21 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 
 				if *g.Metrics[in.Metric].Unit == "Hrs" {
 					hrs, _ := strconv.ParseFloat(amount, 64)
-					month := strings.Split(in.Start, "-")[1]
-					num := hrs / float64(24*Days[month])
 
 					q.InstanceHour = hrs
-					q.InstanceNum = num
 					q.Unit = "Hrs"
+
+					t0, err := time.Parse("2006-01-02", in.Start)
+					if err != nil {
+						return out, fmt.Errorf("parse time=%v", in.Start)
+					}
+
+					t1, err := time.Parse("2006-01-02", in.End)
+					if err != nil {
+						return out, fmt.Errorf("parse time=%v", in.End)
+					}
+
+					q.InstanceNum = hrs / t1.Sub(t0).Hours()
 
 					if in.Dimension == "PLATFORM" {
 						q.Platform = *g.Keys[1]

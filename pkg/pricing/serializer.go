@@ -15,7 +15,7 @@ func Serialize(dir string, region []string) error {
 	}
 
 	for _, r := range region {
-		file := fmt.Sprintf("%s/%s.out", path, r)
+		file := fmt.Sprintf("%s/%s.json", path, r)
 		if _, err := os.Stat(file); !os.IsNotExist(err) {
 			continue
 		}
@@ -53,7 +53,7 @@ func Serialize(dir string, region []string) error {
 func Deserialize(dir string, region []string) ([]Price, error) {
 	price := make([]Price, 0)
 	for _, r := range region {
-		file := fmt.Sprintf("%s/pricing/%s.out", dir, r)
+		file := fmt.Sprintf("%s/pricing/%s.json", dir, r)
 		if _, err := os.Stat(file); os.IsNotExist(err) {
 			return []Price{}, fmt.Errorf("file not found: %v", file)
 		}

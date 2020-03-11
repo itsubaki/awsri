@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/itsubaki/hermes/pkg/usage"
+
 	"github.com/itsubaki/hermes/pkg/pricing"
 
 	"github.com/itsubaki/hermes/pkg/reservation"
-	"github.com/itsubaki/hermes/pkg/usage"
 	"github.com/urfave/cli"
 )
 
@@ -17,9 +18,15 @@ func Action(c *cli.Context) {
 	format := c.String("format")
 	normalize := c.Bool("normalize")
 	merge := c.Bool("merge")
-	monthly := c.Bool("monthly")
+	groupby := c.Bool("groupby")
 	attribute := c.String("attribute")
-	date := usage.LastNMonths(c.Int("months"))
+	period := c.String("period")
+
+	date, err := usage.Last(period)
+	if err != nil {
+		fmt.Printf("get last months/days: %v", err)
+		os.Exit(1)
+	}
 
 	res, err := reservation.Deserialize(dir, date)
 	if err != nil {
@@ -44,17 +51,17 @@ func Action(c *cli.Context) {
 		res = reservation.Merge(res)
 	}
 
-	if format == "json" && !monthly {
+	if format == "json" && !groupby {
 		reservation.Sort(res)
 		for _, r := range res {
 			fmt.Println(r)
 		}
 	}
 
-	if format == "json" && monthly {
-		m := reservation.Monthly(res)
-		for _, mm := range m {
-			fmt.Println(mm)
+	if format == "json" && groupby {
+		g, _ := reservation.GroupBy(res)
+		for _, m := range g {
+			fmt.Println(m)
 		}
 		return
 	}
@@ -62,28 +69,27 @@ func Action(c *cli.Context) {
 	if format == "csv" {
 		fmt.Printf("account_id, description, region, instance_type, usage_type, os/engine, deploymet_option, ")
 		for i := range date {
-			fmt.Printf("%s, ", date[i].YYYYMM())
+			fmt.Printf("%s, ", date[i].String())
 		}
 		fmt.Println()
 
-		m := reservation.Monthly(res)
-		keys := reservation.SortedKey(m)
+		g, keys := reservation.GroupBy(res)
 		for _, k := range keys {
 			fmt.Printf(
 				"%s, %s, %s, %s, %s, %s, %s, ",
-				m[k][0].AccountID,
-				m[k][0].Description,
-				m[k][0].Region,
-				m[k][0].InstanceType,
-				m[k][0].UsageType(),
-				m[k][0].OSEngine(),
-				m[k][0].DeploymentOption,
+				g[k][0].AccountID,
+				g[k][0].Description,
+				g[k][0].Region,
+				g[k][0].InstanceType,
+				g[k][0].UsageType(),
+				g[k][0].OSEngine(),
+				g[k][0].DeploymentOption,
 			)
 
 			for _, d := range date {
 				found := false
-				for _, r := range m[k] {
-					if d.YYYYMM() != r.Date {
+				for _, r := range g[k] {
+					if d.YYYYMMDD() != r.Date {
 						continue
 					}
 
