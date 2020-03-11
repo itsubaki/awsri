@@ -62,7 +62,7 @@ func Action(c *cli.Context) {
 	if format == "csv" {
 		fmt.Printf("account_id, description, region, instance_type, usage_type, os/engine, deploymet_option, ")
 		for i := range date {
-			fmt.Printf("%s, ", date[i].YYYYMM())
+			fmt.Printf("%s, ", date[i].String())
 		}
 		fmt.Println()
 
@@ -82,7 +82,7 @@ func Action(c *cli.Context) {
 			for _, d := range date {
 				found := false
 				for _, r := range g[k] {
-					if d.YYYYMM() != r.Date {
+					if d.String() != r.Date {
 						continue
 					}
 

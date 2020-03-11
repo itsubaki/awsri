@@ -69,7 +69,7 @@ func Action(c *cli.Context) {
 
 		fmt.Printf("account_id, description, region, usage_type, os/engine, ")
 		for i := range date {
-			fmt.Printf("%s, ", date[i].YYYYMM())
+			fmt.Printf("%s, ", date[i].String())
 		}
 		fmt.Println()
 
@@ -81,7 +81,7 @@ func Action(c *cli.Context) {
 			for _, d := range date {
 				found := false
 				for _, q := range g[k] {
-					if d.YYYYMM() != q.Date {
+					if d.String() != q.Date {
 						continue
 					}
 

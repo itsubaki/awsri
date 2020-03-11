@@ -6,13 +6,31 @@ import (
 	"time"
 )
 
+const (
+	month = iota
+	day
+)
+
 type Date struct {
-	Start string
-	End   string
+	Period int
+	Start  string
+	End    string
+}
+
+func (d Date) String() string {
+	if d.Period == month {
+		return d.YYYYMM()
+	}
+
+	return d.YYYYMMDD()
 }
 
 func (d Date) YYYYMM() string {
 	return d.Start[:7]
+}
+
+func (d Date) YYYYMMDD() string {
+	return d.Start
 }
 
 func Last12Months() []Date {
@@ -28,16 +46,48 @@ func LastNMonthsWith(now time.Time, n int) []Date {
 		panic(fmt.Sprintf("parameter=%v is not in 0 < n < 13", n))
 	}
 
-	month := make([]time.Time, 0)
+	months := make([]time.Time, 0)
 	for i := 1; i < n+1; i++ {
-		month = append(month, now.AddDate(0, -i, -now.Day()+1))
+		months = append(months, now.AddDate(0, -i, -now.Day()+1))
 	}
 
 	tmp := make([]Date, 0)
-	for _, m := range month {
+	for _, m := range months {
 		tmp = append(tmp, Date{
-			Start: m.Format("2006-01") + "-01",
-			End:   m.AddDate(0, 1, 0).Format("2006-01") + "-01",
+			Period: month,
+			Start:  m.Format("2006-01") + "-01",
+			End:    m.AddDate(0, 1, 0).Format("2006-01") + "-01",
+		})
+	}
+
+	out := make([]Date, 0)
+	for i := len(tmp) - 1; i > -1; i-- {
+		out = append(out, tmp[i])
+	}
+
+	sort.Slice(out, func(i, j int) bool { return out[i].Start < out[j].Start })
+
+	return out
+}
+
+func Last31Days() []Date {
+	return LastNDays(31)
+}
+func LastNDays(n int) []Date {
+	return LastNDaysWith(time.Now(), n)
+}
+func LastNDaysWith(now time.Time, n int) []Date {
+	days := make([]time.Time, 0)
+	for i := 1; i < n+1; i++ {
+		days = append(days, now.AddDate(0, 0, -i))
+	}
+
+	tmp := make([]Date, 0)
+	for _, d := range days {
+		tmp = append(tmp, Date{
+			Period: day,
+			Start:  d.Format("2006-01-02"),
+			End:    d.AddDate(0, 0, 1).Format("2006-01-02"),
 		})
 	}
 
