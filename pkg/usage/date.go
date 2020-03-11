@@ -38,7 +38,7 @@ func (d Date) YYYYMMDD() string {
 func Last(period string) ([]Date, error) {
 	n, err := strconv.Atoi(period[:len(period)-1])
 	if err != nil {
-		return []Date{}, fmt.Errorf("invalid period(%v) ex. 12m, 365d: %v", period, err)
+		return []Date{}, fmt.Errorf("invalid period=%v: %v", period, err)
 	}
 
 	var date []Date

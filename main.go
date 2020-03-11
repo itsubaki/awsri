@@ -106,7 +106,7 @@ func New(version string) *cli.App {
 			},
 			cli.BoolFlag{
 				Name:  "groupby, g",
-				Usage: "output group by month/day usage",
+				Usage: "output group by month/day usage (format json only)",
 			},
 			cli.StringFlag{
 				Name:  "attribute, a",
@@ -135,7 +135,7 @@ func New(version string) *cli.App {
 			},
 			cli.BoolFlag{
 				Name:  "groupby, g",
-				Usage: "output group by month/day usage",
+				Usage: "output group by month/day usage (format json only)",
 			},
 			cli.StringFlag{
 				Name:  "attribute, a",
