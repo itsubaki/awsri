@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/itsubaki/hermes/pkg/usage"
 
@@ -280,13 +281,22 @@ func fetch(input costexplorer.GetReservationCoverageInput) ([]Utilization, error
 					return out, fmt.Errorf("parse float reserved hours percentage: %v", err)
 				}
 
-				//TODO InstanceNum
+				t0, err := time.Parse("2006-01-02", *input.TimePeriod.Start)
+				if err != nil {
+					return out, fmt.Errorf("parse time=%v", *input.TimePeriod.Start)
+				}
+
+				t1, err := time.Parse("2006-01-02", *input.TimePeriod.End)
+				if err != nil {
+					return out, fmt.Errorf("parse time=%v", *input.TimePeriod.End)
+				}
 
 				u := Utilization{
 					Region:       *g.Attributes["region"],
 					InstanceType: *g.Attributes["instanceType"],
 					Date:         *input.TimePeriod.Start,
 					Hours:        hours,
+					Num:          hours / t1.Sub(t0).Hours(),
 					Percentage:   per,
 				}
 

@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -397,7 +398,17 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 					q.InstanceHour = hrs
 					q.Unit = "Hrs"
 
-					//TODO q.InstanceNum
+					t0, err := time.Parse("2006-01-02", in.Start)
+					if err != nil {
+						return out, fmt.Errorf("parse time=%v", in.Start)
+					}
+
+					t1, err := time.Parse("2006-01-02", in.End)
+					if err != nil {
+						return out, fmt.Errorf("parse time=%v", in.End)
+					}
+
+					q.InstanceNum = hrs / t1.Sub(t0).Hours()
 
 					if in.Dimension == "PLATFORM" {
 						q.Platform = *g.Keys[1]

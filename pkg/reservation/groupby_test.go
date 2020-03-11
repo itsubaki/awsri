@@ -21,7 +21,8 @@ func TestGroupBy(t *testing.T) {
 		merged = append(merged, u...)
 	}
 
-	for _, m := range GroupBy(merged) {
+	g, _ := GroupBy(merged)
+	for _, m := range g {
 		fmt.Printf("%v, %v, %v, ", m[0].AccountID, m[0].Region, m[0].InstanceType)
 		for _, mm := range m {
 			fmt.Printf("%v: %v, ", mm.Date, mm.Hours)

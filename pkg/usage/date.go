@@ -9,14 +9,14 @@ import (
 )
 
 const (
-	month = iota
-	day
+	month = "month"
+	day   = "day"
 )
 
 type Date struct {
-	Period int
-	Start  string
-	End    string
+	Period string `json:"period,omitempty"`
+	Start  string `json:"start,omitempty"`
+	End    string `json:"end,omitempty"`
 }
 
 func (d Date) String() string {
