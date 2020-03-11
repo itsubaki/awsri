@@ -3,8 +3,6 @@ package fetch
 import (
 	"fmt"
 	"os"
-	"strconv"
-	"strings"
 
 	"github.com/itsubaki/hermes/pkg/cost"
 	"github.com/itsubaki/hermes/pkg/pricing"
@@ -18,20 +16,11 @@ func Action(c *cli.Context) {
 	region := c.String("region")
 	period := c.String("period")
 
-	n, err := strconv.Atoi(period[:len(period)-1])
+	date, err := usage.Last(period)
 	if err != nil {
-		fmt.Printf("invalid period(%v): %v", period, err)
+		fmt.Printf("get last months/days: %v", err)
 		os.Exit(1)
 	}
-
-	var date []usage.Date
-	if strings.HasSuffix(period, "m") {
-		date = usage.LastNMonths(n)
-	}
-	if strings.HasSuffix(period, "d") {
-		date = usage.LastNDays(n)
-	}
-
 	if err := cost.Serialize(dir, date); err != nil {
 		fmt.Printf("serialize cost: %v", err)
 		os.Exit(1)
