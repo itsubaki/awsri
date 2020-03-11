@@ -367,9 +367,6 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 					continue
 				}
 
-				index := strings.LastIndex(in.Start, "-")
-				date := string(in.Start)[:index]
-
 				type_ := *g.Keys[0]
 				if strings.HasSuffix(type_, "xl") {
 					type_ = fmt.Sprintf("%sarge", type_)
@@ -378,7 +375,7 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 				q := Quantity{
 					AccountID:   in.AccountID,
 					Description: in.Description,
-					Date:        date,
+					Date:        in.Start,
 					UsageType:   type_,
 				}
 
@@ -396,12 +393,11 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 
 				if *g.Metrics[in.Metric].Unit == "Hrs" {
 					hrs, _ := strconv.ParseFloat(amount, 64)
-					month := strings.Split(in.Start, "-")[1]
-					num := hrs / float64(24*Days[month])
 
 					q.InstanceHour = hrs
-					q.InstanceNum = num
 					q.Unit = "Hrs"
+
+					//TODO q.InstanceNum
 
 					if in.Dimension == "PLATFORM" {
 						q.Platform = *g.Keys[1]

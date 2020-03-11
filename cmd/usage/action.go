@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strconv"
+	"strings"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/usage"
@@ -19,7 +21,21 @@ func Action(c *cli.Context) {
 	overall := c.Bool("merge-overall")
 	groupby := c.Bool("groupby")
 	attribute := c.String("attribute")
-	date := usage.LastNMonths(c.Int("months"))
+	period := c.String("period")
+
+	n, err := strconv.Atoi(period[:len(period)-1])
+	if err != nil {
+		fmt.Printf("invalid period(%v): %v", period, err)
+		os.Exit(1)
+	}
+
+	var date []usage.Date
+	if strings.HasSuffix(period, "m") {
+		date = usage.LastNMonths(n)
+	}
+	if strings.HasSuffix(period, "d") {
+		date = usage.LastNDays(n)
+	}
 
 	quantity, err := usage.Deserialize(dir, date)
 	if err != nil {
@@ -81,7 +97,7 @@ func Action(c *cli.Context) {
 			for _, d := range date {
 				found := false
 				for _, q := range g[k] {
-					if d.String() != q.Date {
+					if d.YYYYMMDD() != q.Date {
 						continue
 					}
 

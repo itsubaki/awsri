@@ -270,28 +270,23 @@ func fetch(input costexplorer.GetReservationCoverageInput) ([]Utilization, error
 					continue
 				}
 
-				index := strings.LastIndex(*input.TimePeriod.Start, "-")
-				date := (*input.TimePeriod.Start)[:index]
-
 				hours, err := strconv.ParseFloat(*g.Coverage.CoverageHours.ReservedHours, 64)
 				if err != nil {
 					return out, fmt.Errorf("parse float reserved hours: %v", err)
 				}
-
-				month := strings.Split(date, "-")[1]
-				num := hours / float64(24*usage.Days[month])
 
 				per, err := strconv.ParseFloat(*g.Coverage.CoverageHours.CoverageHoursPercentage, 64)
 				if err != nil {
 					return out, fmt.Errorf("parse float reserved hours percentage: %v", err)
 				}
 
+				//TODO InstanceNum
+
 				u := Utilization{
 					Region:       *g.Attributes["region"],
 					InstanceType: *g.Attributes["instanceType"],
-					Date:         date,
+					Date:         *input.TimePeriod.Start,
 					Hours:        hours,
-					Num:          num,
 					Percentage:   per,
 				}
 

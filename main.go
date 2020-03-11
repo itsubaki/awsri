@@ -40,9 +40,9 @@ func New(version string) *cli.App {
 		Usage: "json, csv",
 	}
 
-	months := cli.IntFlag{
-		Name:  "months",
-		Value: 12,
+	period := cli.StringFlag{
+		Name:  "period, p",
+		Value: "12m",
 	}
 
 	fetch := cli.Command{
@@ -52,7 +52,7 @@ func New(version string) *cli.App {
 		Usage:   "fetch aws pricing, usage, reservation, cost",
 		Flags: []cli.Flag{
 			region,
-			months,
+			period,
 		},
 	}
 
@@ -67,6 +67,22 @@ func New(version string) *cli.App {
 		},
 	}
 
+	cost := cli.Command{
+		Name:    "cost",
+		Aliases: []string{"c"},
+		Action:  cost.Action,
+		Usage:   "output cost group by linked account",
+		Flags: []cli.Flag{
+			format,
+			period,
+			cli.StringFlag{
+				Name:  "attribute, a",
+				Usage: "blended, unblended, net-unblended, amortized, net-amortized (format csv only)",
+				Value: "blended",
+			},
+		},
+	}
+
 	usage := cli.Command{
 		Name:    "usage",
 		Aliases: []string{"u"},
@@ -75,7 +91,7 @@ func New(version string) *cli.App {
 		Flags: []cli.Flag{
 			region,
 			format,
-			months,
+			period,
 			cli.BoolFlag{
 				Name:  "normalize, n",
 				Usage: "output normalized usage",
@@ -108,7 +124,7 @@ func New(version string) *cli.App {
 		Flags: []cli.Flag{
 			region,
 			format,
-			months,
+			period,
 			cli.BoolFlag{
 				Name:  "normalize, n",
 				Usage: "output normalized usage",
@@ -138,29 +154,13 @@ func New(version string) *cli.App {
 		},
 	}
 
-	cost := cli.Command{
-		Name:    "cost",
-		Aliases: []string{"c"},
-		Action:  cost.Action,
-		Usage:   "output cost group by linked account",
-		Flags: []cli.Flag{
-			format,
-			months,
-			cli.StringFlag{
-				Name:  "attribute, a",
-				Usage: "blended, unblended, net-unblended, amortized, net-amortized (format csv only)",
-				Value: "blended",
-			},
-		},
-	}
-
 	app.Commands = []cli.Command{
 		fetch,
 		pricing,
-		reservation,
-		usage,
-		recommend,
 		cost,
+		usage,
+		reservation,
+		recommend,
 	}
 
 	return app

@@ -3,11 +3,14 @@ package reservation
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
+
+	"github.com/itsubaki/hermes/pkg/usage"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
 
 	"github.com/itsubaki/hermes/pkg/reservation"
-	"github.com/itsubaki/hermes/pkg/usage"
 	"github.com/urfave/cli"
 )
 
@@ -19,7 +22,21 @@ func Action(c *cli.Context) {
 	merge := c.Bool("merge")
 	groupby := c.Bool("groupby")
 	attribute := c.String("attribute")
-	date := usage.LastNMonths(c.Int("months"))
+	period := c.String("period")
+
+	n, err := strconv.Atoi(period[:len(period)-1])
+	if err != nil {
+		fmt.Printf("invalid period(%v): %v", period, err)
+		os.Exit(1)
+	}
+
+	var date []usage.Date
+	if strings.HasSuffix(period, "m") {
+		date = usage.LastNMonths(n)
+	}
+	if strings.HasSuffix(period, "d") {
+		date = usage.LastNDays(n)
+	}
 
 	res, err := reservation.Deserialize(dir, date)
 	if err != nil {
@@ -82,7 +99,7 @@ func Action(c *cli.Context) {
 			for _, d := range date {
 				found := false
 				for _, r := range g[k] {
-					if d.String() != r.Date {
+					if d.YYYYMMDD() != r.Date {
 						continue
 					}
 
