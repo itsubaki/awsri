@@ -17,7 +17,7 @@ func Serialize(dir string, date []usage.Date) error {
 	}
 
 	for i := range date {
-		file := fmt.Sprintf("%s/%s.out", path, date[i].YYYYMM())
+		file := fmt.Sprintf("%s/%s.json", path, date[i].String())
 		if _, err := os.Stat(file); !os.IsNotExist(err) {
 			continue
 		}
@@ -45,7 +45,7 @@ func Serialize(dir string, date []usage.Date) error {
 func Deserialize(dir string, date []usage.Date) ([]Utilization, error) {
 	utilization := make([]Utilization, 0)
 	for _, d := range date {
-		file := fmt.Sprintf("%s/reservation/%s.out", dir, d.YYYYMM())
+		file := fmt.Sprintf("%s/reservation/%s.json", dir, d.String())
 		if _, err := os.Stat(file); os.IsNotExist(err) {
 			return []Utilization{}, fmt.Errorf("file not found: %v", file)
 		}

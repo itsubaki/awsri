@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/itsubaki/hermes/pkg/cost"
 	"github.com/itsubaki/hermes/pkg/usage"
+
+	"github.com/itsubaki/hermes/pkg/cost"
 	"github.com/urfave/cli"
 )
 
@@ -13,7 +14,13 @@ func Action(c *cli.Context) {
 	dir := c.GlobalString("dir")
 	format := c.String("format")
 	attribute := c.String("attribute")
-	date := usage.LastNMonths(c.Int("months"))
+	period := c.String("period")
+
+	date, err := usage.Last(period)
+	if err != nil {
+		fmt.Printf("get last months/days: %v", err)
+		os.Exit(1)
+	}
 
 	ac, err := cost.Deserialize(dir, date)
 	if err != nil {
@@ -30,19 +37,18 @@ func Action(c *cli.Context) {
 	if format == "csv" {
 		fmt.Printf("account_id, description, service, record_type, ")
 		for i := range date {
-			fmt.Printf("%s, ", date[i].YYYYMM())
+			fmt.Printf("%s, ", date[i].String())
 		}
 		fmt.Println()
 
-		mc := cost.Monthly(ac)
-		keys := cost.SortedKey(mc)
+		g, keys := cost.GroupBy(ac)
 		for _, k := range keys {
-			fmt.Printf("%s, %s, %s, %s, ", mc[k][0].AccountID, mc[k][0].Description, mc[k][0].Service, mc[k][0].RecordType)
+			fmt.Printf("%s, %s, %s, %s, ", g[k][0].AccountID, g[k][0].Description, g[k][0].Service, g[k][0].RecordType)
 
 			for _, d := range date {
 				found := false
-				for _, q := range mc[k] {
-					if d.YYYYMM() != q.Date {
+				for _, q := range g[k] {
+					if d.YYYYMMDD() != q.Date {
 						continue
 					}
 

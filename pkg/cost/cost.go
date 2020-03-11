@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/itsubaki/hermes/pkg/usage"
 
@@ -159,15 +158,12 @@ func fetch(start, end string, input *costexplorer.GetCostAndUsageInput) ([]Accou
 			return []AccountCost{}, fmt.Errorf("get cost and usage: %v", err)
 		}
 
-		index := strings.LastIndex(start, "-")
-		date := start[:index]
-
 		for _, r := range cost.ResultsByTime {
 			for _, g := range r.Groups {
 				o := AccountCost{
 					Service:    *g.Keys[0],
 					RecordType: *g.Keys[1],
-					Date:       date,
+					Date:       start,
 					AmortizedCost: Cost{
 						Amount: *g.Metrics["AmortizedCost"].Amount,
 						Unit:   *g.Metrics["AmortizedCost"].Unit,

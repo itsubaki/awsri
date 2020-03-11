@@ -9,7 +9,7 @@ import (
 func TestFetch(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	u, err := Fetch("2019-09-01", "2019-10-01")
+	u, err := Fetch("2019-09-01", "2019-09-02")
 	if err != nil {
 		t.Errorf("fetch: %v", err)
 	}

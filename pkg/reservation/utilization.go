@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/itsubaki/hermes/pkg/usage"
 
@@ -270,28 +271,32 @@ func fetch(input costexplorer.GetReservationCoverageInput) ([]Utilization, error
 					continue
 				}
 
-				index := strings.LastIndex(*input.TimePeriod.Start, "-")
-				date := (*input.TimePeriod.Start)[:index]
-
 				hours, err := strconv.ParseFloat(*g.Coverage.CoverageHours.ReservedHours, 64)
 				if err != nil {
 					return out, fmt.Errorf("parse float reserved hours: %v", err)
 				}
-
-				month := strings.Split(date, "-")[1]
-				num := hours / float64(24*usage.Days[month])
 
 				per, err := strconv.ParseFloat(*g.Coverage.CoverageHours.CoverageHoursPercentage, 64)
 				if err != nil {
 					return out, fmt.Errorf("parse float reserved hours percentage: %v", err)
 				}
 
+				t0, err := time.Parse("2006-01-02", *input.TimePeriod.Start)
+				if err != nil {
+					return out, fmt.Errorf("parse time=%v", *input.TimePeriod.Start)
+				}
+
+				t1, err := time.Parse("2006-01-02", *input.TimePeriod.End)
+				if err != nil {
+					return out, fmt.Errorf("parse time=%v", *input.TimePeriod.End)
+				}
+
 				u := Utilization{
 					Region:       *g.Attributes["region"],
 					InstanceType: *g.Attributes["instanceType"],
-					Date:         date,
+					Date:         *input.TimePeriod.Start,
 					Hours:        hours,
-					Num:          num,
+					Num:          hours / t1.Sub(t0).Hours(),
 					Percentage:   per,
 				}
 
