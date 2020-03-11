@@ -71,7 +71,7 @@ write: /var/tmp/hermes/usage/2018-09.out
 ```
 
 ```
-$ AWS_PROFILE=example hermes pricing | jq .
+$ hermes pricing | jq .
 [
   {
     "Version": "20190730012138",
@@ -99,7 +99,7 @@ $ AWS_PROFILE=example hermes pricing | jq .
 ```
 
 ```
-$ AWS_PROFILE=example hermes usage | jq .
+$ hermes usage | jq .
 [
   {
     "account_id": "123456789012",
@@ -116,12 +116,12 @@ $ AWS_PROFILE=example hermes usage | jq .
 ```
 
 ```
-$ AWS_PROFILE=example hermes usage --format csv | column -t -s, | less -S
+$ hermes usage --format csv | column -t -s, | less -S
 ```
 
 
 ```
-$ cat purchase.json | hermes | jq .
+$ cat purchase.json | hermes recommend | jq .
 {
   "region": "ap-northeast-1",
   "usage_type": "APN1-BoxUsage:c4.large",
