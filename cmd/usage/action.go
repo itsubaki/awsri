@@ -17,7 +17,7 @@ func Action(c *cli.Context) {
 	normalize := c.Bool("normalize")
 	merge := c.Bool("merge")
 	overall := c.Bool("merge-overall")
-	monthly := c.Bool("monthly")
+	groupby := c.Bool("groupby")
 	attribute := c.String("attribute")
 	date := usage.LastNMonths(c.Int("months"))
 
@@ -48,7 +48,7 @@ func Action(c *cli.Context) {
 		quantity = usage.MergeOverall(quantity)
 	}
 
-	if format == "json" && !monthly {
+	if format == "json" && !groupby {
 		usage.Sort(quantity)
 		for _, q := range quantity {
 			fmt.Println(q)
@@ -56,7 +56,7 @@ func Action(c *cli.Context) {
 		return
 	}
 
-	if format == "json" && monthly {
+	if format == "json" && groupby {
 		g, _ := usage.GroupBy(quantity)
 		for _, q := range g {
 			fmt.Println(q)

@@ -17,7 +17,7 @@ func Action(c *cli.Context) {
 	format := c.String("format")
 	normalize := c.Bool("normalize")
 	merge := c.Bool("merge")
-	monthly := c.Bool("monthly")
+	groupby := c.Bool("groupby")
 	attribute := c.String("attribute")
 	date := usage.LastNMonths(c.Int("months"))
 
@@ -44,14 +44,14 @@ func Action(c *cli.Context) {
 		res = reservation.Merge(res)
 	}
 
-	if format == "json" && !monthly {
+	if format == "json" && !groupby {
 		reservation.Sort(res)
 		for _, r := range res {
 			fmt.Println(r)
 		}
 	}
 
-	if format == "json" && monthly {
+	if format == "json" && groupby {
 		g, _ := reservation.GroupBy(res)
 		for _, m := range g {
 			fmt.Println(m)

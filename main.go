@@ -89,8 +89,8 @@ func New(version string) *cli.App {
 				Usage: "output merged usage",
 			},
 			cli.BoolFlag{
-				Name:  "monthly, mon",
-				Usage: "output monthly usage",
+				Name:  "groupby, g",
+				Usage: "output group by month/day usage",
 			},
 			cli.StringFlag{
 				Name:  "attribute, a",
@@ -118,8 +118,8 @@ func New(version string) *cli.App {
 				Usage: "output merged usage group by linked account",
 			},
 			cli.BoolFlag{
-				Name:  "monthly, mon",
-				Usage: "output monthly usage",
+				Name:  "groupby, g",
+				Usage: "output group by month/day usage",
 			},
 			cli.StringFlag{
 				Name:  "attribute, a",
