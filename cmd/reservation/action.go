@@ -2,7 +2,6 @@ package reservation
 
 import (
 	"fmt"
-	"math"
 	"os"
 
 	"github.com/itsubaki/hermes/pkg/usage"
@@ -41,19 +40,8 @@ func Action(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	cache, warning := reservation.NewCache(plist)
-	for _, w := range warning {
+	for _, w := range reservation.AddCoveringCost(plist, res) {
 		fmt.Println(w)
-	}
-
-	for i := range res {
-		p, err := cache.Find(res[i])
-		if err != nil {
-			fmt.Printf("[WARNING] %v\n", err)
-			continue
-		}
-
-		res[i].CoveringCost = math.Round(p.OnDemand*res[i].Hours*1000) / 1000
 	}
 
 	if normalize {
