@@ -2,6 +2,7 @@ package reservation
 
 import (
 	"fmt"
+	"math"
 	"os"
 
 	"github.com/itsubaki/hermes/pkg/usage"
@@ -28,19 +29,38 @@ func Action(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	res, err := reservation.Deserialize(dir, date)
+	des, err := reservation.Deserialize(dir, date)
 	if err != nil {
 		fmt.Printf("deserialize: %v\n", err)
 		os.Exit(1)
 	}
 
-	if normalize {
-		plist, err := pricing.Deserialize(dir, []string{region})
-		if err != nil {
-			fmt.Printf("desirialize pricing: %v\n", err)
-			os.Exit(1)
+	res := make([]reservation.Utilization, 0)
+	for i := range des {
+		if des[i].Region != region {
+			continue
 		}
 
+		res = append(res, des[i])
+	}
+
+	plist, err := pricing.Deserialize(dir, []string{region})
+	if err != nil {
+		fmt.Printf("desirialize pricing: %v\n", err)
+		os.Exit(1)
+	}
+
+	cache := reservation.NewCache(plist)
+	for i := range res {
+		p, err := cache.Find(res[i])
+		if err != nil {
+			fmt.Printf("[WARNING] %v\n", err)
+		}
+
+		res[i].CoveringCost = math.Round(p.OnDemand*res[i].Hours*1000) / 1000
+	}
+
+	if normalize {
 		family := pricing.Family(plist)
 		mini := pricing.Minimum(family, plist)
 
@@ -101,6 +121,9 @@ func Action(c *cli.Context) {
 					}
 					if attribute == "percentage" {
 						fmt.Printf("%.3f, ", r.Percentage)
+					}
+					if attribute == "covering-cost" {
+						fmt.Printf("%.3f, ", r.CoveringCost)
 					}
 
 					found = true

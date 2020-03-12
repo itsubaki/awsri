@@ -27,10 +27,19 @@ func Action(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	quantity, err := usage.Deserialize(dir, date)
+	des, err := usage.Deserialize(dir, date)
 	if err != nil {
 		fmt.Printf("deserialize usage: %v\n", err)
 		os.Exit(1)
+	}
+
+	quantity := make([]usage.Quantity, 0)
+	for i := range des {
+		if des[i].Region != region {
+			continue
+		}
+
+		quantity = append(quantity, des[i])
 	}
 
 	if normalize {

@@ -29,6 +29,7 @@ type Utilization struct {
 	Hours            float64 `json:"hours"`
 	Num              float64 `json:"num"`
 	Percentage       float64 `json:"percentage"`
+	CoveringCost     float64 `json:"covering_cost"` // ondemand cost
 }
 
 func (u Utilization) UsageType() string {
@@ -224,7 +225,10 @@ func FetchWith(start, end string, fn []fetchInputFunc) ([]Utilization, error) {
 			and = append(and, exp)
 
 			input := costexplorer.GetReservationCoverageInput{
-				Metrics: []*string{aws.String("Hour")},
+				Metrics: []*string{
+					aws.String("Hour"),
+					aws.String("Cost"),
+				},
 				Filter: &costexplorer.Expression{
 					And: and,
 				},
