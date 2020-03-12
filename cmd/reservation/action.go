@@ -50,11 +50,16 @@ func Action(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	cache := reservation.NewCache(plist)
+	cache, warning := reservation.NewCache(plist)
+	for _, w := range warning {
+		fmt.Println(w)
+	}
+
 	for i := range res {
 		p, err := cache.Find(res[i])
 		if err != nil {
 			fmt.Printf("[WARNING] %v\n", err)
+			continue
 		}
 
 		res[i].CoveringCost = math.Round(p.OnDemand*res[i].Hours*1000) / 1000

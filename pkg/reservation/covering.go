@@ -8,8 +8,9 @@ import (
 
 type Cache map[string]pricing.Price
 
-func NewCache(plist []pricing.Price) Cache {
+func NewCache(plist []pricing.Price) (Cache, []string) {
 	cache := make(map[string]pricing.Price)
+	warning := make([]string, 0)
 
 	for i := range plist {
 		key := fmt.Sprintf(
@@ -20,13 +21,13 @@ func NewCache(plist []pricing.Price) Cache {
 		)
 
 		if v, ok := cache[key]; ok && v.OnDemand != plist[i].OnDemand {
-			fmt.Printf("[WARNING] unexpected pricing: %v\n", v)
+			warning = append(warning, fmt.Sprintf("[WARNING] unexpected pricing: %v", v))
 		}
 
 		cache[key] = plist[i]
 	}
 
-	return cache
+	return cache, warning
 }
 
 func (c Cache) Find(u Utilization) (pricing.Price, error) {
