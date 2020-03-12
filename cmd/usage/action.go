@@ -11,15 +11,15 @@ import (
 )
 
 func Action(c *cli.Context) {
-	region := c.String("region")
 	dir := c.GlobalString("dir")
+	region := c.StringSlice("region")
 	format := c.String("format")
 	normalize := c.Bool("normalize")
 	merge := c.Bool("merge")
 	overall := c.Bool("merge-overall")
 	groupby := c.Bool("groupby")
-	attribute := c.String("attribute")
 	period := c.String("period")
+	attribute := c.String("attribute")
 
 	date, err := usage.Last(period)
 	if err != nil {
@@ -27,31 +27,21 @@ func Action(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	des, err := usage.Deserialize(dir, date)
+	quantity, err := usage.Deserialize(dir, date)
 	if err != nil {
 		fmt.Printf("deserialize usage: %v\n", err)
 		os.Exit(1)
 	}
 
-	quantity := make([]usage.Quantity, 0)
-	for i := range des {
-		if des[i].Region != region {
-			continue
-		}
-
-		quantity = append(quantity, des[i])
-	}
-
 	if normalize {
-		plist, err := pricing.Deserialize(dir, []string{region})
+		plist, err := pricing.Deserialize(dir, region)
 		if err != nil {
 			fmt.Printf("desirialize pricing: %v\n", err)
 			os.Exit(1)
 		}
 
 		family := pricing.Family(plist)
-		mini := pricing.Minimum(family, plist)
-
+		mini := pricing.Minimum(plist, family)
 		quantity = usage.Normalize(quantity, mini)
 	}
 

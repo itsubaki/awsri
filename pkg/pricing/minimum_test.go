@@ -12,7 +12,7 @@ func TestMinimum(t *testing.T) {
 	}
 
 	family := Family(plist)
-	mini := Minimum(family, plist)
+	mini := Minimum(plist, family)
 	for _, v := range mini {
 		fmt.Println(v)
 	}

@@ -10,7 +10,7 @@ type Tuple struct {
 	Minimum Price
 }
 
-func Minimum(family map[string]Price, plist []Price) map[string]Tuple {
+func Minimum(plist []Price, family map[string]Price) map[string]Tuple {
 	tuple := make(map[string]Tuple)
 	for i := range plist {
 		hash := fmt.Sprintf(

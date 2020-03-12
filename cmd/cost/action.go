@@ -13,8 +13,8 @@ import (
 func Action(c *cli.Context) {
 	dir := c.GlobalString("dir")
 	format := c.String("format")
-	attribute := c.String("attribute")
 	period := c.String("period")
+	attribute := c.String("attribute")
 
 	date, err := usage.Last(period)
 	if err != nil {

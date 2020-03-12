@@ -9,11 +9,11 @@ import (
 )
 
 func Action(c *cli.Context) {
-	region := c.String("region")
 	dir := c.GlobalString("dir")
+	region := c.StringSlice("region")
 	format := c.String("format")
 
-	price, err := pricing.Deserialize(dir, []string{region})
+	price, err := pricing.Deserialize(dir, region)
 	if err != nil {
 		fmt.Printf("deserialize: %v\n", err)
 		os.Exit(1)
