@@ -20,7 +20,7 @@ func Action(c *cli.Context) {
 
 	date, err := calendar.Last(period)
 	if err != nil {
-		fmt.Printf("get last months/days: %v", err)
+		fmt.Printf("get last period=%s: %v", period, err)
 		os.Exit(1)
 	}
 
