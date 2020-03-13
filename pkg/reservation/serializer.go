@@ -7,10 +7,10 @@ import (
 	"os"
 	"sort"
 
-	"github.com/itsubaki/hermes/pkg/usage"
+	"github.com/itsubaki/hermes/pkg/calendar"
 )
 
-func Serialize(dir string, date []usage.Date) error {
+func Serialize(dir string, date []calendar.Date) error {
 	path := fmt.Sprintf("%s/reservation", dir)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		os.MkdirAll(path, os.ModePerm)
@@ -42,7 +42,7 @@ func Serialize(dir string, date []usage.Date) error {
 	return nil
 }
 
-func Deserialize(dir string, date []usage.Date) ([]Utilization, error) {
+func Deserialize(dir string, date []calendar.Date) ([]Utilization, error) {
 	utilization := make([]Utilization, 0)
 	for _, d := range date {
 		file := fmt.Sprintf("%s/reservation/%s.json", dir, d.String())

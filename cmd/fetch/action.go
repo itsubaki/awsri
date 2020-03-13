@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/itsubaki/hermes/pkg/calendar"
+
 	"github.com/itsubaki/hermes/pkg/cost"
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/reservation"
@@ -16,7 +18,7 @@ func Action(c *cli.Context) {
 	region := c.StringSlice("region")
 	period := c.String("period")
 
-	date, err := usage.Last(period)
+	date, err := calendar.Last(period)
 	if err != nil {
 		fmt.Printf("get last months/days: %v", err)
 		os.Exit(1)

@@ -6,9 +6,11 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
+
+	"github.com/itsubaki/hermes/pkg/calendar"
 )
 
-func Serialize(dir string, date []Date) error {
+func Serialize(dir string, date []calendar.Date) error {
 	path := fmt.Sprintf("%s/usage", dir)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		os.MkdirAll(path, os.ModePerm)
@@ -40,7 +42,7 @@ func Serialize(dir string, date []Date) error {
 	return nil
 }
 
-func Deserialize(dir string, date []Date) ([]Quantity, error) {
+func Deserialize(dir string, date []calendar.Date) ([]Quantity, error) {
 	quantity := make([]Quantity, 0)
 	for _, d := range date {
 		file := fmt.Sprintf("%s/usage/%s.json", dir, d.String())

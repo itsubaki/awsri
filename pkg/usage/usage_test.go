@@ -5,13 +5,15 @@ import (
 	"os"
 	"sort"
 	"testing"
+
+	"github.com/itsubaki/hermes/pkg/calendar"
 )
 
 func TestFetchUsageType(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
 	merged := make([]string, 0)
-	for _, d := range LastNMonths(1) {
+	for _, d := range calendar.LastNMonths(1) {
 		usageType, err := fetchUsageType(d.Start, d.End)
 		if err != nil {
 			t.Errorf("get usage type: %v", err)
@@ -40,7 +42,7 @@ func TestFetchUsageType(t *testing.T) {
 func TestFetch(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	m := LastNMonths(1)[0]
+	m := calendar.LastNMonths(1)[0]
 	list, err := Fetch(m.Start, m.End)
 	if err != nil {
 		t.Errorf("get usage quantity: %v", err)
@@ -58,7 +60,7 @@ func TestFetch(t *testing.T) {
 func TestFetchWith(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	m := LastNMonths(1)[0]
+	m := calendar.LastNMonths(1)[0]
 	list, err := FetchWith(m.Start, m.End, []FetchFunc{
 		fetchSpotUsage,
 	})

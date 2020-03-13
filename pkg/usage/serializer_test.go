@@ -3,10 +3,12 @@ package usage
 import (
 	"fmt"
 	"testing"
+
+	"github.com/itsubaki/hermes/pkg/calendar"
 )
 
 func TestDeserialize(t *testing.T) {
-	usage, err := Deserialize("/var/tmp/hermes", LastNMonths(3))
+	usage, err := Deserialize("/var/tmp/hermes", calendar.LastNMonths(3))
 	if err != nil {
 		t.Errorf("desirialize: %v", err)
 	}

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/itsubaki/hermes/pkg/calendar"
+
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/recommend"
 	"github.com/itsubaki/hermes/pkg/usage"
@@ -35,7 +37,7 @@ func TestPackage(t *testing.T) {
 	family := pricing.Family(plist)
 	mini := pricing.Minimum(family, plist)
 
-	date := usage.LastNMonths(12)
+	date := calendar.LastNMonths(12)
 	forecast, err := usage.Deserialize("/var/tmp/hermes", date)
 	if err != nil {
 		t.Errorf("deserialize usage: %v", err)

@@ -1,4 +1,4 @@
-package usage
+package calendar
 
 import (
 	"fmt"
@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	month = "month"
-	day   = "day"
+	monthly = "monthly"
+	daily   = "daily"
 )
 
 type Date struct {
@@ -20,7 +20,7 @@ type Date struct {
 }
 
 func (d Date) String() string {
-	if d.Period == month {
+	if d.Period == monthly {
 		return d.YYYYMM()
 	}
 
@@ -73,7 +73,7 @@ func LastNMonthsWith(now time.Time, n int) []Date {
 	tmp := make([]Date, 0)
 	for _, m := range months {
 		tmp = append(tmp, Date{
-			Period: month,
+			Period: monthly,
 			Start:  m.Format("2006-01") + "-01",
 			End:    m.AddDate(0, 1, 0).Format("2006-01") + "-01",
 		})
@@ -104,7 +104,7 @@ func LastNDaysWith(now time.Time, n int) []Date {
 	tmp := make([]Date, 0)
 	for _, d := range days {
 		tmp = append(tmp, Date{
-			Period: day,
+			Period: daily,
 			Start:  d.Format("2006-01-02"),
 			End:    d.AddDate(0, 0, 1).Format("2006-01-02"),
 		})

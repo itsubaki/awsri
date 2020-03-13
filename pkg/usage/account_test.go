@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/itsubaki/hermes/pkg/calendar"
 )
 
 func TestFetchLinkedAccount(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	m := LastNMonths(1)[0]
+	m := calendar.LastNMonths(1)[0]
 	list, err := FetchLinkedAccount(m.Start, m.End)
 	if err != nil {
 		t.Errorf("get usage quantity: %v", err)
