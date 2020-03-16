@@ -2,6 +2,8 @@ package pricing
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -102,20 +104,26 @@ type Price struct {
 	NormalizationSizeFactor string  `json:"normalization_size_factor,omitempty"` // compute, database
 }
 
-func (p Price) ID() string {
-	return fmt.Sprintf(
-		"%s_%s_%s_%s%s%s_%s_%s_%s",
-		p.UsageType,
-		p.LeaseContractLength,
-		p.PurchaseOption,
-		p.OperatingSystem,
-		p.CacheEngine,
-		p.DatabaseEngine,
-		p.Tenancy,
-		p.PreInstalled,
-		p.OfferingClass,
-	)
+func (p Price) Sha256() string {
+	sha := sha256.Sum256([]byte(p.JSON()))
+	return hex.EncodeToString(sha[:])
 }
+
+//
+//func (p Price) ID() string {
+//	return fmt.Sprintf(
+//		"%s_%s_%s_%s%s%s_%s_%s_%s",
+//		p.UsageType,
+//		p.LeaseContractLength,
+//		p.PurchaseOption,
+//		p.OperatingSystem,
+//		p.CacheEngine,
+//		p.DatabaseEngine,
+//		p.Tenancy,
+//		p.PreInstalled,
+//		p.OfferingClass,
+//	)
+//}
 
 func (p Price) String() string {
 	return p.JSON()

@@ -2,6 +2,8 @@ package usage
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -38,6 +40,11 @@ type GetQuantityInput struct {
 	UsageType   []string
 	Start       string
 	End         string
+}
+
+func (q Quantity) Sha256() string {
+	sha := sha256.Sum256([]byte(q.JSON()))
+	return hex.EncodeToString(sha[:])
 }
 
 func (q Quantity) OSEngine() string {

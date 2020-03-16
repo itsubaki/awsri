@@ -13,7 +13,7 @@ func TestNormalize(t *testing.T) {
 	}
 
 	family := pricing.Family(plist)
-	mini := pricing.Minimum(family, plist)
+	mini := pricing.Minimum(plist, family)
 
 	forecast := []Quantity{
 		{

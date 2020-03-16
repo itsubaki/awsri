@@ -35,7 +35,7 @@ func TestPackage(t *testing.T) {
 	}
 
 	family := pricing.Family(plist)
-	mini := pricing.Minimum(family, plist)
+	mini := pricing.Minimum(plist, family)
 
 	date := calendar.LastNMonths(12)
 	forecast, err := usage.Deserialize("/var/tmp/hermes", date)
@@ -45,23 +45,23 @@ func TestPackage(t *testing.T) {
 
 	normalized := usage.Normalize(forecast, mini)
 	merged := usage.MergeOverall(normalized)
-	monthly := usage.Monthly(merged)
+	g, _ := usage.GroupBy(merged)
 
 	for _, p := range price {
-		for k := range monthly {
-			if len(monthly[k][0].Platform) > 0 {
-				if p.UsageType != monthly[k][0].UsageType || p.OperatingSystem != usage.OperatingSystem[monthly[k][0].Platform] {
+		for k := range g {
+			if len(g[k][0].Platform) > 0 {
+				if p.UsageType != g[k][0].UsageType || p.OperatingSystem != usage.OperatingSystem[g[k][0].Platform] {
 					continue
 				}
 			}
 
-			if len(monthly[k][0].Platform) < 1 {
+			if len(g[k][0].Platform) < 1 {
 				if fmt.Sprintf("%s%s%s", p.UsageType, p.CacheEngine, p.DatabaseEngine) != k {
 					continue
 				}
 			}
 
-			q, _ := recommend.BreakEvenPoint(monthly[k], p)
+			q, _ := recommend.BreakEvenPoint(g[k], p)
 			fmt.Println(q)
 			break
 		}
