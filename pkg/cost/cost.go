@@ -15,6 +15,7 @@ import (
 )
 
 type AccountCost struct {
+	ID               string `json:"id"`
 	AccountID        string `json:"account_id"`
 	Description      string `json:"description"`
 	Date             string `json:"date,omitempty"`
@@ -192,6 +193,9 @@ func fetch(start, end string, input *costexplorer.GetCostAndUsageInput) ([]Accou
 						Unit:   *g.Metrics["BlendedCost"].Unit,
 					},
 				}
+
+				sha := sha256.Sum256([]byte(o.JSON()))
+				o.ID = hex.EncodeToString(sha[:])
 
 				out = append(out, o)
 			}

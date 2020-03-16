@@ -83,6 +83,7 @@ type Product struct {
 }
 
 type Price struct {
+	ID                      string  `json:"id"`                                  // SKU.OfferTermCode
 	Version                 string  `json:"version,omitempty"`                   // common
 	SKU                     string  `json:"sku,omitempty"`                       // common
 	OfferTermCode           string  `json:"offer_term_code,omitempty"`           // common
@@ -108,22 +109,6 @@ func (p Price) Sha256() string {
 	sha := sha256.Sum256([]byte(p.JSON()))
 	return hex.EncodeToString(sha[:])
 }
-
-//
-//func (p Price) ID() string {
-//	return fmt.Sprintf(
-//		"%s_%s_%s_%s%s%s_%s_%s_%s",
-//		p.UsageType,
-//		p.LeaseContractLength,
-//		p.PurchaseOption,
-//		p.OperatingSystem,
-//		p.CacheEngine,
-//		p.DatabaseEngine,
-//		p.Tenancy,
-//		p.PreInstalled,
-//		p.OfferingClass,
-//	)
-//}
 
 func (p Price) String() string {
 	return p.JSON()
@@ -353,6 +338,7 @@ func fetch(region string, list PriceList) (map[string]Price, error) {
 			}
 
 			out[k] = Price{
+				ID:                      fmt.Sprintf("%s.%s", v.SKU, v.OfferTermCode),
 				Version:                 v.Version,
 				SKU:                     v.SKU,
 				OfferTermCode:           v.OfferTermCode,

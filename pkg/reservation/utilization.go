@@ -19,6 +19,7 @@ import (
 )
 
 type Utilization struct {
+	ID               string  `json:"id"`
 	AccountID        string  `json:"account_id"`
 	Description      string  `json:"description"`
 	Region           string  `json:"region"`
@@ -32,11 +33,6 @@ type Utilization struct {
 	Num              float64 `json:"num"`
 	Percentage       float64 `json:"percentage"`
 	CoveringCost     float64 `json:"covering_cost"` // ondemand cost
-}
-
-func (u Utilization) Sha256() string {
-	sha := sha256.Sum256([]byte(u.JSON()))
-	return hex.EncodeToString(sha[:])
 }
 
 func (u Utilization) UsageType() string {
@@ -323,6 +319,9 @@ func fetch(input costexplorer.GetReservationCoverageInput) ([]Utilization, error
 					u.DatabaseEngine = *g.Attributes["databaseEngine"]
 					u.DeploymentOption = *g.Attributes["deploymentOption"]
 				}
+
+				sha := sha256.Sum256([]byte(u.JSON()))
+				u.ID = hex.EncodeToString(sha[:])
 
 				out = append(out, u)
 			}

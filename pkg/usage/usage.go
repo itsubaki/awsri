@@ -17,6 +17,7 @@ import (
 )
 
 type Quantity struct {
+	ID             string  `json:"id"`
 	AccountID      string  `json:"account_id,omitempty"`
 	Description    string  `json:"description,omitempty"`
 	Region         string  `json:"region,omitempty"`
@@ -40,11 +41,6 @@ type GetQuantityInput struct {
 	UsageType   []string
 	Start       string
 	End         string
-}
-
-func (q Quantity) Sha256() string {
-	sha := sha256.Sum256([]byte(q.JSON()))
-	return hex.EncodeToString(sha[:])
 }
 
 func (q Quantity) OSEngine() string {
@@ -431,6 +427,9 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 				if region, ok := region[strings.Split(q.UsageType, "-")[0]]; ok {
 					q.Region = region
 				}
+
+				sha := sha256.Sum256([]byte(q.JSON()))
+				q.ID = hex.EncodeToString(sha[:])
 
 				out = append(out, q)
 			}
