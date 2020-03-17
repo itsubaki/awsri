@@ -2,8 +2,6 @@ package reservation
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -19,7 +17,6 @@ import (
 )
 
 type Utilization struct {
-	ID               string  `json:"id"`
 	AccountID        string  `json:"account_id"`
 	Description      string  `json:"description"`
 	Region           string  `json:"region"`
@@ -319,9 +316,6 @@ func fetch(input costexplorer.GetReservationCoverageInput) ([]Utilization, error
 					u.DatabaseEngine = *g.Attributes["databaseEngine"]
 					u.DeploymentOption = *g.Attributes["deploymentOption"]
 				}
-
-				sha := sha256.Sum256([]byte(u.JSON()))
-				u.ID = hex.EncodeToString(sha[:])
 
 				out = append(out, u)
 			}

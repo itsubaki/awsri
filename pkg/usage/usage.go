@@ -2,8 +2,6 @@ package usage
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -17,7 +15,6 @@ import (
 )
 
 type Quantity struct {
-	ID             string  `json:"id"`
 	AccountID      string  `json:"account_id,omitempty"`
 	Description    string  `json:"description,omitempty"`
 	Region         string  `json:"region,omitempty"`
@@ -427,9 +424,6 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 				if region, ok := region[strings.Split(q.UsageType, "-")[0]]; ok {
 					q.Region = region
 				}
-
-				sha := sha256.Sum256([]byte(q.JSON()))
-				q.ID = hex.EncodeToString(sha[:])
 
 				out = append(out, q)
 			}

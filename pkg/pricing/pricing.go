@@ -83,7 +83,6 @@ type Product struct {
 }
 
 type Price struct {
-	ID                      string  `json:"id"`                                  // SKU.OfferTermCode
 	Version                 string  `json:"version,omitempty"`                   // common
 	SKU                     string  `json:"sku,omitempty"`                       // common
 	OfferTermCode           string  `json:"offer_term_code,omitempty"`           // common
@@ -338,7 +337,6 @@ func fetch(region string, list PriceList) (map[string]Price, error) {
 			}
 
 			out[k] = Price{
-				ID:                      fmt.Sprintf("%s.%s", v.SKU, v.OfferTermCode),
 				Version:                 v.Version,
 				SKU:                     v.SKU,
 				OfferTermCode:           v.OfferTermCode,
