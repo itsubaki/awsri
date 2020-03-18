@@ -40,8 +40,8 @@ func Action(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	for _, w := range reservation.AddCoveringCost(plist, res) {
-		fmt.Println(w)
+	for _, e := range reservation.AddCoveringCost(plist, res) {
+		fmt.Printf("[WARN] %s\n", e)
 	}
 
 	if normalize {

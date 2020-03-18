@@ -7,8 +7,8 @@ import (
 	"github.com/itsubaki/hermes/pkg/pricing"
 )
 
-func AddCoveringCost(plist []pricing.Price, u []Utilization) []string {
-	warning := make([]string, 0)
+func AddCoveringCost(plist []pricing.Price, u []Utilization) []error {
+	err := make([]error, 0)
 
 	cache := make(map[string]pricing.Price)
 	for i := range plist {
@@ -20,7 +20,7 @@ func AddCoveringCost(plist []pricing.Price, u []Utilization) []string {
 		)
 
 		if v, ok := cache[key]; ok && v.OnDemand != plist[i].OnDemand {
-			warning = append(warning, fmt.Sprintf("[WARNING] unexpected pricing: %v", v))
+			err = append(err, fmt.Errorf("unexpected pricing: %v", v))
 		}
 
 		cache[key] = plist[i]
@@ -36,12 +36,12 @@ func AddCoveringCost(plist []pricing.Price, u []Utilization) []string {
 
 		p, ok := cache[key]
 		if !ok {
-			warning = append(warning, fmt.Sprintf("[WARNING] pricing not found: %v", u[i]))
+			err = append(err, fmt.Errorf("pricing not found: %v", u[i]))
 			continue
 		}
 
 		u[i].CoveringCost = math.Round(p.OnDemand*u[i].Hours*1000) / 1000
 	}
 
-	return warning
+	return err
 }
