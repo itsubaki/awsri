@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"os"
 
-	hermes "github.com/itsubaki/hermes/pkg"
+	"github.com/itsubaki/hermes/cmd"
 )
 
 var date, hash, goversion string
 
 func main() {
 	v := fmt.Sprintf("%s %s %s", date, hash, goversion)
-	if err := hermes.New(v).Run(os.Args); err != nil {
+	if err := cmd.New(v).Run(os.Args); err != nil {
 		panic(err)
 	}
 }
