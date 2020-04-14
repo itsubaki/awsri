@@ -2,8 +2,6 @@ package reservation
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -32,11 +30,6 @@ type Utilization struct {
 	Num              float64 `json:"num"`
 	Percentage       float64 `json:"percentage"`
 	CoveringCost     float64 `json:"covering_cost"` // ondemand cost
-}
-
-func (u Utilization) Sha256() string {
-	sha := sha256.Sum256([]byte(u.JSON()))
-	return hex.EncodeToString(sha[:])
 }
 
 func (u Utilization) UsageType() string {

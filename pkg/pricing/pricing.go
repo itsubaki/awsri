@@ -2,8 +2,6 @@ package pricing
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -102,11 +100,6 @@ type Price struct {
 	DatabaseEngine          string  `json:"database_engine,omitempty"`           // database
 	OfferingClass           string  `json:"offering_class,omitempty"`            // compute, database
 	NormalizationSizeFactor string  `json:"normalization_size_factor,omitempty"` // compute, database
-}
-
-func (p Price) Sha256() string {
-	sha := sha256.Sum256([]byte(p.JSON()))
-	return hex.EncodeToString(sha[:])
 }
 
 func (p Price) String() string {

@@ -2,16 +2,13 @@ package cost
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-
-	"github.com/itsubaki/hermes/pkg/usage"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/costexplorer"
+	"github.com/itsubaki/hermes/pkg/usage"
 )
 
 type AccountCost struct {
@@ -30,11 +27,6 @@ type AccountCost struct {
 type Cost struct {
 	Amount string `json:"amount"`
 	Unit   string `json:"unit"`
-}
-
-func (a AccountCost) Sha256() string {
-	sha := sha256.Sum256([]byte(a.JSON()))
-	return hex.EncodeToString(sha[:])
 }
 
 func (a AccountCost) String() string {
