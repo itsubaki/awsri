@@ -6,6 +6,7 @@ import (
 
 	"github.com/itsubaki/hermes/cmd/cost"
 	"github.com/itsubaki/hermes/cmd/fetch"
+	"github.com/itsubaki/hermes/cmd/org"
 	"github.com/itsubaki/hermes/cmd/pricing"
 	"github.com/itsubaki/hermes/cmd/recommend"
 	"github.com/itsubaki/hermes/cmd/reservation"
@@ -159,6 +160,15 @@ func New(version string) *cli.App {
 		},
 	}
 
+	org := cli.Command{
+		Name:   "org",
+		Action: org.Action,
+		Usage:  "output list of accounts",
+		Flags: []cli.Flag{
+			format,
+		},
+	}
+
 	app.Commands = []cli.Command{
 		fetch,
 		pricing,
@@ -166,6 +176,7 @@ func New(version string) *cli.App {
 		usage,
 		reservation,
 		recommend,
+		org,
 	}
 
 	return app
