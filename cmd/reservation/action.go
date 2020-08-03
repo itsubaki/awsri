@@ -5,9 +5,7 @@ import (
 	"os"
 
 	"github.com/itsubaki/hermes/pkg/calendar"
-
 	"github.com/itsubaki/hermes/pkg/pricing"
-
 	"github.com/itsubaki/hermes/pkg/reservation"
 	"github.com/urfave/cli"
 )
@@ -40,7 +38,7 @@ func Action(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	for _, e := range reservation.AddCoveringCost(plist, res) {
+	for _, e := range reservation.AddOnDemandConversionCost(plist, res) {
 		fmt.Printf("[WARN] %s\n", e)
 	}
 
@@ -105,8 +103,8 @@ func Action(c *cli.Context) {
 					if attribute == "percentage" {
 						fmt.Printf("%.3f, ", r.Percentage)
 					}
-					if attribute == "covering-cost" {
-						fmt.Printf("%.3f, ", r.CoveringCost)
+					if attribute == "ondemand-conversion-cost" {
+						fmt.Printf("%.3f, ", r.OnDemandConversionCost)
 					}
 
 					found = true

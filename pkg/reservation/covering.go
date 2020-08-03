@@ -7,7 +7,7 @@ import (
 	"github.com/itsubaki/hermes/pkg/pricing"
 )
 
-func AddCoveringCost(plist []pricing.Price, u []Utilization) []error {
+func AddOnDemandConversionCost(plist []pricing.Price, u []Utilization) []error {
 	err := make([]error, 0)
 
 	cache := make(map[string]pricing.Price)
@@ -40,7 +40,7 @@ func AddCoveringCost(plist []pricing.Price, u []Utilization) []error {
 			continue
 		}
 
-		u[i].CoveringCost = math.Round(p.OnDemand*u[i].Hours*1000) / 1000
+		u[i].OnDemandConversionCost = math.Round(p.OnDemand*u[i].Hours*1000) / 1000
 	}
 
 	return err

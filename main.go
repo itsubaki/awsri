@@ -145,7 +145,7 @@ func New(version string) *cli.App {
 			},
 			cli.StringFlag{
 				Name:  "attribute, a",
-				Usage: "hours, num, percentage, covering-cost (format csv only)",
+				Usage: "hours, num, percentage, ondemand-conversion-cost (format csv only)",
 				Value: "hours",
 			},
 		},

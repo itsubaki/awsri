@@ -6,7 +6,6 @@ import (
 	"sort"
 
 	"github.com/itsubaki/hermes/pkg/calendar"
-
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/usage"
 	"github.com/urfave/cli"
