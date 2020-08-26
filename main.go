@@ -123,10 +123,10 @@ func New(version string) *cli.App {
 		},
 	}
 
-	reservutil := cli.Command{
+	rsvutil := cli.Command{
 		Name:    "utilization",
 		Aliases: []string{"u"},
-		Usage:   "output reservation utilization group by linked account",
+		Usage:   "output reservation utilization and coverage group by linked account",
 		Action:  utilization.Action,
 		Flags: []cli.Flag{
 			region,
@@ -152,11 +152,15 @@ func New(version string) *cli.App {
 		},
 	}
 
-	reserv := cli.Command{
+	rsved := cli.Command{
 		Name:    "reserved",
 		Aliases: []string{"r"},
 		Usage:   "output history of reserved request",
 		Action:  reserved.Action,
+		Flags: []cli.Flag{
+			region,
+			format,
+		},
 	}
 
 	reservation := cli.Command{
@@ -164,8 +168,8 @@ func New(version string) *cli.App {
 		Aliases: []string{"r"},
 		Usage:   "output reservation utilization, coverage, reserved",
 		Subcommands: []cli.Command{
-			reservutil,
-			reserv,
+			rsvutil,
+			rsved,
 		},
 	}
 

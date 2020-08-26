@@ -32,6 +32,30 @@ type Reserved struct {
 	State              string    `json:"state"`
 }
 
+func (r Reserved) TypeClass() string {
+	class := r.InstanceType
+	if len(r.CacheNodeType) > 0 {
+		class = r.CacheNodeType
+	}
+	if len(r.DBInstanceClass) > 0 {
+		class = r.DBInstanceClass
+	}
+
+	return class
+}
+
+func (r Reserved) Count() int64 {
+	count := r.InstanceCount
+	if r.CacheNodeCount > 0 {
+		count = r.CacheNodeCount
+	}
+	if r.DBInstanceCount > 0 {
+		count = r.DBInstanceCount
+	}
+
+	return count
+}
+
 func (r Reserved) String() string {
 	return r.JSON()
 }
