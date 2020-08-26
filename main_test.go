@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/itsubaki/hermes/pkg/calendar"
-
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/recommend"
 	"github.com/itsubaki/hermes/pkg/usage"

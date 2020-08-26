@@ -9,7 +9,8 @@ import (
 	"github.com/itsubaki/hermes/cmd/org"
 	"github.com/itsubaki/hermes/cmd/pricing"
 	"github.com/itsubaki/hermes/cmd/recommend"
-	"github.com/itsubaki/hermes/cmd/reservation"
+	"github.com/itsubaki/hermes/cmd/reservation/reserved"
+	"github.com/itsubaki/hermes/cmd/reservation/utilization"
 	"github.com/itsubaki/hermes/cmd/usage"
 	"github.com/urfave/cli"
 )
@@ -122,11 +123,11 @@ func New(version string) *cli.App {
 		},
 	}
 
-	reservation := cli.Command{
-		Name:    "reservation",
-		Aliases: []string{"r"},
+	reservutil := cli.Command{
+		Name:    "utilization",
+		Aliases: []string{"u"},
 		Usage:   "output reservation utilization group by linked account",
-		Action:  reservation.Action,
+		Action:  utilization.Action,
 		Flags: []cli.Flag{
 			region,
 			format,
@@ -148,6 +149,23 @@ func New(version string) *cli.App {
 				Usage: "hours, num, percentage, ondemand-conversion-cost (format csv only)",
 				Value: "hours",
 			},
+		},
+	}
+
+	reserv := cli.Command{
+		Name:    "reserved",
+		Aliases: []string{"r"},
+		Usage:   "output history of reserved request",
+		Action:  reserved.Action,
+	}
+
+	reservation := cli.Command{
+		Name:    "reservation",
+		Aliases: []string{"r"},
+		Usage:   "output reservation utilization, coverage, reserved",
+		Subcommands: []cli.Command{
+			reservutil,
+			reserv,
 		},
 	}
 
