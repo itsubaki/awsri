@@ -30,7 +30,7 @@ func TestPackage(t *testing.T) {
 
 	plist, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
 	if err != nil {
-		fmt.Errorf("desirialize pricing: %v", err)
+		t.Errorf("desirialize pricing: %v", err)
 	}
 
 	family := pricing.Family(plist)
