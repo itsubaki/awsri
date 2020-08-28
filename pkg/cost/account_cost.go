@@ -60,7 +60,7 @@ func Fetch(start, end string) ([]AccountCost, error) {
 	return FetchWith(start, end, []string{})
 }
 
-func FetchWith(start, end string, with []string) ([]AccountCost, error) {
+func FetchWith(start, end string, dim []string) ([]AccountCost, error) {
 	input := costexplorer.GetCostAndUsageInput{
 		Metrics: []*string{
 			aws.String("NetAmortizedCost"),
@@ -94,7 +94,7 @@ func FetchWith(start, end string, with []string) ([]AccountCost, error) {
 	out := make([]AccountCost, 0)
 	for _, a := range la {
 
-		if len(with) == 0 {
+		if len(dim) == 0 {
 			input.Filter = &costexplorer.Expression{
 				Dimensions: &costexplorer.DimensionValues{
 					Key:    aws.String("LINKED_ACCOUNT"),
@@ -103,9 +103,9 @@ func FetchWith(start, end string, with []string) ([]AccountCost, error) {
 			}
 		}
 
-		if len(with) > 0 {
+		if len(dim) > 0 {
 			or := make([]*costexplorer.Expression, 0)
-			for _, w := range with {
+			for _, w := range dim {
 				or = append(or, &costexplorer.Expression{
 					Dimensions: &costexplorer.DimensionValues{
 						Key:    aws.String("SERVICE"),
