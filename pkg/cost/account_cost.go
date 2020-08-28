@@ -93,7 +93,6 @@ func FetchWith(start, end string, dim []string) ([]AccountCost, error) {
 
 	out := make([]AccountCost, 0)
 	for _, a := range la {
-
 		if len(dim) == 0 {
 			input.Filter = &costexplorer.Expression{
 				Dimensions: &costexplorer.DimensionValues{
