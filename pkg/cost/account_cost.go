@@ -163,26 +163,41 @@ func fetch(start, end string, input *costexplorer.GetCostAndUsageInput) ([]Accou
 					Service:    *g.Keys[0],
 					RecordType: *g.Keys[1],
 					Date:       start,
-					AmortizedCost: Cost{
-						Amount: *g.Metrics["AmortizedCost"].Amount,
-						Unit:   *g.Metrics["AmortizedCost"].Unit,
-					},
-					NetAmortizedCost: Cost{
-						Amount: *g.Metrics["NetAmortizedCost"].Amount,
-						Unit:   *g.Metrics["NetAmortizedCost"].Unit,
-					},
-					UnblendedCost: Cost{
-						Amount: *g.Metrics["UnblendedCost"].Amount,
-						Unit:   *g.Metrics["UnblendedCost"].Unit,
-					},
-					NetUnblendedCost: Cost{
-						Amount: *g.Metrics["NetUnblendedCost"].Amount,
-						Unit:   *g.Metrics["NetUnblendedCost"].Unit,
-					},
-					BlendedCost: Cost{
-						Amount: *g.Metrics["BlendedCost"].Amount,
-						Unit:   *g.Metrics["BlendedCost"].Unit,
-					},
+				}
+
+				if v, ok := g.Metrics["NetAmortizedCost"]; ok {
+					o.NetAmortizedCost = Cost{
+						Amount: *v.Amount,
+						Unit:   *v.Unit,
+					}
+				}
+
+				if v, ok := g.Metrics["NetUnblendedCost"]; ok {
+					o.NetUnblendedCost = Cost{
+						Amount: *v.Amount,
+						Unit:   *v.Unit,
+					}
+				}
+
+				if v, ok := g.Metrics["AmortizedCost"]; ok {
+					o.AmortizedCost = Cost{
+						Amount: *v.Amount,
+						Unit:   *v.Unit,
+					}
+				}
+
+				if v, ok := g.Metrics["UnblendedCost"]; ok {
+					o.UnblendedCost = Cost{
+						Amount: *v.Amount,
+						Unit:   *v.Unit,
+					}
+				}
+
+				if v, ok := g.Metrics["BlendedCost"]; ok {
+					o.BlendedCost = Cost{
+						Amount: *v.Amount,
+						Unit:   *v.Unit,
+					}
 				}
 
 				out = append(out, o)
