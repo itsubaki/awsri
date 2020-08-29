@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/itsubaki/hermes/cmd/cache/list"
+	"github.com/itsubaki/hermes/cmd/cache/rm"
 	"github.com/itsubaki/hermes/cmd/cost"
 	"github.com/itsubaki/hermes/cmd/fetch"
 	"github.com/itsubaki/hermes/cmd/org"
@@ -61,6 +63,28 @@ func New(version string) *cli.App {
 		Flags: []cli.Flag{
 			region,
 			period,
+		},
+	}
+
+	rmcache := cli.Command{
+		Name:   "rm",
+		Action: rm.Action,
+		Usage:  "remove fetched data",
+	}
+
+	lscache := cli.Command{
+		Name:    "list",
+		Aliases: []string{"ls"},
+		Action:  list.Action,
+		Usage:   "list fetched data",
+	}
+
+	cache := cli.Command{
+		Name:  "cache",
+		Usage: "output fetched data",
+		Subcommands: []cli.Command{
+			rmcache,
+			lscache,
 		},
 	}
 
@@ -193,13 +217,14 @@ func New(version string) *cli.App {
 	}
 
 	app.Commands = []cli.Command{
+		org,
 		fetch,
+		cache,
 		pricing,
 		cost,
 		usage,
 		reservation,
 		recommend,
-		org,
 	}
 
 	return app
