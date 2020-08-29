@@ -70,6 +70,11 @@ func New(version string) *cli.App {
 		Name:   "rm",
 		Action: rm.Action,
 		Usage:  "remove fetched data",
+		Flags: []cli.Flag{
+			cli.BoolFlag{
+				Name: "yes, y",
+			},
+		},
 	}
 
 	lscache := cli.Command{
