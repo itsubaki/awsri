@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/itsubaki/hermes/pkg/flag"
 	"github.com/itsubaki/hermes/pkg/reservation/reserved"
 	"github.com/urfave/cli"
 )
 
 func Action(c *cli.Context) {
-	region := c.StringSlice("region")
 	format := c.String("format")
+	region := flag.Split(c.StringSlice("region"))
 
 	rsv, err := reserved.Fetch(region)
 	if err != nil {

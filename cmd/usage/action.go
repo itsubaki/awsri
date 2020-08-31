@@ -6,6 +6,7 @@ import (
 	"sort"
 
 	"github.com/itsubaki/hermes/pkg/calendar"
+	"github.com/itsubaki/hermes/pkg/flag"
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/usage"
 	"github.com/urfave/cli"
@@ -13,7 +14,6 @@ import (
 
 func Action(c *cli.Context) {
 	dir := c.GlobalString("dir")
-	region := c.StringSlice("region")
 	format := c.String("format")
 	normalize := c.Bool("normalize")
 	merge := c.Bool("merge")
@@ -21,6 +21,7 @@ func Action(c *cli.Context) {
 	groupby := c.Bool("groupby")
 	period := c.String("period")
 	attribute := c.String("attribute")
+	region := flag.Split(c.StringSlice("region"))
 
 	date, err := calendar.Last(period)
 	if err != nil {

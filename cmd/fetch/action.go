@@ -6,6 +6,7 @@ import (
 
 	"github.com/itsubaki/hermes/pkg/calendar"
 	"github.com/itsubaki/hermes/pkg/cost"
+	"github.com/itsubaki/hermes/pkg/flag"
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/reservation"
 	"github.com/itsubaki/hermes/pkg/usage"
@@ -14,9 +15,9 @@ import (
 
 func Action(c *cli.Context) {
 	dir := c.GlobalString("dir")
-	region := c.StringSlice("region")
 	period := c.String("period")
-	metrics := c.StringSlice("metrics")
+	region := flag.Split(c.StringSlice("region"))
+	metrics := flag.Split(c.StringSlice("metrics"))
 
 	date, err := calendar.Last(period)
 	if err != nil {

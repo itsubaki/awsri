@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/itsubaki/hermes/pkg/flag"
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/urfave/cli"
 )
 
 func Action(c *cli.Context) {
 	dir := c.GlobalString("dir")
-	region := c.StringSlice("region")
 	format := c.String("format")
+	region := flag.Split(c.StringSlice("region"))
 
 	price, err := pricing.Deserialize(dir, region)
 	if err != nil {
