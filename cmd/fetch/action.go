@@ -16,6 +16,7 @@ func Action(c *cli.Context) {
 	dir := c.GlobalString("dir")
 	region := c.StringSlice("region")
 	period := c.String("period")
+	metrics := c.StringSlice("metrics")
 
 	date, err := calendar.Last(period)
 	if err != nil {
@@ -23,7 +24,7 @@ func Action(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	if err := cost.Serialize(dir, date); err != nil {
+	if err := cost.Serialize(dir, date, metrics); err != nil {
 		fmt.Printf("serialize cost: %v", err)
 		os.Exit(1)
 	}

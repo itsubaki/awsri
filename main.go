@@ -63,6 +63,18 @@ func New(version string) *cli.App {
 		Flags: []cli.Flag{
 			region,
 			period,
+			cli.StringSliceFlag{
+				Name:   "metrics, m",
+				EnvVar: "METRICS",
+				Usage:  "NetAmortizedCost, NetUnblendedCost, UnblendedCost, AmortizedCost, BlendedCost",
+				Value: &cli.StringSlice{
+					"NetAmortizedCost",
+					"NetUnblendedCost",
+					"UnblendedCost",
+					"AmortizedCost",
+					"BlendedCost",
+				},
+			},
 		},
 	}
 

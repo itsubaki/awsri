@@ -56,19 +56,28 @@ func (a AccountCost) Pretty() string {
 	return pretty.String()
 }
 
-func Fetch(start, end string) ([]AccountCost, error) {
-	return FetchWith(start, end, []string{})
+func Fetch(start, end string, metrics []string) ([]AccountCost, error) {
+	return FetchWith(start, end, []string{}, metrics)
 }
 
-func FetchWith(start, end string, dim []string) ([]AccountCost, error) {
-	input := costexplorer.GetCostAndUsageInput{
-		Metrics: []*string{
+func FetchWith(start, end string, dim, met []string) ([]AccountCost, error) {
+	metrics := make([]*string, 0)
+	for _, m := range met {
+		metrics = append(metrics, aws.String(m))
+	}
+
+	if len(metrics) < 1 {
+		metrics = []*string{
 			aws.String("NetAmortizedCost"),
 			aws.String("NetUnblendedCost"),
 			aws.String("UnblendedCost"),
 			aws.String("AmortizedCost"),
 			aws.String("BlendedCost"),
-		},
+		}
+	}
+
+	input := costexplorer.GetCostAndUsageInput{
+		Metrics:     metrics,
 		Granularity: aws.String("MONTHLY"),
 		GroupBy: []*costexplorer.GroupDefinition{
 			{

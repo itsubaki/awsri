@@ -10,7 +10,7 @@ import (
 	"github.com/itsubaki/hermes/pkg/calendar"
 )
 
-func Serialize(dir string, date []calendar.Date) error {
+func Serialize(dir string, date []calendar.Date, metrics []string) error {
 	path := fmt.Sprintf("%s/cost", dir)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		os.MkdirAll(path, os.ModePerm)
@@ -22,7 +22,7 @@ func Serialize(dir string, date []calendar.Date) error {
 			continue
 		}
 
-		ac, err := Fetch(date[i].Start, date[i].End)
+		ac, err := Fetch(date[i].Start, date[i].End, metrics)
 		if err != nil {
 			return fmt.Errorf("fetch cost (%s, %s): %v\n", date[i].Start, date[i].End, err)
 		}
