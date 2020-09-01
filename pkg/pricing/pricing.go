@@ -342,7 +342,7 @@ func fetch(region string, list PriceList) (map[string]Price, error) {
 				Operation:               pp.Attributes["operation"],
 				CacheEngine:             pp.Attributes["cacheEngine"],
 				DatabaseEngine:          pp.Attributes["databaseEngine"],
-				LeaseContractLength:     strings.TrimSpace(v.LeaseContractLength),
+				LeaseContractLength:     strings.ReplaceAll(v.LeaseContractLength, " ", ""),
 				PurchaseOption:          v.PurchaseOption,
 				OfferingClass:           v.OfferingClass,
 				OnDemand:                v.OnDemand,
