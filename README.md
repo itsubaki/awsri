@@ -2,8 +2,6 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/itsubaki/hermes?style=flat-square)](https://goreportcard.com/report/github.com/itsubaki/hermes)
 
- - AWS Cost Optimization Library
-
 ## Motivation
 
  In order to reduce AWS cost,
