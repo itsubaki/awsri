@@ -1,4 +1,4 @@
-package reservation
+package reservation_test
 
 import (
 	"fmt"
@@ -6,14 +6,15 @@ import (
 	"testing"
 
 	"github.com/itsubaki/hermes/pkg/calendar"
+	"github.com/itsubaki/hermes/pkg/reservation"
 )
 
 func TestGroupBy(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	merged := make([]Utilization, 0)
+	merged := make([]reservation.Utilization, 0)
 	for _, d := range calendar.LastNMonths(3) {
-		u, err := Fetch(d.Start, d.End)
+		u, err := reservation.Fetch(d.Start, d.End)
 		if err != nil {
 			t.Errorf("fetch: %v", err)
 		}
@@ -21,7 +22,7 @@ func TestGroupBy(t *testing.T) {
 		merged = append(merged, u...)
 	}
 
-	g, _ := GroupBy(merged)
+	g, _ := reservation.GroupBy(merged)
 	for _, m := range g {
 		fmt.Printf("%v, %v, %v, ", m[0].AccountID, m[0].Region, m[0].InstanceType)
 		for _, mm := range m {

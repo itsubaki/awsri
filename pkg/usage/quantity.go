@@ -92,7 +92,7 @@ func FetchWith(start, end string, fn []FetchFunc) ([]Quantity, error) {
 		return nil, fmt.Errorf("get linked account: %v", err)
 	}
 
-	usageType, err := fetchUsageType(start, end)
+	usageType, err := FetchUsageType(start, end)
 	if err != nil {
 		return nil, fmt.Errorf("get usage type: %v", err)
 	}
@@ -114,11 +114,11 @@ func FetchWith(start, end string, fn []FetchFunc) ([]Quantity, error) {
 
 func Fetch(start, end string) ([]Quantity, error) {
 	return FetchWith(start, end, []FetchFunc{
-		fetchBoxUsage,
-		fetchNodeUsage,
-		fetchInstanceUsage,
-		fetchMultiAZUsage,
-		fetchNode,
+		FetchBoxUsage,
+		FetchNodeUsage,
+		FetchInstanceUsage,
+		FetchMultiAZUsage,
+		FetchNode,
 		// TODO buggy
 		//fetchDataTransfer,
 		//fetchRequests,
@@ -126,7 +126,7 @@ func Fetch(start, end string) ([]Quantity, error) {
 	})
 }
 
-func fetchDataTransfer(start, end string, account Account, usageType []string) ([]Quantity, error) {
+func FetchDataTransfer(start, end string, account Account, usageType []string) ([]Quantity, error) {
 	ut := make([]string, 0)
 	for i := range usageType {
 		// JP-DataTransfer-Out-Bytes is CloudFront -> Japan -> Bandwidth in AWS Console
@@ -137,7 +137,7 @@ func fetchDataTransfer(start, end string, account Account, usageType []string) (
 		ut = append(ut, usageType[i])
 	}
 
-	return fetchQuantity(&GetQuantityInput{
+	return FetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
 		Metric:      "UsageQuantity",
@@ -147,7 +147,7 @@ func fetchDataTransfer(start, end string, account Account, usageType []string) (
 	})
 }
 
-func fetchRequests(start, end string, account Account, usageType []string) ([]Quantity, error) {
+func FetchRequests(start, end string, account Account, usageType []string) ([]Quantity, error) {
 	ut := make([]string, 0)
 	for i := range usageType {
 		if !strings.Contains(usageType[i], "Requests-") {
@@ -157,7 +157,7 @@ func fetchRequests(start, end string, account Account, usageType []string) ([]Qu
 		ut = append(ut, usageType[i])
 	}
 
-	return fetchQuantity(&GetQuantityInput{
+	return FetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
 		Metric:      "UsageQuantity",
@@ -167,7 +167,7 @@ func fetchRequests(start, end string, account Account, usageType []string) ([]Qu
 	})
 }
 
-func fetchBoxUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
+func FetchBoxUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
 	ut := make([]string, 0)
 	for i := range usageType {
 		if !strings.Contains(usageType[i], "BoxUsage:") {
@@ -176,7 +176,7 @@ func fetchBoxUsage(start, end string, account Account, usageType []string) ([]Qu
 		ut = append(ut, usageType[i])
 	}
 
-	return fetchQuantity(&GetQuantityInput{
+	return FetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
 		Metric:      "UsageQuantity",
@@ -187,7 +187,7 @@ func fetchBoxUsage(start, end string, account Account, usageType []string) ([]Qu
 	})
 }
 
-func fetchSpotUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
+func FetchSpotUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
 	ut := make([]string, 0)
 	for i := range usageType {
 		if !strings.Contains(usageType[i], "SpotUsage:") {
@@ -196,7 +196,7 @@ func fetchSpotUsage(start, end string, account Account, usageType []string) ([]Q
 		ut = append(ut, usageType[i])
 	}
 
-	return fetchQuantity(&GetQuantityInput{
+	return FetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
 		Metric:      "UsageQuantity",
@@ -207,7 +207,7 @@ func fetchSpotUsage(start, end string, account Account, usageType []string) ([]Q
 	})
 }
 
-func fetchNodeUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
+func FetchNodeUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
 	ut := make([]string, 0)
 	for i := range usageType {
 		if !strings.Contains(usageType[i], "NodeUsage:") {
@@ -216,7 +216,7 @@ func fetchNodeUsage(start, end string, account Account, usageType []string) ([]Q
 		ut = append(ut, usageType[i])
 	}
 
-	return fetchQuantity(&GetQuantityInput{
+	return FetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
 		Metric:      "UsageQuantity",
@@ -227,7 +227,7 @@ func fetchNodeUsage(start, end string, account Account, usageType []string) ([]Q
 	})
 }
 
-func fetchInstanceUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
+func FetchInstanceUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
 	ut := make([]string, 0)
 	for i := range usageType {
 		if !strings.Contains(usageType[i], "InstanceUsage:") {
@@ -237,7 +237,7 @@ func fetchInstanceUsage(start, end string, account Account, usageType []string) 
 		ut = append(ut, usageType[i])
 	}
 
-	return fetchQuantity(&GetQuantityInput{
+	return FetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
 		Metric:      "UsageQuantity",
@@ -248,7 +248,7 @@ func fetchInstanceUsage(start, end string, account Account, usageType []string) 
 	})
 }
 
-func fetchMultiAZUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
+func FetchMultiAZUsage(start, end string, account Account, usageType []string) ([]Quantity, error) {
 	ut := make([]string, 0)
 	for i := range usageType {
 		if !strings.Contains(usageType[i], "Multi-AZUsage:") {
@@ -258,7 +258,7 @@ func fetchMultiAZUsage(start, end string, account Account, usageType []string) (
 		ut = append(ut, usageType[i])
 	}
 
-	return fetchQuantity(&GetQuantityInput{
+	return FetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
 		Metric:      "UsageQuantity",
@@ -269,7 +269,7 @@ func fetchMultiAZUsage(start, end string, account Account, usageType []string) (
 	})
 }
 
-func fetchNode(start, end string, account Account, usageType []string) ([]Quantity, error) {
+func FetchNode(start, end string, account Account, usageType []string) ([]Quantity, error) {
 	ut := make([]string, 0)
 	for i := range usageType {
 		if !strings.Contains(usageType[i], "Node:") {
@@ -278,7 +278,7 @@ func fetchNode(start, end string, account Account, usageType []string) ([]Quanti
 		ut = append(ut, usageType[i])
 	}
 
-	q, err := fetchQuantity(&GetQuantityInput{
+	q, err := FetchQuantity(&GetQuantityInput{
 		AccountID:   account.ID,
 		Description: account.Description,
 		Metric:      "UsageQuantity",
@@ -299,7 +299,7 @@ func fetchNode(start, end string, account Account, usageType []string) ([]Quanti
 	return out, nil
 }
 
-func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
+func FetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 	and := make([]*costexplorer.Expression, 0)
 	and = append(and, &costexplorer.Expression{
 		Dimensions: &costexplorer.DimensionValues{
@@ -438,7 +438,7 @@ func fetchQuantity(in *GetQuantityInput) ([]Quantity, error) {
 	return out, nil
 }
 
-func fetchUsageType(start, end string) ([]string, error) {
+func FetchUsageType(start, end string) ([]string, error) {
 	input := costexplorer.GetDimensionValuesInput{
 		Dimension: aws.String("USAGE_TYPE"),
 		TimePeriod: &costexplorer.DateInterval{

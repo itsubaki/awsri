@@ -1,10 +1,11 @@
-package recommend
+package recommend_test
 
 import (
 	"fmt"
 	"testing"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
+	"github.com/itsubaki/hermes/pkg/recommend"
 	"github.com/itsubaki/hermes/pkg/usage"
 )
 
@@ -39,5 +40,5 @@ func TestRecommend(t *testing.T) {
 		{Date: "2019-01", InstanceNum: 10},
 	}
 
-	fmt.Println(Do(forecast, price).Pretty())
+	fmt.Println(recommend.Do(forecast, price).Pretty())
 }

@@ -1,4 +1,4 @@
-package usage
+package usage_test
 
 import (
 	"fmt"
@@ -6,13 +6,14 @@ import (
 	"testing"
 
 	"github.com/itsubaki/hermes/pkg/calendar"
+	"github.com/itsubaki/hermes/pkg/usage"
 )
 
 func TestFetchLinkedAccount(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
 	m := calendar.LastNMonths(1)[0]
-	list, err := FetchLinkedAccount(m.Start, m.End)
+	list, err := usage.FetchLinkedAccount(m.Start, m.End)
 	if err != nil {
 		t.Errorf("get usage quantity: %v", err)
 	}

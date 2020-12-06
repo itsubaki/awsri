@@ -1,9 +1,10 @@
-package recommend
+package recommend_test
 
 import (
 	"testing"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
+	"github.com/itsubaki/hermes/pkg/recommend"
 	"github.com/itsubaki/hermes/pkg/usage"
 )
 
@@ -38,7 +39,7 @@ func TestBreakEvenPoint(t *testing.T) {
 		{InstanceNum: 10},
 	}
 
-	q, _ := BreakEvenPoint(forecast, price)
+	q, _ := recommend.BreakEvenPoint(forecast, price)
 	if q.InstanceNum != 40 {
 		t.Errorf("%v", q.InstanceNum)
 	}

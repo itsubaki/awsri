@@ -1,15 +1,17 @@
-package reserved
+package reserved_test
 
 import (
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/itsubaki/hermes/pkg/reservation/reserved"
 )
 
 func TestFetch(t *testing.T) {
 	os.Setenv("AWS_PROFILE", "example")
 
-	r, err := Fetch([]string{
+	r, err := reserved.Fetch([]string{
 		"ap-northeast-1",
 		"us-west-1",
 		"us-west-2",

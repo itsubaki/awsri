@@ -1,18 +1,20 @@
-package pricing
+package pricing_test
 
 import (
 	"fmt"
 	"testing"
+
+	"github.com/itsubaki/hermes/pkg/pricing"
 )
 
 func TestMinimum(t *testing.T) {
-	plist, err := Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
+	plist, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
 	if err != nil {
 		t.Errorf("desirialize pricing: %v", err)
 	}
 
-	family := Family(plist)
-	mini := Minimum(plist, family)
+	family := pricing.Family(plist)
+	mini := pricing.Minimum(plist, family)
 	for _, v := range mini {
 		fmt.Println(v)
 	}

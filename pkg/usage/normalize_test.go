@@ -1,9 +1,10 @@
-package usage
+package usage_test
 
 import (
 	"testing"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
+	"github.com/itsubaki/hermes/pkg/usage"
 )
 
 func TestNormalize(t *testing.T) {
@@ -15,7 +16,7 @@ func TestNormalize(t *testing.T) {
 	family := pricing.Family(plist)
 	mini := pricing.Minimum(plist, family)
 
-	forecast := []Quantity{
+	forecast := []usage.Quantity{
 		{
 			Region:       "ap-northeast-1",
 			UsageType:    "APN1-BoxUsage:m4.large",
@@ -39,7 +40,7 @@ func TestNormalize(t *testing.T) {
 		},
 	}
 
-	n := Normalize(forecast, mini)
+	n := usage.Normalize(forecast, mini)
 	for _, nn := range n {
 		if nn.UsageType != "APN1-BoxUsage:m4.large" {
 			t.Errorf("%s\n", nn)

@@ -1,16 +1,18 @@
-package pricing
+package pricing_test
 
 import (
 	"testing"
+
+	"github.com/itsubaki/hermes/pkg/pricing"
 )
 
 func TestFetchRedshift(t *testing.T) {
-	p, err := Fetch(Redshift, "ap-northeast-1")
+	p, err := pricing.Fetch(pricing.Redshift, "ap-northeast-1")
 	if err != nil {
 		t.Error(err)
 	}
 
-	price := make([]Price, 0)
+	price := make([]pricing.Price, 0)
 	for _, v := range p {
 		price = append(price, v)
 	}
@@ -22,11 +24,11 @@ func TestFetchRedshift(t *testing.T) {
 
 func TestBreakEvenPoint(t *testing.T) {
 	cases := []struct {
-		Price Price
+		Price pricing.Price
 		Point int
 	}{
 		{
-			Price{
+			pricing.Price{
 				Region:                  "ap-northeast-1",
 				UsageType:               "APN1-BoxUsage:c4.large",
 				Tenancy:                 "Shared",
@@ -43,7 +45,7 @@ func TestBreakEvenPoint(t *testing.T) {
 			9,
 		},
 		{
-			Price{
+			pricing.Price{
 				Region:                  "ap-northeast-1",
 				UsageType:               "APN1-BoxUsage:c4.large",
 				Tenancy:                 "Shared",
@@ -60,7 +62,7 @@ func TestBreakEvenPoint(t *testing.T) {
 			9,
 		},
 		{
-			Price{
+			pricing.Price{
 				Region:                  "ap-northeast-1",
 				UsageType:               "APN1-BoxUsage:c4.large",
 				Tenancy:                 "Shared",

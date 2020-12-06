@@ -1,8 +1,10 @@
-package pricing
+package pricing_test
 
 import (
 	"fmt"
 	"testing"
+
+	"github.com/itsubaki/hermes/pkg/pricing"
 )
 
 func TestSerialize(t *testing.T) {
@@ -10,7 +12,7 @@ func TestSerialize(t *testing.T) {
 }
 
 func TestDeserialize(t *testing.T) {
-	price, err := Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
+	price, err := pricing.Deserialize("/var/tmp/hermes", []string{"ap-northeast-1"})
 	if err != nil {
 		t.Errorf("desirialize: %v", err)
 	}
