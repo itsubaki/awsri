@@ -2,35 +2,34 @@ package cost
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/itsubaki/hermes/pkg/calendar"
 	"github.com/itsubaki/hermes/pkg/cost"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-func Action(c *cli.Context) {
-	dir := c.GlobalString("dir")
+func Action(c *cli.Context) error {
+	dir := c.String("dir")
 	format := c.String("format")
 	period := c.String("period")
 	attribute := c.String("attribute")
 
 	date, err := calendar.Last(period)
 	if err != nil {
-		fmt.Printf("get last period=%s: %v", period, err)
-		os.Exit(1)
+		return fmt.Errorf("get last period=%s: %v", period, err)
 	}
 
 	ac, err := cost.Deserialize(dir, date)
 	if err != nil {
-		fmt.Printf("deserialize cost: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("deserialize cost: %v\n", err)
 	}
 
 	if format == "json" {
 		for _, a := range ac {
 			fmt.Println(a)
 		}
+
+		return nil
 	}
 
 	if format == "csv" {
@@ -79,6 +78,8 @@ func Action(c *cli.Context) {
 			fmt.Println()
 		}
 
-		return
+		return nil
 	}
+
+	return fmt.Errorf("invalid format=%v", format)
 }

@@ -9,17 +9,15 @@ import (
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/recommend"
 	"github.com/itsubaki/hermes/pkg/usage"
-
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-func Action(c *cli.Context) {
+func Action(c *cli.Context) error {
 	format := c.String("format")
 
 	stdin, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
-		fmt.Printf("read stdin: %v", err)
-		os.Exit(1)
+		return fmt.Errorf("read stdin: %v", err)
 	}
 
 	type Purchase struct {
@@ -29,8 +27,7 @@ func Action(c *cli.Context) {
 
 	var purchase []Purchase
 	if err := json.Unmarshal(stdin, &purchase); err != nil {
-		fmt.Printf("unmarshal: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("unmarshal: %v\n", err)
 	}
 
 	out := make([]recommend.Recommended, 0)
@@ -43,6 +40,8 @@ func Action(c *cli.Context) {
 		for _, o := range out {
 			fmt.Println(o)
 		}
+
+		return nil
 	}
 
 	if format == "csv" {
@@ -66,5 +65,9 @@ func Action(c *cli.Context) {
 				o.Cost.Saving,
 			)
 		}
+
+		return nil
 	}
+
+	return fmt.Errorf("invalid format=%v", format)
 }

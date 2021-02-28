@@ -14,7 +14,7 @@ import (
 	"github.com/itsubaki/hermes/cmd/reservation/reserved"
 	"github.com/itsubaki/hermes/cmd/reservation/utilization"
 	"github.com/itsubaki/hermes/cmd/usage"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 var date, hash, goversion string
@@ -26,33 +26,37 @@ func New(version string) *cli.App {
 	app.Usage = "aws cost optimization"
 	app.Version = version
 	app.Flags = []cli.Flag{
-		cli.StringFlag{
-			Name:  "dir, d",
-			Value: "/var/tmp/hermes",
+		&cli.StringFlag{
+			Name:    "dir",
+			Aliases: []string{"d"},
+			Value:   "/var/tmp/hermes",
 		},
 	}
 
 	region := cli.StringSliceFlag{
-		Name:   "region, r",
-		EnvVar: "REGION",
-		Usage:  "ap-east-1, ap-south-1, ap-northeast-1, ap-northeast-2, ap-northeast-3, ap-southeast-1, ap-southeast-2, eu-north-1, eu-west-1, eu-west-2, eu-west-3, eu-central-1, us-east-1, us-east-2, us-west-1, us-west-2, us-gov-east-1, us-gov-west-1, ca-central-1, sa-east-1, me-south-1",
-		Value: &cli.StringSlice{
+		Name:    "region",
+		Aliases: []string{"r"},
+		EnvVars: []string{"REGION"},
+		Usage:   "ap-east-1, ap-south-1, ap-northeast-1, ap-northeast-2, ap-northeast-3, ap-southeast-1, ap-southeast-2, eu-north-1, eu-west-1, eu-west-2, eu-west-3, eu-central-1, us-east-1, us-east-2, us-west-1, us-west-2, us-gov-east-1, us-gov-west-1, ca-central-1, sa-east-1, me-south-1",
+		Value: cli.NewStringSlice(
 			"ap-northeast-1",
 			"ap-southeast-1",
 			"us-west-1",
 			"us-west-2",
-		},
+		),
 	}
 
 	format := cli.StringFlag{
-		Name:  "format, f",
-		Value: "json",
-		Usage: "json, csv",
+		Name:    "format",
+		Aliases: []string{"f"},
+		Value:   "json",
+		Usage:   "json, csv",
 	}
 
 	period := cli.StringFlag{
-		Name:  "period, p",
-		Value: "12m",
+		Name:    "period",
+		Aliases: []string{"p"},
+		Value:   "12m",
 	}
 
 	fetch := cli.Command{
@@ -61,19 +65,20 @@ func New(version string) *cli.App {
 		Action:  fetch.Action,
 		Usage:   "fetch aws pricing, usage, reservation, cost",
 		Flags: []cli.Flag{
-			region,
-			period,
-			cli.StringSliceFlag{
-				Name:   "metrics, m",
-				EnvVar: "METRICS",
-				Usage:  "NetAmortizedCost, NetUnblendedCost, UnblendedCost, AmortizedCost, BlendedCost",
-				Value: &cli.StringSlice{
+			&region,
+			&period,
+			&cli.StringSliceFlag{
+				Name:    "metrics",
+				Aliases: []string{"m"},
+				EnvVars: []string{"METRICS"},
+				Usage:   "NetAmortizedCost, NetUnblendedCost, UnblendedCost, AmortizedCost, BlendedCost",
+				Value: cli.NewStringSlice(
 					"NetAmortizedCost",
 					"NetUnblendedCost",
 					"UnblendedCost",
 					"AmortizedCost",
 					"BlendedCost",
-				},
+				),
 			},
 		},
 	}
@@ -83,8 +88,9 @@ func New(version string) *cli.App {
 		Action: rm.Action,
 		Usage:  "remove fetched data",
 		Flags: []cli.Flag{
-			cli.BoolFlag{
-				Name: "yes, y",
+			&cli.BoolFlag{
+				Name:    "yes",
+				Aliases: []string{"y"},
 			},
 		},
 	}
@@ -99,9 +105,9 @@ func New(version string) *cli.App {
 	cache := cli.Command{
 		Name:  "cache",
 		Usage: "output fetched data",
-		Subcommands: []cli.Command{
-			rmcache,
-			lscache,
+		Subcommands: []*cli.Command{
+			&rmcache,
+			&lscache,
 		},
 	}
 
@@ -111,8 +117,8 @@ func New(version string) *cli.App {
 		Action:  pricing.Action,
 		Usage:   "output aws pricing",
 		Flags: []cli.Flag{
-			region,
-			format,
+			&region,
+			&format,
 		},
 	}
 
@@ -122,12 +128,13 @@ func New(version string) *cli.App {
 		Action:  cost.Action,
 		Usage:   "output cost group by linked account",
 		Flags: []cli.Flag{
-			format,
-			period,
-			cli.StringFlag{
-				Name:  "attribute, a",
-				Usage: "blended, unblended, net-unblended, amortized, net-amortized (format csv only)",
-				Value: "unblended",
+			&format,
+			&period,
+			&cli.StringFlag{
+				Name:    "attribute",
+				Aliases: []string{"a"},
+				Usage:   "blended, unblended, net-unblended, amortized, net-amortized (format csv only)",
+				Value:   "unblended",
 			},
 		},
 	}
@@ -138,29 +145,34 @@ func New(version string) *cli.App {
 		Action:  usage.Action,
 		Usage:   "output aws instance hour usage",
 		Flags: []cli.Flag{
-			region,
-			format,
-			period,
-			cli.BoolFlag{
-				Name:  "normalize, n",
-				Usage: "output normalized usage",
+			&region,
+			&format,
+			&period,
+			&cli.BoolFlag{
+				Name:    "normalize",
+				Aliases: []string{"n"},
+				Usage:   "output normalized usage",
 			},
-			cli.BoolFlag{
-				Name:  "merge, m",
-				Usage: "output merged usage group by linked account",
+			&cli.BoolFlag{
+				Name:    "merge",
+				Aliases: []string{"m"},
+				Usage:   "output merged usage group by linked account",
 			},
-			cli.BoolFlag{
-				Name:  "merge-overall, mm",
-				Usage: "output merged usage",
+			&cli.BoolFlag{
+				Name:    "merge-overall",
+				Aliases: []string{"mm"},
+				Usage:   "output merged usage",
 			},
-			cli.BoolFlag{
-				Name:  "groupby, g",
-				Usage: "output group by month/day usage (format json only)",
+			&cli.BoolFlag{
+				Name:    "groupby",
+				Aliases: []string{"g"},
+				Usage:   "output group by month/day usage (format json only)",
 			},
-			cli.StringFlag{
-				Name:  "attribute, a",
-				Usage: "hours, num (format csv only)",
-				Value: "hours",
+			&cli.StringFlag{
+				Name:    "attribute",
+				Aliases: []string{"a"},
+				Usage:   "hours, num (format csv only)",
+				Value:   "hours",
 			},
 		},
 	}
@@ -171,25 +183,29 @@ func New(version string) *cli.App {
 		Usage:   "output reservation utilization and coverage group by linked account",
 		Action:  utilization.Action,
 		Flags: []cli.Flag{
-			region,
-			format,
-			period,
-			cli.BoolFlag{
-				Name:  "normalize, n",
-				Usage: "output normalized usage",
+			&region,
+			&format,
+			&period,
+			&cli.BoolFlag{
+				Name:    "normalize",
+				Aliases: []string{"n"},
+				Usage:   "output normalized usage",
 			},
-			cli.BoolFlag{
-				Name:  "merge, m",
-				Usage: "output merged usage group by linked account",
+			&cli.BoolFlag{
+				Name:    "merge",
+				Aliases: []string{"m"},
+				Usage:   "output merged usage group by linked account",
 			},
-			cli.BoolFlag{
-				Name:  "groupby, g",
-				Usage: "output group by month/day usage (format json only)",
+			&cli.BoolFlag{
+				Name:    "groupby",
+				Aliases: []string{"g"},
+				Usage:   "output group by month/day usage (format json only)",
 			},
-			cli.StringFlag{
-				Name:  "attribute, a",
-				Usage: "hours, num, percentage, ondemand-conversion-cost (format csv only)",
-				Value: "hours",
+			&cli.StringFlag{
+				Name:    "attribute",
+				Aliases: []string{"a"},
+				Usage:   "hours, num, percentage, ondemand-conversion-cost (format csv only)",
+				Value:   "hours",
 			},
 		},
 	}
@@ -200,8 +216,8 @@ func New(version string) *cli.App {
 		Usage:   "output history of reserved request",
 		Action:  reserved.Action,
 		Flags: []cli.Flag{
-			region,
-			format,
+			&region,
+			&format,
 		},
 	}
 
@@ -209,9 +225,9 @@ func New(version string) *cli.App {
 		Name:    "reservation",
 		Aliases: []string{"r"},
 		Usage:   "output reservation utilization, coverage, reserved",
-		Subcommands: []cli.Command{
-			rsvutil,
-			rsved,
+		Subcommands: []*cli.Command{
+			&rsvutil,
+			&rsved,
 		},
 	}
 
@@ -220,7 +236,7 @@ func New(version string) *cli.App {
 		Action: recommend.Action,
 		Usage:  "output recommended reserved instance num",
 		Flags: []cli.Flag{
-			format,
+			&format,
 		},
 	}
 
@@ -229,19 +245,19 @@ func New(version string) *cli.App {
 		Action: org.Action,
 		Usage:  "output list of accounts",
 		Flags: []cli.Flag{
-			format,
+			&format,
 		},
 	}
 
-	app.Commands = []cli.Command{
-		org,
-		fetch,
-		cache,
-		pricing,
-		cost,
-		usage,
-		reservation,
-		recommend,
+	app.Commands = []*cli.Command{
+		&org,
+		&fetch,
+		&cache,
+		&pricing,
+		&cost,
+		&usage,
+		&reservation,
+		&recommend,
 	}
 
 	return app

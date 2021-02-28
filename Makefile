@@ -6,8 +6,8 @@ LDFLAGS := -X 'main.date=${DATE}' -X 'main.hash=${HASH}' -X 'main.goversion=${GO
 
 install:
 	-rm ${GOPATH}/bin/hermes
-	GO111MODULE=on go mod tidy
-	GO111MODULE=on go install -ldflags "${LDFLAGS}" github.com/itsubaki/hermes
+	go mod tidy
+	go install -ldflags "${LDFLAGS}"
 
 .PHONY: test
 test:

@@ -2,7 +2,6 @@ package fetch
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/itsubaki/hermes/pkg/calendar"
 	"github.com/itsubaki/hermes/pkg/cost"
@@ -10,38 +9,35 @@ import (
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/reservation"
 	"github.com/itsubaki/hermes/pkg/usage"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-func Action(c *cli.Context) {
-	dir := c.GlobalString("dir")
+func Action(c *cli.Context) error {
+	dir := c.String("dir")
 	period := c.String("period")
 	region := flag.Split(c.StringSlice("region"))
 	metrics := flag.Split(c.StringSlice("metrics"))
 
 	date, err := calendar.Last(period)
 	if err != nil {
-		fmt.Printf("get last period=%s: %v", period, err)
-		os.Exit(1)
+		return fmt.Errorf("get last period=%s: %v", period, err)
 	}
 
 	if err := cost.Serialize(dir, date, metrics); err != nil {
-		fmt.Printf("serialize cost: %v", err)
-		os.Exit(1)
+		return fmt.Errorf("serialize cost: %v", err)
 	}
 
 	if err := reservation.Serialize(dir, date); err != nil {
-		fmt.Printf("serialize reservation: %v", err)
-		os.Exit(1)
+		return fmt.Errorf("serialize reservation: %v", err)
 	}
 
 	if err := usage.Serialize(dir, date); err != nil {
-		fmt.Printf("serialize usage: %v", err)
-		os.Exit(1)
+		return fmt.Errorf("serialize usage: %v", err)
 	}
 
 	if err := pricing.Serialize(dir, region); err != nil {
-		fmt.Printf("serialize pricing: %v", err)
-		os.Exit(1)
+		return fmt.Errorf("serialize pricing: %v", err)
 	}
+
+	return nil
 }

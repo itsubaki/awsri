@@ -3,14 +3,13 @@ package org
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/organizations"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-func Action(c *cli.Context) {
+func Action(c *cli.Context) error {
 	format := c.String("format")
 
 	svc := organizations.New(session.Must(session.NewSession()))
@@ -24,8 +23,7 @@ func Action(c *cli.Context) {
 
 		result, err := svc.ListAccounts(input)
 		if err != nil {
-			fmt.Printf("list accounts: %v", err)
-			os.Exit(1)
+			return fmt.Errorf("list accounts: %v", err)
 		}
 
 		for i := range result.Accounts {
@@ -49,7 +47,7 @@ func Action(c *cli.Context) {
 			fmt.Println(string(b))
 		}
 
-		return
+		return nil
 	}
 
 	if format == "csv" {
@@ -57,5 +55,9 @@ func Action(c *cli.Context) {
 		for _, o := range output {
 			fmt.Printf("%s, %s, %s, %s, %s, %s, %s\n", *o.Arn, *o.Email, *o.Id, *o.JoinedMethod, *o.JoinedTimestamp, *o.Name, *o.Status)
 		}
+
+		return nil
 	}
+
+	return nil
 }

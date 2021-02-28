@@ -2,29 +2,28 @@ package pricing
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/itsubaki/hermes/pkg/flag"
 	"github.com/itsubaki/hermes/pkg/pricing"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-func Action(c *cli.Context) {
-	dir := c.GlobalString("dir")
+func Action(c *cli.Context) error {
+	dir := c.String("dir")
 	format := c.String("format")
 	region := flag.Split(c.StringSlice("region"))
 
 	price, err := pricing.Deserialize(dir, region)
 	if err != nil {
-		fmt.Printf("deserialize: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("deserialize: %v\n", err)
 	}
 
 	if format == "json" {
 		for _, p := range price {
 			fmt.Println(p)
 		}
-		return
+
+		return nil
 	}
 
 	if format == "csv" {
@@ -53,6 +52,9 @@ func Action(c *cli.Context) {
 				p.NormalizationSizeFactor,
 			)
 		}
-		return
+
+		return nil
 	}
+
+	return fmt.Errorf("invalid format=%v", format)
 }

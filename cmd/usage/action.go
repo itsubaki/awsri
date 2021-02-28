@@ -2,18 +2,17 @@ package usage
 
 import (
 	"fmt"
-	"os"
 	"sort"
 
 	"github.com/itsubaki/hermes/pkg/calendar"
 	"github.com/itsubaki/hermes/pkg/flag"
 	"github.com/itsubaki/hermes/pkg/pricing"
 	"github.com/itsubaki/hermes/pkg/usage"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-func Action(c *cli.Context) {
-	dir := c.GlobalString("dir")
+func Action(c *cli.Context) error {
+	dir := c.String("dir")
 	format := c.String("format")
 	normalize := c.Bool("normalize")
 	merge := c.Bool("merge")
@@ -25,21 +24,18 @@ func Action(c *cli.Context) {
 
 	date, err := calendar.Last(period)
 	if err != nil {
-		fmt.Printf("get last period=%s: %v", period, err)
-		os.Exit(1)
+		return fmt.Errorf("get last period=%s: %v", period, err)
 	}
 
 	quantity, err := usage.Deserialize(dir, date)
 	if err != nil {
-		fmt.Printf("deserialize usage: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("deserialize usage: %v\n", err)
 	}
 
 	if normalize {
 		plist, err := pricing.Deserialize(dir, region)
 		if err != nil {
-			fmt.Printf("desirialize pricing: %v\n", err)
-			os.Exit(1)
+			return fmt.Errorf("desirialize pricing: %v\n", err)
 		}
 
 		family := pricing.Family(plist)
@@ -60,7 +56,8 @@ func Action(c *cli.Context) {
 		for _, q := range quantity {
 			fmt.Println(q)
 		}
-		return
+
+		return nil
 	}
 
 	if format == "json" && groupby {
@@ -68,7 +65,8 @@ func Action(c *cli.Context) {
 		for _, q := range g {
 			fmt.Println(q)
 		}
-		return
+
+		return nil
 	}
 
 	if format == "csv" {
@@ -116,6 +114,9 @@ func Action(c *cli.Context) {
 
 			fmt.Println()
 		}
-		return
+
+		return nil
 	}
+
+	return fmt.Errorf("invalid format=%v", format)
 }

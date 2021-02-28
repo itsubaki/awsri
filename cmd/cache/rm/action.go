@@ -7,27 +7,26 @@ import (
 	"strings"
 
 	"github.com/itsubaki/hermes/cmd/cache"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-func Action(c *cli.Context) {
-	dir := c.GlobalString("dir")
+func Action(c *cli.Context) error {
+	dir := c.String("dir")
 	yes := c.Bool("yes")
 
 	files, err := cache.Dirwalk(dir)
 	if err != nil {
-		fmt.Printf("dir walk: %v", err)
-		os.Exit(1)
+		return fmt.Errorf("dir walk: %v", err)
 	}
 
 	if len(files) < 1 {
 		fmt.Println("file not found")
-		return
+		return nil
 	}
 
 	if yes {
 		remove(files)
-		return
+		return nil
 	}
 
 	for _, f := range files {
@@ -41,8 +40,10 @@ func Action(c *cli.Context) {
 
 	if yn == "y" || yn == "yes" {
 		remove(files)
-		return
+		return nil
 	}
+
+	return nil
 }
 
 func remove(files []string) {

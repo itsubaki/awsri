@@ -2,27 +2,27 @@ package reserved
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/itsubaki/hermes/pkg/flag"
 	"github.com/itsubaki/hermes/pkg/reservation/reserved"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-func Action(c *cli.Context) {
+func Action(c *cli.Context) error {
 	format := c.String("format")
 	region := flag.Split(c.StringSlice("region"))
 
 	rsv, err := reserved.Fetch(region)
 	if err != nil {
-		fmt.Printf("fetch region=%s: %v", region, err)
-		os.Exit(1)
+		return fmt.Errorf("fetch region=%s: %v", region, err)
 	}
 
 	if format == "json" {
 		for _, r := range rsv {
 			fmt.Println(r)
 		}
+
+		return nil
 	}
 
 	if format == "csv" {
@@ -44,5 +44,9 @@ func Action(c *cli.Context) {
 			)
 			fmt.Println()
 		}
+
+		return nil
 	}
+
+	return fmt.Errorf("invalid format=%v", format)
 }
