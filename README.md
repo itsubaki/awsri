@@ -12,7 +12,7 @@
 
 ## Required
 
-```
+```sh
 # set aws credential "example" with iam policy "hermes"
 
 $ cat ~/.aws/credentials
@@ -21,7 +21,7 @@ aws_access_key_id = ********************
 aws_secret_access_key = ****************************************
 ```
 
-```
+```sh
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -45,13 +45,13 @@ aws_secret_access_key = ****************************************
 
 ## Install
 
-```
+```sh
 $ go get github.com/itsubaki/hermes
 ```
 
 ## CommandLine Example
 
-```
+```sh
 $ AWS_PROFILE=example hermes fetch
 write: /var/tmp/hermes/pricing/ap-northeast-1.out
 write: /var/tmp/hermes/pricing/us-west-2.out
@@ -68,7 +68,7 @@ write: /var/tmp/hermes/usage/2018-10.out
 write: /var/tmp/hermes/usage/2018-09.out
 ```
 
-```
+```sh
 $ hermes pricing | jq .
 [
   {
@@ -96,7 +96,7 @@ $ hermes pricing | jq .
 ]
 ```
 
-```
+```sh
 $ hermes usage | jq .
 [
   {
@@ -113,11 +113,11 @@ $ hermes usage | jq .
 ]
 ```
 
-```
+```sh
 $ hermes usage --format csv | column -t -s, | less -S
 ```
 
-```
+```sh
 $ cat purchase.json | hermes recommend | jq .
 {
   "region": "ap-northeast-1",
