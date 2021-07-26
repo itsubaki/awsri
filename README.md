@@ -46,7 +46,7 @@ aws_secret_access_key = ****************************************
 ## Install
 
 ```sh
-$ go get github.com/itsubaki/hermes
+$ go install github.com/itsubaki/hermes@latest
 ```
 
 ## CommandLine Example
