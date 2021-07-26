@@ -1,12 +1,12 @@
 package cache
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 )
 
 func Dirwalk(dir string) ([]string, error) {
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return []string{}, err
 	}

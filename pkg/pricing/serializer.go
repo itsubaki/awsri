@@ -3,7 +3,6 @@ package pricing
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"sort"
 )
@@ -20,19 +19,33 @@ func Serialize(dir string, region []string) error {
 			continue
 		}
 
+		ch := make(chan error, len(URL))
 		price := make([]Price, 0)
 		for _, url := range URL {
-			p, err := Fetch(url, r)
-			if err != nil {
-				return fmt.Errorf("fetch pricing (%s, %s): %v\n", url, r, err)
+
+			go func(url, region string) {
+				p, err := Fetch(url, region)
+				if err != nil {
+					ch <- fmt.Errorf("fetch pricing (%s, %s): %v\n", url, region, err)
+				}
+
+				list := make([]Price, 0)
+				for k := range p {
+					list = append(list, p[k])
+				}
+
+				price = append(price, list...)
+
+				ch <- nil
+			}(url, r)
+		}
+
+		for err := range ch {
+			if err == nil {
+				continue
 			}
 
-			list := make([]Price, 0)
-			for k := range p {
-				list = append(list, p[k])
-			}
-
-			price = append(price, list...)
+			return err
 		}
 
 		b, err := json.Marshal(price)
@@ -40,7 +53,7 @@ func Serialize(dir string, region []string) error {
 			return fmt.Errorf("marshal: %v", err)
 		}
 
-		if err := ioutil.WriteFile(file, b, os.ModePerm); err != nil {
+		if err := os.WriteFile(file, b, os.ModePerm); err != nil {
 			return fmt.Errorf("write file: %v", err)
 		}
 
@@ -58,7 +71,7 @@ func Deserialize(dir string, region []string) ([]Price, error) {
 			return []Price{}, fmt.Errorf("file not found: %v", file)
 		}
 
-		read, err := ioutil.ReadFile(file)
+		read, err := os.ReadFile(file)
 		if err != nil {
 			return []Price{}, fmt.Errorf("read %s: %v", file, err)
 		}

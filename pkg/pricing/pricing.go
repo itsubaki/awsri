@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -230,7 +230,7 @@ func FetchWithClient(url, region string, client *http.Client) (map[string]Price,
 			return nil, fmt.Errorf("get %s: %v", url, err)
 		}
 
-		buf, err := ioutil.ReadAll(resp.Body)
+		buf, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, fmt.Errorf("read body: %v", err)
 		}
@@ -248,7 +248,7 @@ func FetchWithClient(url, region string, client *http.Client) (map[string]Price,
 			return nil, fmt.Errorf("get %s: %v", url, err)
 		}
 
-		buf, err := ioutil.ReadAll(resp.Body)
+		buf, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, fmt.Errorf("read body: %v", err)
 		}

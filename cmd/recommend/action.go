@@ -3,7 +3,7 @@ package recommend
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/itsubaki/hermes/pkg/pricing"
@@ -15,7 +15,7 @@ import (
 func Action(c *cli.Context) error {
 	format := c.String("format")
 
-	stdin, err := ioutil.ReadAll(os.Stdin)
+	stdin, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		return fmt.Errorf("read stdin: %v", err)
 	}

@@ -3,7 +3,6 @@ package usage
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"sort"
 
@@ -32,7 +31,7 @@ func Serialize(dir string, date []calendar.Date) error {
 			return fmt.Errorf("marshal: %v\n", err)
 		}
 
-		if err := ioutil.WriteFile(file, b, os.ModePerm); err != nil {
+		if err := os.WriteFile(file, b, os.ModePerm); err != nil {
 			return fmt.Errorf("write file: %v\n", err)
 		}
 
@@ -50,7 +49,7 @@ func Deserialize(dir string, date []calendar.Date) ([]Quantity, error) {
 			return []Quantity{}, fmt.Errorf("file not found: %v", file)
 		}
 
-		read, err := ioutil.ReadFile(file)
+		read, err := os.ReadFile(file)
 		if err != nil {
 			return []Quantity{}, fmt.Errorf("read %s: %v", file, err)
 		}
