@@ -10,6 +10,12 @@
  This library shows the RI that you should buy now,
  based on the future instance usage and the current RI purchase.
 
+## Install
+
+```sh
+go install github.com/itsubaki/hermes@latest
+```
+
 ## Required
 
 ```sh
@@ -41,12 +47,6 @@ aws_secret_access_key = ****************************************
     }
   ]
 }
-```
-
-## Install
-
-```sh
-$ go install github.com/itsubaki/hermes@latest
 ```
 
 ## CommandLine Example
