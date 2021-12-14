@@ -92,9 +92,11 @@ func LastNMonthsWith(now time.Time, n int) []Date {
 func Last31Days() []Date {
 	return LastNDays(31)
 }
+
 func LastNDays(n int) []Date {
 	return LastNDaysWith(time.Now(), n)
 }
+
 func LastNDaysWith(now time.Time, n int) []Date {
 	days := make([]time.Time, 0)
 	for i := 1; i < n+1; i++ {
