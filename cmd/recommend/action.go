@@ -6,9 +6,9 @@ import (
 	"io"
 	"os"
 
-	"github.com/itsubaki/hermes/pkg/pricing"
-	"github.com/itsubaki/hermes/pkg/recommend"
-	"github.com/itsubaki/hermes/pkg/usage"
+	"github.com/itsubaki/hermes/pricing"
+	"github.com/itsubaki/hermes/recommend"
+	"github.com/itsubaki/hermes/usage"
 	"github.com/urfave/cli/v2"
 )
 

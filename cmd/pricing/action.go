@@ -3,8 +3,8 @@ package pricing
 import (
 	"fmt"
 
-	"github.com/itsubaki/hermes/pkg/flag"
-	"github.com/itsubaki/hermes/pkg/pricing"
+	"github.com/itsubaki/hermes/flag"
+	"github.com/itsubaki/hermes/pricing"
 	"github.com/urfave/cli/v2"
 )
 

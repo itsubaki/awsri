@@ -3,8 +3,8 @@ package reserved
 import (
 	"fmt"
 
-	"github.com/itsubaki/hermes/pkg/flag"
-	"github.com/itsubaki/hermes/pkg/reservation/reserved"
+	"github.com/itsubaki/hermes/flag"
+	"github.com/itsubaki/hermes/reservation/reserved"
 	"github.com/urfave/cli/v2"
 )
 

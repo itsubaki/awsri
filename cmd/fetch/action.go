@@ -3,12 +3,12 @@ package fetch
 import (
 	"fmt"
 
-	"github.com/itsubaki/hermes/pkg/calendar"
-	"github.com/itsubaki/hermes/pkg/cost"
-	"github.com/itsubaki/hermes/pkg/flag"
-	"github.com/itsubaki/hermes/pkg/pricing"
-	"github.com/itsubaki/hermes/pkg/reservation"
-	"github.com/itsubaki/hermes/pkg/usage"
+	"github.com/itsubaki/hermes/calendar"
+	"github.com/itsubaki/hermes/cost"
+	"github.com/itsubaki/hermes/flag"
+	"github.com/itsubaki/hermes/pricing"
+	"github.com/itsubaki/hermes/reservation"
+	"github.com/itsubaki/hermes/usage"
 	"github.com/urfave/cli/v2"
 )
 

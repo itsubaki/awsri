@@ -3,8 +3,8 @@ package cost
 import (
 	"fmt"
 
-	"github.com/itsubaki/hermes/pkg/calendar"
-	"github.com/itsubaki/hermes/pkg/cost"
+	"github.com/itsubaki/hermes/calendar"
+	"github.com/itsubaki/hermes/cost"
 	"github.com/urfave/cli/v2"
 )
 

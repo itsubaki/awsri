@@ -17,3 +17,6 @@ secret
 
 # goland
 .idea/
+
+# Codespaces
+.vscode
