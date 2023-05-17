@@ -56,7 +56,7 @@ func (a AccountCost) Pretty() string {
 	return pretty.String()
 }
 
-func Fetch(start, end string, metrics []string) ([]AccountCost, error) {
+func Fetch(start, end string, metrics ...string) ([]AccountCost, error) {
 	return FetchWith(start, end, []string{}, metrics)
 }
 

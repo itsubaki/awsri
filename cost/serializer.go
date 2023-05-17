@@ -21,7 +21,7 @@ func Serialize(dir string, date []calendar.Date, metrics []string) error {
 			continue
 		}
 
-		ac, err := Fetch(date[i].Start, date[i].End, metrics)
+		ac, err := Fetch(date[i].Start, date[i].End, metrics...)
 		if err != nil {
 			return fmt.Errorf("fetch cost (%s, %s): %v", date[i].Start, date[i].End, err)
 		}
