@@ -68,11 +68,11 @@ func FetchWith(start, end string, dim, met []string) ([]AccountCost, error) {
 
 	if len(metrics) < 1 {
 		metrics = []*string{
-			aws.String("NetAmortizedCost"),
-			aws.String("NetUnblendedCost"),
-			aws.String("UnblendedCost"),
-			aws.String("AmortizedCost"),
-			aws.String("BlendedCost"),
+			aws.String(NetAmortizedCost),
+			aws.String(NetUnblendedCost),
+			aws.String(UnblendedCost),
+			aws.String(AmortizedCost),
+			aws.String(BlendedCost),
 		}
 	}
 
@@ -173,35 +173,35 @@ func fetch(start, end string, input *costexplorer.GetCostAndUsageInput) ([]Accou
 					Date:       start,
 				}
 
-				if v, ok := g.Metrics["NetAmortizedCost"]; ok {
+				if v, ok := g.Metrics[NetAmortizedCost]; ok {
 					o.NetAmortizedCost = Cost{
 						Amount: *v.Amount,
 						Unit:   *v.Unit,
 					}
 				}
 
-				if v, ok := g.Metrics["NetUnblendedCost"]; ok {
+				if v, ok := g.Metrics[NetUnblendedCost]; ok {
 					o.NetUnblendedCost = Cost{
 						Amount: *v.Amount,
 						Unit:   *v.Unit,
 					}
 				}
 
-				if v, ok := g.Metrics["AmortizedCost"]; ok {
+				if v, ok := g.Metrics[AmortizedCost]; ok {
 					o.AmortizedCost = Cost{
 						Amount: *v.Amount,
 						Unit:   *v.Unit,
 					}
 				}
 
-				if v, ok := g.Metrics["UnblendedCost"]; ok {
+				if v, ok := g.Metrics[UnblendedCost]; ok {
 					o.UnblendedCost = Cost{
 						Amount: *v.Amount,
 						Unit:   *v.Unit,
 					}
 				}
 
-				if v, ok := g.Metrics["BlendedCost"]; ok {
+				if v, ok := g.Metrics[BlendedCost]; ok {
 					o.BlendedCost = Cost{
 						Amount: *v.Amount,
 						Unit:   *v.Unit,
