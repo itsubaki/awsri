@@ -23,16 +23,16 @@ func Serialize(dir string, date []calendar.Date, metrics []string) error {
 
 		ac, err := Fetch(date[i].Start, date[i].End, metrics)
 		if err != nil {
-			return fmt.Errorf("fetch cost (%s, %s): %v\n", date[i].Start, date[i].End, err)
+			return fmt.Errorf("fetch cost (%s, %s): %v", date[i].Start, date[i].End, err)
 		}
 
 		b, err := json.Marshal(ac)
 		if err != nil {
-			return fmt.Errorf("marshal: %v\n", err)
+			return fmt.Errorf("marshal: %v", err)
 		}
 
 		if err := os.WriteFile(file, b, os.ModePerm); err != nil {
-			return fmt.Errorf("write file: %v\n", err)
+			return fmt.Errorf("write file: %v", err)
 		}
 
 		fmt.Printf("write: %v\n", file)
